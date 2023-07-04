@@ -126,5 +126,5 @@ textarea:disabled::placeholder {
   height: 16px;
   position: absolute;
   right: 0;
-  margin-right: 10px;
+  margin-right: 16px;
 }

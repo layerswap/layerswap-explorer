@@ -5,7 +5,8 @@ import { ApiResponse } from "@/models/ApiResponse";
 import CopyButton from "../../components/buttons/copyButton";
 import { ExternalLink } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../../components/shadcn/accordion';
-import useSWR from "swr"
+import useSWR from "swr";
+import StatusIcon from '../../components/SwapHistory/StatusIcons';
 
 type Swap = {
     created_date: string,
@@ -39,7 +40,7 @@ type Transaction = {
 export default function SearchData({ searchParam }: { searchParam: string }) {
     const fetcher = (url: string) => fetch(url).then(r => r.json())
     const { data, error, isLoading } = useSWR<ApiResponse<Swap>>(`https://bridge-api-dev.layerswap.cloud/api/explorer/${searchParam}`, fetcher, { dedupingInterval: 60000 })
-    const swap = data?.data
+    const swap = data?.data;
 
     if (error) return <div>failed to load</div>
     if (isLoading) return <div>loading...</div>
@@ -57,7 +58,9 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                     </div>
                     <div className="px-4 py-6 sm:grid sm:grid-cols-4 sm:gap-4 sm:px-6">
                         <dt className="text-sm font-medium text-white">Status</dt>
-                        <dd className="mt-1 text-sm leading-6 text-primary-text sm:col-span-2 sm:mt-0">{swap.status}</dd>
+                        <dd className="mt-1 text-sm leading-6 text-primary-text sm:col-span-2 sm:mt-0">
+                            <StatusIcon swap={swap.status} />
+                        </dd>
                     </div>
                     <div className="px-4 py-6 sm:grid sm:grid-cols-4 sm:gap-4 sm:px-6">
                         <dt className="text-sm font-medium text-white">To Address</dt>

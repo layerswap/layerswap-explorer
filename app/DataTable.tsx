@@ -3,6 +3,7 @@
 import { shortenAddress } from "@/lib/utils";
 import { ApiResponse } from "@/models/ApiResponse";
 import useSWR from "swr"
+import StatusIcon from '../components/SwapHistory/StatusIcons';
 
 type Swap = {
     created_date: string,
@@ -42,7 +43,7 @@ export default function DataTable() {
     if (isLoading) return <div>loading...</div>
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full">
-          
+
             <div className="mt-8 flow-root">
                 <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                     <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -79,7 +80,9 @@ export default function DataTable() {
                                             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-white sm:pl-6">
                                                 {new Date(swap.created_date).toLocaleString()}
                                             </td>
-                                            <td className="whitespace-nowrap px-3 py-4 text-sm text-primary-tex">{swap.status}</td>
+                                            <td className="whitespace-nowrap px-3 py-4 text-sm text-primary-tex">
+                                                <StatusIcon swap={swap.status} />
+                                            </td>
                                             <td className="whitespace-nowrap px-3 py-4 text-sm text-primary-tex">{shortenAddress(swap.destination_address)}</td>
                                             <td className="whitespace-nowrap px-3 py-4 text-sm text-primary-tex">{swap.source_network_asset}</td>
                                             <td className="whitespace-nowrap px-3 py-4 text-sm text-primary-tex">{swap.source_network || swap.source_exchange}</td>
