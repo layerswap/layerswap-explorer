@@ -1,5 +1,4 @@
 "use client"
-
 import { shortenAddress } from "@/lib/utils";
 import { ApiResponse } from "@/models/ApiResponse";
 import useSWR from "swr"
@@ -43,7 +42,6 @@ export default function DataTable() {
     if (isLoading) return <div>loading...</div>
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full">
-
             <div className="mt-8 flow-root">
                 <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                     <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -51,14 +49,11 @@ export default function DataTable() {
                             <table className="min-w-full divide-y divide-secondary-500">
                                 <thead className="bg-secondary-800">
                                     <tr>
-                                        <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-6">
-                                            Date
+                                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
+                                            To Address
                                         </th>
                                         <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
                                             Status
-                                        </th>
-                                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
-                                            To Address
                                         </th>
                                         <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
                                             Asset
@@ -78,15 +73,15 @@ export default function DataTable() {
                                     {swapsData?.map((swap, index) => (
                                         <tr key={index}>
                                             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-white sm:pl-6">
+                                                {shortenAddress(swap.destination_address)}
                                                 {new Date(swap.created_date).toLocaleString()}
                                             </td>
                                             <td className="whitespace-nowrap px-3 py-4 text-sm text-primary-tex">
                                                 <StatusIcon swap={swap.status} />
                                             </td>
-                                            <td className="whitespace-nowrap px-3 py-4 text-sm text-primary-tex">{shortenAddress(swap.destination_address)}</td>
                                             <td className="whitespace-nowrap px-3 py-4 text-sm text-primary-tex">{swap.source_network_asset}</td>
-                                            <td className="whitespace-nowrap px-3 py-4 text-sm text-primary-tex">{swap.source_network || swap.source_exchange}</td>
-                                            <td className="whitespace-nowrap px-3 py-4 text-sm text-primary-tex">{swap.destination_network || swap.destination_exchange}</td>
+                                            <td className="whitespace-nowrap px-3 py-4 text-sm text-primary-tex">{swap.source_exchange || swap.source_network}</td>
+                                            <td className="whitespace-nowrap px-3 py-4 text-sm text-primary-tex">{swap.destination_exchange || swap.destination_network}</td>
                                             <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                                                 <a href="#" className="text-primary hover:text-primary-800 duration-200 transition-all">
                                                     Edit<span className="sr-only">, {swap.destination_address}</span>
