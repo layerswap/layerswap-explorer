@@ -17,10 +17,6 @@
     -moz-appearance: textfield;
   }
   
-  .styled-scroll {
-    @apply scrollbar:!w-1.5 scrollbar:!h-1.5 scrollbar:bg-secondary-500  scrollbar-thumb:!rounded scrollbar-thumb:!bg-slate-300  scrollbar-thumb:!bg-slate-500/50;
-  }
-  
 }
 
 @layer base {
@@ -124,4 +120,11 @@ textarea:disabled::placeholder {
 
 .space-y-reverse {
   --space-y-reverse: 1
+}
+.accordion .chevron-down {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  right: 0;
+  margin-right: 10px;
 }
