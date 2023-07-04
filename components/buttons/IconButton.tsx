@@ -21,4 +21,6 @@ const IconButton = forwardRef<HTMLButtonElement | HTMLAnchorElement, IconButtonP
     )
 })
 
+IconButton.displayName='IconButton'
+
 export default IconButton
