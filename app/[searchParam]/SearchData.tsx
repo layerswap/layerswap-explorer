@@ -173,11 +173,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
             </div>
         </div>
         :
-        <div className="overflow-hidden bg-secondary-700 shadow-xl sm:rounded-lg border border-secondary-500 w-full max-w-6xl">
-            <div className="px-4 py-6 sm:px-6 bg-secondary-800">
-                <h3 className="text-base font-semibold leading-7 text-white">Applicant Information</h3>
-                <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Personal details and application.</p>
-            </div>
+        <div className="bg-secondary-700 shadow-xl sm:rounded-lg border border-secondary-500 w-full max-w-6xl px-4 sm:px-6 lg:px-8">
             {swap && <div className="py-10 pt-4 px-3">
                 <div className="flex items-start md:ml-0 md:mb-6 flex-col sm:flex-row sm:justify-between sm:items-start">
                     <div className="flex flex-row ml-2 mb-4 sm:mb-0">
@@ -207,10 +203,10 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                 <div className="text-sm lg:text-base font-medium text-tx-base w-fit">
                                     <div className="flex items-center text-white">
                                         <a href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit inline-flex items-center">
-                                            {shortenAddress(swap?.input_transaction?.transaction_id)}
+                                            <span className="break-all w-11/12">{swap?.input_transaction?.transaction_id}</span>
                                             <ExternalLink width={16} height={16} className="mx-1" />
                                         </a>
-                                        <CopyButton toCopy={swap?.input_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} />
+                                        <CopyButton toCopy={swap?.input_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="lg:-ml-3" />
                                     </div>
                                 </div>
                                 <div className="cursor-pointer"></div>
@@ -246,8 +242,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             <div className="text-base font-normal text-socket-secondary">Sender Address</div>
                             <div className="flex items-center text-sm lg:text-base font-medium text-tx-base w-fit">
                                 <div className="flex items-center text-white">
-                                    <a href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit inline-flex items-center">
-                                        {shortenAddress(swap?.input_transaction?.from)}
+                                    <a href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit inline-flex items-center break-all">
+                                        {swap?.input_transaction?.from}
                                         <ExternalLink width={16} height={16} className="mx-1" />
                                     </a>
                                     <CopyButton toCopy={swap?.input_transaction?.from} iconHeight={16} iconClassName="order-2" iconWidth={16} />
@@ -274,10 +270,10 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     {swap?.output_transaction?.transaction_id ?
                                         <div className="flex items-center text-white">
                                             <a href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit inline-flex items-center">
-                                                {shortenAddress(swap?.output_transaction?.transaction_id)}
-                                                <ExternalLink width={16} height={16} className="mx-1" />
+                                                <span className="break-all w-11/12">{swap?.output_transaction?.transaction_id}</span>
+                                                <ExternalLink width={16} height={16} className="px-1" />
                                             </a>
-                                            <CopyButton toCopy={swap?.output_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} />
+                                            <CopyButton toCopy={swap?.output_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16}  className="lg:-ml-3" />
                                         </div>
                                         :
                                         <span>-</span>
@@ -323,8 +319,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             <div className="text-base font-normal text-socket-secondary">Receiver Address</div>
                             <div className="flex items-center text-sm lg:text-base font-medium text-tx-base w-fit">
                                 <div className="flex items-center text-white">
-                                    <a href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit inline-flex items-center">
-                                        {shortenAddress(swap?.destination_address)}
+                                    <a href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit inline-flex items-center break-all">
+                                        {swap?.destination_address}
                                         <ExternalLink width={16} height={16} className="mx-1" />
                                     </a>
                                     <CopyButton toCopy={swap?.destination_address} iconHeight={16} iconClassName="order-2" iconWidth={16} />

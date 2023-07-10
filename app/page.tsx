@@ -6,19 +6,22 @@ import { mapNetworkCurrencies } from "./helpers/settingsHelper";
 import { SettingsProvider } from "@/context/settings";
 import LayerSwapAuthApiClient from "@/lib/userAuthApiClient";
 import { LayerSwapAppSettings } from "@/models/LayerSwapAppSettings";
-
+import Header from "@/components/Header";
+import BackBtn from "./helpers/BackButton";
 
 export default async function Home() {
 
   const settingsData = await getServerSideProps();
   const settings = settingsData?.props?.settings || undefined;
-  
+
   LayerSwapAuthApiClient.identityBaseEndpoint = settings?.discovery?.identity_url || '';
   let appSettings = new LayerSwapAppSettings(settings);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between max-w-6xl mx-auto py-24">
       <SettingsProvider data={appSettings}>
+        <Header />
+        <BackBtn />
         <Search />
         <DataTable />
       </SettingsProvider>

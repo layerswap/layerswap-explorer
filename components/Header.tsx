@@ -14,8 +14,8 @@ export default function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
     return (
-        <header className="w-full">
-            <nav className="mx-auto flex max-w-full w-full items-center justify-between p-6 lg:px-8" aria-label="Global">
+        <header className="w-max-w-6xl w-full mx-auto">
+            <nav className="mx-auto flex max-w-6xl items-center justify-between p-6 lg:px-8" aria-label="Global">
                 <div className="flex lg:flex-1">
                     <a href="/" className="-m-1.5 p-1.5">
                         <LayerSwapLogo className="h-8 w-auto text-primary-logoColor" />
@@ -37,11 +37,6 @@ export default function Header() {
                             {item.name}
                         </a>
                     ))}
-                </div>
-                <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-                    <a href="#" className="text-sm font-semibold leading-6 text-white">
-                        Log in <span aria-hidden="true">&rarr;</span>
-                    </a>
                 </div>
             </nav>
             <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
