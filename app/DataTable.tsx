@@ -134,7 +134,7 @@ export default function DataTable() {
                                                                         </span>
                                                                     </div>
                                                                     <div className="mx-1">
-                                                                        <span className="text-white">{swap?.output_transaction?.usd_price}</span>
+                                                                        <span className="text-white">{swap?.output_transaction?.amount}</span>
                                                                         <span className="mx-1 text-white">{swap?.destination_network_asset}</span>
                                                                     </div>
                                                                 </div>
