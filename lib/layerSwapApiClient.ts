@@ -8,8 +8,9 @@ export default class LayerSwapApiClient {
     static apiBaseEndpoint: string | undefined = AppSettings.LayerswapApiUri;
 
     async GetSettingsAsync(): Promise<ApiResponse<LayerSwapSettings>> {
+        const fetcher = (url: string) => fetch(url).then(r => r.json())
         const version = process.env.NEXT_PUBLIC_API_VERSION
-        return await axios.get(`${LayerSwapApiClient.apiBaseEndpoint}/api/settings?version=${version}`).then(res => res.data);
+        return await fetcher(`${LayerSwapApiClient.apiBaseEndpoint}/api/settings?version=${version}`)
     }
 }
 

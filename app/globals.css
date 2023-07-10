@@ -128,3 +128,7 @@ textarea:disabled::placeholder {
   right: 0;
   margin-right: 16px;
 }
+
+.disabled {
+  pointer-events: none;
+}

@@ -7,6 +7,7 @@ import { ExternalLink } from "lucide-react";
 import { useSettingsState } from "@/context/settings";
 import Image from "next/image";
 import Link from "next/link";
+import LoadingBlocks from "@/components/LoadingBlocks";
 
 type Swap = {
     created_date: string,
@@ -39,12 +40,12 @@ type Transaction = {
 
 export default function DataTable() {
     const fetcher = (url: string) => fetch(url).then(r => r.json())
-    const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>('https://bridge-api-dev.layerswap.cloud/api/explorer', fetcher, { dedupingInterval: 60000 })
+    const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>('https://bridge-api-dev.layerswap.cloud/api/explorer', fetcher, { dedupingInterval: 60000 });
     const swapsData = data?.data;
     const settings = useSettingsState();
 
     if (error) return <div>failed to load</div>
-    if (isLoading) return <div>loading...</div>
+    if (isLoading) return <LoadingBlocks />
 
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full">
@@ -67,14 +68,14 @@ export default function DataTable() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-secondary-400 bg-secondary">
-                                    {swapsData?.map((swap, index) => {
+                                    {swapsData?.filter(sd => sd?.input_transaction)?.map((swap, index) => {
                                         const sourceLayer = swap?.source_exchange ? settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase()) : settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap.source_network?.toLowerCase())
                                         const destinationLayer = swap?.destination_exchange ? settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase()) : settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_network?.toLowerCase())
 
                                         return (
                                             <tr key={index}>
                                                 <td className="whitespace-nowrap py-4 px-3 text-sm font-medium text-white flex flex-col">
-                                                    <Link href={`/${swap.destination_address}`} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                    <Link href={`/${swap.destination_address}`} className="hover:text-gray-300 inline-flex items-center w-fit">
                                                         {shortenAddress(swap.destination_address)}
                                                     </Link>
                                                     <StatusIcon swap={swap.status} />
@@ -108,9 +109,9 @@ export default function DataTable() {
                                                                         <Image alt={`Source chain icon ${index}`} src={settings?.resolveImgSrc(sourceLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-full" />
                                                                     </span>
                                                                 </div>
-                                                                <span className="ml-1 text-white">{sourceLayer?.display_name}</span>
-                                                                <div className="mx-0.5">
-                                                                    <Link href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                                <div className="mx-0.5 text-white">
+                                                                    <Link href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                                        <span className="mx-0.5 hover:text-gray-300">{sourceLayer?.display_name}</span>
                                                                         <ExternalLink width={16} height={16} />
                                                                     </Link>
                                                                 </div>
@@ -146,9 +147,9 @@ export default function DataTable() {
                                                                         <Image alt={`Destination chain icon ${index}`} src={settings?.resolveImgSrc(destinationLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-full" />
                                                                     </span>
                                                                 </div>
-                                                                <span className="ml-1 text-white">{destinationLayer?.display_name}</span>
-                                                                <div className="mx-0.5">
-                                                                    <Link href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                                <div className="mx-0.5 text-white">
+                                                                    <Link href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className={`${!swap?.output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
+                                                                        <span className="mx-0.5 hover:text-gray-300">{destinationLayer?.display_name}</span>
                                                                         <ExternalLink width={16} height={16} />
                                                                     </Link>
                                                                 </div>

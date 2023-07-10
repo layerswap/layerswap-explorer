@@ -2,15 +2,11 @@
 import Search from "@/components/Search";
 import DataTable from "./DataTable";
 import LayerSwapApiClient from '../lib/layerSwapApiClient';
-import { LayerSwapSettings } from '@/models/LayerSwapSettings';
 import { mapNetworkCurrencies } from "./helpers/settingsHelper";
 import { SettingsProvider } from "@/context/settings";
 import LayerSwapAuthApiClient from "@/lib/userAuthApiClient";
 import { LayerSwapAppSettings } from "@/models/LayerSwapAppSettings";
 
-type IndexProps = {
-  settings?: LayerSwapSettings | undefined,
-}
 
 export default async function Home() {
 

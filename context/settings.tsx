@@ -1,5 +1,4 @@
 import { LayerSwapAppSettings } from '@/models/LayerSwapAppSettings';
-import { LayerSwapSettings } from '@/models/LayerSwapSettings';
 import React, { FC, ReactNode } from 'react'
 
 const SettingsStateContext = React.createContext<LayerSwapAppSettings | null>(null);
