@@ -1,9 +1,12 @@
 "use client"
-
 import { shortenAddress } from "@/lib/utils";
 import { ApiResponse } from "@/models/ApiResponse";
 import useSWR from "swr"
 import StatusIcon from '../components/SwapHistory/StatusIcons';
+import { ExternalLink } from "lucide-react";
+import { useSettingsState } from "@/context/settings";
+import Image from "next/image";
+import Link from "next/link";
 
 type Swap = {
     created_date: string,
@@ -37,13 +40,14 @@ type Transaction = {
 export default function DataTable() {
     const fetcher = (url: string) => fetch(url).then(r => r.json())
     const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>('https://bridge-api-dev.layerswap.cloud/api/explorer', fetcher, { dedupingInterval: 60000 })
-    const swapsData = data?.data
+    const swapsData = data?.data;
+    const settings = useSettingsState();
 
     if (error) return <div>failed to load</div>
     if (isLoading) return <div>loading...</div>
+
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full">
-
             <div className="mt-8 flow-root">
                 <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                     <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -51,17 +55,8 @@ export default function DataTable() {
                             <table className="min-w-full divide-y divide-secondary-500">
                                 <thead className="bg-secondary-800">
                                     <tr>
-                                        <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-6">
-                                            Date
-                                        </th>
-                                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
-                                            Status
-                                        </th>
                                         <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
                                             To Address
-                                        </th>
-                                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
-                                            Asset
                                         </th>
                                         <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
                                             Source
@@ -69,31 +64,102 @@ export default function DataTable() {
                                         <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
                                             Destination
                                         </th>
-                                        <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                                            <span className="sr-only">Edit</span>
-                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-secondary-400 bg-secondary">
-                                    {swapsData?.map((swap, index) => (
-                                        <tr key={index}>
-                                            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-white sm:pl-6">
-                                                {new Date(swap.created_date).toLocaleString()}
-                                            </td>
-                                            <td className="whitespace-nowrap px-3 py-4 text-sm text-primary-tex">
-                                                <StatusIcon swap={swap.status} />
-                                            </td>
-                                            <td className="whitespace-nowrap px-3 py-4 text-sm text-primary-tex">{shortenAddress(swap.destination_address)}</td>
-                                            <td className="whitespace-nowrap px-3 py-4 text-sm text-primary-tex">{swap.source_network_asset}</td>
-                                            <td className="whitespace-nowrap px-3 py-4 text-sm text-primary-tex">{swap.source_network || swap.source_exchange}</td>
-                                            <td className="whitespace-nowrap px-3 py-4 text-sm text-primary-tex">{swap.destination_network || swap.destination_exchange}</td>
-                                            <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                                <a href="#" className="text-primary hover:text-primary-800 duration-200 transition-all">
-                                                    Edit<span className="sr-only">, {swap.destination_address}</span>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    ))}
+                                    {swapsData?.map((swap, index) => {
+                                        const sourceLayer = swap?.source_exchange ? settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase()) : settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap.source_network?.toLowerCase())
+                                        const destinationLayer = swap?.destination_exchange ? settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase()) : settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_network?.toLowerCase())
+
+                                        return (
+                                            <tr key={index}>
+                                                <td className="whitespace-nowrap py-4 px-3 text-sm font-medium text-white flex flex-col">
+                                                    <Link href={`/${swap.destination_address}`} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                        {shortenAddress(swap.destination_address)}
+                                                    </Link>
+                                                    <StatusIcon swap={swap.status} />
+                                                    <span className="text-primary-text">{new Date(swap.created_date).toLocaleString()}</span>
+                                                </td>
+                                                <td className="whitespace-nowrap px-3 py-4 text-sm text-primary-text">
+                                                    <div className="flex flex-row">
+                                                        <div className="flex flex-col items-end ">
+                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end">Token:</span>
+                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end">{swap?.source_exchange ? 'Exchange' : 'Network'}:</span>
+                                                        </div>
+                                                        <div className="flex flex-col">
+                                                            <div className="text-sm md:text-base flex flex-row">
+                                                                <div className="flex flex-row items-center ml-1">
+                                                                    <div className="relative h-4 w-4 md:h-5 md:w-5">
+                                                                        <span>
+                                                                            <span></span>
+                                                                            <Image alt={`Source token icon ${index}`} src={settings?.resolveImgSrc(settings?.currencies?.find(c => c?.asset === swap?.source_network_asset)) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-full" />
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="mx-1">
+                                                                        <span className="text-white">{swap?.input_transaction?.amount}</span>
+                                                                        <span className="mx-1 text-white">{swap?.source_network_asset}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="text-sm md:text-base flex flex-row items-center ml-1">
+                                                                <div className="relative h-4 w-4 md:h-5 md:w-5">
+                                                                    <span>
+                                                                        <span></span>
+                                                                        <Image alt={`Source chain icon ${index}`} src={settings?.resolveImgSrc(sourceLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-full" />
+                                                                    </span>
+                                                                </div>
+                                                                <span className="ml-1 text-white">{sourceLayer?.display_name}</span>
+                                                                <div className="mx-0.5">
+                                                                    <Link href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                                        <ExternalLink width={16} height={16} />
+                                                                    </Link>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="whitespace-nowrap px-3 py-4 text-sm text-primary-text">
+                                                    <div className="flex flex-row">
+                                                        <div className="flex flex-col items-end ">
+                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end">Token:</span>
+                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end">{swap?.destination_exchange ? 'Exchange' : 'Network'}:</span>
+                                                        </div>
+                                                        <div className="flex flex-col">
+                                                            <div className="text-sm md:text-base flex flex-row">
+                                                                <div className="flex flex-row items-center ml-1">
+                                                                    <div className="relative h-4 w-4 md:h-5 md:w-5">
+                                                                        <span>
+                                                                            <span></span>
+                                                                            <Image alt={`Destination token icon ${index}`} src={settings?.resolveImgSrc(settings?.currencies?.find(c => c?.asset === swap?.destination_network_asset)) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-full" />
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="mx-1">
+                                                                        <span className="text-white">{swap?.output_transaction?.usd_price}</span>
+                                                                        <span className="mx-1 text-white">{swap?.destination_network_asset}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="text-sm md:text-base flex flex-row items-center ml-1">
+                                                                <div className="relative h-4 w-4 md:h-5 md:w-5">
+                                                                    <span>
+                                                                        <span></span>
+                                                                        <Image alt={`Destination chain icon ${index}`} src={settings?.resolveImgSrc(destinationLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-full" />
+                                                                    </span>
+                                                                </div>
+                                                                <span className="ml-1 text-white">{destinationLayer?.display_name}</span>
+                                                                <div className="mx-0.5">
+                                                                    <Link href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                                        <ExternalLink width={16} height={16} />
+                                                                    </Link>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )
+                                    }
+                                    )}
                                 </tbody>
                             </table>
                         </div>
