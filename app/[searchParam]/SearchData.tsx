@@ -49,7 +49,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const swapDestinationLayer = swap?.destination_exchange ? settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase()) : settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap?.destination_network?.toLowerCase());
 
     if (error) return <div>failed to load</div>
-    if (!isLoading) return <LoadingBlocks />
+    if (isLoading) return <LoadingBlocks />
 
     return (Number(data?.data?.length) > 1 ?
         <div className="px-4 sm:px-6 lg:px-8 w-full">
