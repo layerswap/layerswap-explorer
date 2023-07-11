@@ -40,7 +40,7 @@ type Transaction = {
 
 export default function DataTable() {
     const fetcher = (url: string) => fetch(url).then(r => r.json())
-    const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>('https://bridge-api-dev.layerswap.cloud/api/explorer', fetcher, { dedupingInterval: 60000 });
+    const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>('https://bridge-api-dev.layerswap.cloud/api/explorer?statuses=1&statuses=4', fetcher, { dedupingInterval: 60000 });
     const swapsData = data?.data;
     const settings = useSettingsState();
 
@@ -68,7 +68,7 @@ export default function DataTable() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-secondary-400 bg-secondary">
-                                    {swapsData?.filter(sd => sd?.input_transaction)?.map((swap, index) => {
+                                    {swapsData?.map((swap, index) => {
                                         const sourceLayer = swap?.source_exchange ? settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase()) : settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap.source_network?.toLowerCase())
                                         const destinationLayer = swap?.destination_exchange ? settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase()) : settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_network?.toLowerCase())
 

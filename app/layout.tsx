@@ -1,4 +1,6 @@
+import Header from '@/components/Header'
 import './globals.css'
+import Footer from '@/components/Footer'
 
 export const metadata = {
   title: 'Layerswap Explorer',
@@ -12,7 +14,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className='flex min-h-screen flex-col justify-between overflow- items-center max-w-6xl mx-auto'>
+        <Header />
+        {children}
+        <Footer />
+      </body>
     </html>
   )
 }

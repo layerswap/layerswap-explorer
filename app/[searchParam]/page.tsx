@@ -1,13 +1,8 @@
-'use client';
 import { SettingsProvider } from "@/context/settings";
 import SearchData from "./SearchData";
 import LayerSwapApiClient from "@/lib/layerSwapApiClient";
-import { mapNetworkCurrencies } from "../helpers/settingsHelper";
-import { LayerSwapAppSettings } from "@/models/LayerSwapAppSettings";
+import { mapNetworkCurrencies } from "../../helpers/settingsHelper";
 import LayerSwapAuthApiClient from "@/lib/userAuthApiClient";
-import Search from "@/components/Search";
-import Header from "@/components/Header";
-import BackBtn from "../helpers/BackButton";
 
 export default async function Page({ params }: { params: { searchParam: string } }) {
 
@@ -15,16 +10,12 @@ export default async function Page({ params }: { params: { searchParam: string }
   const settings = settingsData?.props?.settings || undefined;
 
   LayerSwapAuthApiClient.identityBaseEndpoint = settings?.discovery?.identity_url || '';
-  let appSettings = new LayerSwapAppSettings(settings);
 
   return (
-    <SettingsProvider data={appSettings}>
-      <div className="flex min-h-screen flex-col items-center max-w-6xl mx-auto py-24">
-        <Header />
-        <BackBtn />
-        <Search />
+    <SettingsProvider data={settings}>
+      <main className="w-full py-5 px-6 xl:px-0">
         <SearchData searchParam={params.searchParam} />
-      </div>
+      </main>
     </SettingsProvider>
   )
 }

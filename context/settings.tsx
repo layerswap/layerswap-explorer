@@ -1,11 +1,15 @@
+'use client'
 import { LayerSwapAppSettings } from '@/models/LayerSwapAppSettings';
+import { LayerSwapSettings } from '@/models/LayerSwapSettings';
 import React, { FC, ReactNode } from 'react'
 
 const SettingsStateContext = React.createContext<LayerSwapAppSettings | null>(null);
 
-export const SettingsProvider: FC<{data:LayerSwapAppSettings, children: ReactNode}> = ({children, data}) => {
+export const SettingsProvider: FC<{ data: LayerSwapSettings | undefined, children: ReactNode }> = ({ children, data }) => {
+  let appSettings = new LayerSwapAppSettings(data);
+
   return (
-    <SettingsStateContext.Provider value={data}>
+    <SettingsStateContext.Provider value={appSettings}>
       {children}
     </SettingsStateContext.Provider>
   );

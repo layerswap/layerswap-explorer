@@ -1,13 +1,9 @@
-'use client';
 import Search from "@/components/Search";
 import DataTable from "./DataTable";
 import LayerSwapApiClient from '../lib/layerSwapApiClient';
-import { mapNetworkCurrencies } from "./helpers/settingsHelper";
+import { mapNetworkCurrencies } from "../helpers/settingsHelper";
 import { SettingsProvider } from "@/context/settings";
 import LayerSwapAuthApiClient from "@/lib/userAuthApiClient";
-import { LayerSwapAppSettings } from "@/models/LayerSwapAppSettings";
-import Header from "@/components/Header";
-import BackBtn from "./helpers/BackButton";
 
 export default async function Home() {
 
@@ -15,24 +11,20 @@ export default async function Home() {
   const settings = settingsData?.props?.settings || undefined;
 
   LayerSwapAuthApiClient.identityBaseEndpoint = settings?.discovery?.identity_url || '';
-  let appSettings = new LayerSwapAppSettings(settings);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between max-w-6xl mx-auto py-24">
-      <SettingsProvider data={appSettings}>
-        <Header />
-        <BackBtn />
+    <SettingsProvider data={settings}>
+      <main className="w-full py-5 px-6 xl:px-0">
         <Search />
         <DataTable />
-      </SettingsProvider>
-    </main>
+      </main>
+    </SettingsProvider>
   )
 }
 
 
-
-
 async function getServerSideProps() {
+  "use server"
   try {
     var apiClient = new LayerSwapApiClient();
     const { data: settings } = await apiClient.GetSettingsAsync();
