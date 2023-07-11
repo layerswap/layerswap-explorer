@@ -55,7 +55,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     return (Number(data?.data?.length) > 1 ?
         <div className="px-4 sm:px-6 lg:px-8 w-full">
             <div className="mt-8 flow-root w-full">
-                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8 overflow-y-scroll h-full max-h-[70vh] dataTable">
                     <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                         <h1 className="h5 mb-2 text-white">
                             <span className="font-bold text-primary-text">Address: </span>
@@ -66,17 +66,17 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                         </h1>
                     </div>
                     <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                        <div className="overflow-hidden shadow ring-1 ring-white ring-opacity-5 sm:rounded-lg">
-                            <table className="min-w-full divide-y divide-secondary-500">
-                                <thead className="bg-secondary-800">
+                        <div className="shadow ring-1 ring-white ring-opacity-5 sm:rounded-lg">
+                            <table className="min-w-full divide-y divide-secondary-500 relative">
+                                <thead className="bg-secondary-800 sticky top-0 z-10">
                                     <tr>
-                                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
-                                            Source Transaction Hash
+                                        <th scope="col" className="sticky top-0 px-3 py-3.5 text-left text-sm font-semibold text-white">
+                                            To Address
                                         </th>
-                                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
+                                        <th scope="col" className="sticky top-0 px-3 py-3.5 text-left text-sm font-semibold text-white">
                                             Source
                                         </th>
-                                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
+                                        <th scope="col" className="sticky top-0 px-3 py-3.5 text-left text-sm font-semibold text-white">
                                             Destination
                                         </th>
                                     </tr>

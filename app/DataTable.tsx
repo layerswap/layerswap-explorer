@@ -50,24 +50,24 @@ export default function DataTable() {
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full">
             <div className="mt-8 flow-root">
-                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                        <div className="overflow-hidden shadow ring-1 ring-white ring-opacity-5 sm:rounded-lg">
-                            <table className="min-w-full divide-y divide-secondary-500">
-                                <thead className="bg-secondary-800">
+                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8 h-full max-h-[60vh] dataTable">
+                    <div className="inline-block h-screen min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                        <div className="shadow ring-1 ring-white ring-opacity-5 sm:rounded-lg">
+                            <table className="min-w-full divide-y divide-secondary-500 relative">
+                                <thead className="bg-secondary-800 sticky top-0 z-10">
                                     <tr>
-                                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
+                                        <th scope="col" className="sticky top-0 px-3 py-3.5 text-left text-sm font-semibold text-white">
                                             To Address
                                         </th>
-                                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
+                                        <th scope="col" className="sticky top-0 px-3 py-3.5 text-left text-sm font-semibold text-white">
                                             Source
                                         </th>
-                                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
+                                        <th scope="col" className="sticky top-0 px-3 py-3.5 text-left text-sm font-semibold text-white">
                                             Destination
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-secondary-400 bg-secondary">
+                                <tbody className="divide-y divide-secondary-400 bg-secondary overflow-y-scroll">
                                     {swapsData?.map((swap, index) => {
                                         const sourceLayer = swap?.source_exchange ? settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase()) : settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap.source_network?.toLowerCase())
                                         const destinationLayer = swap?.destination_exchange ? settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase()) : settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_network?.toLowerCase())
