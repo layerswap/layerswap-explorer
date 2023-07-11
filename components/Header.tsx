@@ -17,7 +17,7 @@ export default function Header() {
 
     return (
         <header className="w-max-w-6xl w-full mx-auto">
-            {pathname !== '/' && <div className='hidden xl:block'>
+            {pathname !== '/' && <div className='hidden xl:block absolute left-4 top-4 md:left-8 md:top-8 hover:bg-gray-800 hover:text-accent-foreground rounded ring-offset-background transition-colors'>
                 <BackBtn />
             </div>}
             <nav className={`mx-auto max-w-6xl grid grid-cols-2 lg:grid-cols-6 lg:grid-rows-1 items-center py-3 px-6 lg:px-8 ${pathname !== '/' ? 'grid-rows-2' : 'grid-rows-1'}`} aria-label="Global">

@@ -57,11 +57,15 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
             <div className="mt-8 flow-root w-full">
                 <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                     <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                        <div className="d-flex align-items-center gap-2 mt-n0.5">
-                            <h1 className="h5 mb-2 text-white">
-                                <span className="font-bold text-primary-text">Address</span> {swap?.destination_address}
-                            </h1>
-                        </div>
+                        <h1 className="h5 mb-2 text-white">
+                            <span className="font-bold text-primary-text">Address: </span>
+                            <span className="break-all">
+                                {swap?.destination_address}
+                                <CopyButton toCopy={swap?.destination_address || ''} iconHeight={16} iconClassName="order-2" iconWidth={16} className="inline-flex items-center ml-1 align-middle" />
+                            </span>
+                        </h1>
+                    </div>
+                    <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                         <div className="overflow-hidden shadow ring-1 ring-white ring-opacity-5 sm:rounded-lg">
                             <table className="min-w-full divide-y divide-secondary-500">
                                 <thead className="bg-secondary-800">
