@@ -4,10 +4,8 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import LayerSwapLogo from './icons/layerSwapLogo'
 
 const navigation = [
-    { name: 'Product', href: '#' },
-    { name: 'Features', href: '#' },
-    { name: 'Marketplace', href: '#' },
-    { name: 'Company', href: '#' },
+    { name: 'Layerswap', href: 'https://layerswap.io' },
+    { name: 'Docs', href: 'https://docs.layerswap.io' },
 ]
 
 export default function Header() {

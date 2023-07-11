@@ -1,12 +1,11 @@
 "use client"
-
-import { SearchIcon } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { SearchIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const Search = () => {
-    const [searchParam, setSearchParam] = useState('')
-    const router = useRouter()
+    const [searchParam, setSearchParam] = useState('');
+    const router = useRouter();
 
     return (
         <div className="w-full">
@@ -35,4 +34,4 @@ const Search = () => {
     )
 }
 
-export default Search
+export default Search;
