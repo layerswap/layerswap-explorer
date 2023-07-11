@@ -54,7 +54,7 @@ export default function DataTable() {
                     <div className="inline-block h-screen min-w-full py-2 align-middle sm:px-6 lg:px-8">
                         <div className="shadow ring-1 ring-white ring-opacity-5 sm:rounded-lg">
                             <table className="min-w-full divide-y divide-secondary-500 relative">
-                                <thead className="bg-secondary-800 sticky top-0 z-10">
+                                <thead className="bg-secondary-800 sticky -top-1 z-10">
                                     <tr>
                                         <th scope="col" className="sticky top-0 px-3 py-3.5 text-left text-sm font-semibold text-white">
                                             To Address
