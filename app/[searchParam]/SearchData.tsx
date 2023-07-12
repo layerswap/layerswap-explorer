@@ -214,28 +214,26 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
             </div>
         </div>
         :
-        <div className="px-6 lg:px-8 w-full">
-            <div className="bg-secondary-700 shadow-xl sm:rounded-lg border border-secondary-500 w-full lg:px-4">
-                {swap && <div className="py-2 lg:py-10 pt-4 px-3">
+        <div className="w-full">
+            <div className="shadow-xl sm:rounded-lg w-full">
+                {swap && <div className="py-2 lg:py-10 pt-4 px-2">
                     <div className="md:ml-0 md:mb-6 flex-col sm:flex-row sm:justify-between sm:items-start">
                         <div className="ml-2 mb-4 sm:mb-0">
                             <div className="text-sm md:text-base text-[#475467] dark:text-white sm:flex justify-between w-full">
                                 <div className="items-center text-base mb-0.5 text-white">
                                     <div className="mr-2 font-medium text-xl">
                                         <span className="flex"><StatusIcon swap={swap.status} /></span>
-                                    </div>
-                                </div>
-                                <div className="mx-2 font-normal text-normal text-socket-secondary text-primary-text">
-                                    <div>
-                                        <span className="mr-1">Created at:</span>
-                                        <TooltipProvider>
-                                            <Tooltip>
-                                                <TooltipTrigger className="cursor-default text-white">{new Date(swap.created_date).toLocaleString()}</TooltipTrigger>
-                                                <TooltipContent>
-                                                    {new Date(swap.created_date).toUTCString()}
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
+                                        <div className="text-sm mt-1 text-primary-text">
+                                            <span className="mr-1">Created at:</span>
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger className="cursor-default">{new Date(swap.created_date).toLocaleString()}</TooltipTrigger>
+                                                    <TooltipContent>
+                                                        {new Date(swap.created_date).toUTCString()}
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -254,10 +252,9 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                 <div className="text-sm lg:text-base font-medium text-tx-base w-fit">
                                     <div className="flex items-center text-white">
                                         <a href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                            <span className="break-all w-11/12">{swap?.input_transaction?.transaction_id}</span>
-                                            <ExternalLink width={16} height={16} className="mx-1" />
+                                            <span className="break-all link link-underline link-underline-black">{swap?.input_transaction?.transaction_id}</span>
                                         </a>
-                                        <CopyButton toCopy={swap?.input_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} />
+                                        <CopyButton toCopy={swap?.input_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                     </div>
                                 </div>
                             </div>
@@ -294,15 +291,14 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                 <div className="text-sm lg:text-base font-medium text-tx-base w-fit">
                                     <div className="flex items-center text-white">
                                         <a href={`${sourceNetwork?.account_explorer_template?.replace('{0}', swap?.input_transaction?.from)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                            <span className="break-all w-11/12">{swap?.input_transaction?.from}</span>
-                                            <ExternalLink width={16} height={16} className="mx-1" />
+                                            <span className="break-all link link-underline link-underline-black">{swap?.input_transaction?.from}</span>
                                         </a>
-                                        <CopyButton toCopy={swap?.input_transaction?.from} iconHeight={16} iconClassName="order-2" iconWidth={16} />
+                                        <CopyButton toCopy={swap?.input_transaction?.from} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="rotate-90 lg:rotate-0 self-center"><ArrowRight className="text-white w-6 h-auto"/></div>
+                        <div className="rotate-90 lg:rotate-0 self-center"><ArrowRight className="text-white w-6 h-auto" /></div>
                         <div className="border-[1px] border-slate-700	border-tx-page rounded-md w-full p-6 grid gap-y-3 text-primary-text bg-secondary-700">
                             <div className="flex items-center text-white">
                                 <div className="mr-2 uppercase text-socket-table text-normal font-medium">Destination Transaction</div>
@@ -316,10 +312,9 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     {swap?.output_transaction?.transaction_id ?
                                         <div className="flex items-center text-white">
                                             <a href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                                <span className="break-all w-11/12">{swap?.output_transaction?.transaction_id}</span>
-                                                <ExternalLink width={16} height={16} className="mx-1" />
+                                                <span className="break-all link link-underline link-underline-black">{swap?.output_transaction?.transaction_id}</span>
                                             </a>
-                                            <CopyButton toCopy={swap?.output_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} />
+                                            <CopyButton toCopy={swap?.output_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                         </div>
                                         :
                                         <span>-</span>
@@ -354,10 +349,9 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     {swap?.output_transaction ?
                                         <div className="flex items-center text-white">
                                             <a href={`${destinationNetwork?.account_explorer_template?.replace("{0}", swap?.output_transaction?.to)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                                <span className="break-all w-11/12">{swap?.output_transaction?.to}</span>
-                                                <ExternalLink width={16} height={16} className="mx-1" />
+                                                <span className="break-all link link-underline link-underline-black">{swap?.output_transaction?.to}</span>
                                             </a>
-                                            <CopyButton toCopy={swap?.destination_address} iconHeight={16} iconClassName="order-2" iconWidth={16} />
+                                            <CopyButton toCopy={swap?.destination_address} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                         </div>
                                         :
                                         <span className="ml-1">-</span>
