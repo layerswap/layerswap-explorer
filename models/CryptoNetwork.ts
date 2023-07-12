@@ -16,11 +16,12 @@ export type CryptoNetwork = {
     average_completion_time: string;
     fee_multiplier: number;
     transaction_explorer_template: string;
+    account_explorer_template: string;
     status: LayerStatus;
     currencies?: NetworkCurrency[];
     refuel_amount_in_usd: number;
     chain_id: string;
-    address_type: NetworkAddressType
+    address_type: NetworkAddressType;
 }
 
 export type NetworkCurrency = {

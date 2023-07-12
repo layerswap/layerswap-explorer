@@ -11,6 +11,7 @@ import { useSettingsState } from "@/context/settings";
 import LoadingBlocks from "@/components/LoadingBlocks";
 import { SwapStatus } from "@/models/SwapStatus";
 import AppSettings from "@/lib/AppSettings";
+import NotFound from "@/components/notFound";
 
 type Swap = {
     created_date: string,
@@ -46,17 +47,26 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>(`${AppSettings.LayerswapApiUri}/api/explorer/${searchParam}`, fetcher, { dedupingInterval: 60000 });
     const swap = data?.data?.[0];
     const settings = useSettingsState();
+
     const swapSourceLayer = swap?.source_exchange ? settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase()) : settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap?.source_network?.toLowerCase());
     const swapDestinationLayer = swap?.destination_exchange ? settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase()) : settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap?.destination_network?.toLowerCase());
+    const sourceNetwork = settings?.networks?.find(n => n.internal_name?.toLowerCase() === swap?.source_network?.toLowerCase());
+    const destinationNetwork = settings?.networks?.find(n => n.internal_name?.toLowerCase() === swap?.destination_network?.toLowerCase());
 
+    const elapsedTimeInMiliseconds = new Date(swap?.output_transaction?.created_date || '')?.getTime() - new Date(swap?.input_transaction?.created_date || '')?.getTime();
+    const timeElapsed = millisToMinutesAndSeconds(elapsedTimeInMiliseconds);
+
+    const filteredData = data?.data?.filter(s => s?.input_transaction);
     if (error) return <div>failed to load</div>
     if (isLoading) return <LoadingBlocks />
+    if (data?.error) return <NotFound />
+
 
     return (Number(data?.data?.length) > 1 ?
         <div className="px-4 sm:px-6 lg:px-8 w-full">
             <div className="mt-8 flow-root w-full">
                 <div className="inline-block min-w-full py-2 align-middle">
-                    <h1 className="h5 mb-2 text-white">
+                    <h1 className="h5 mb-2 text-white flex gap-1">
                         <span className="font-bold text-primary-text">Address: </span>
                         <span className="break-all">
                             {swap?.destination_address}
@@ -64,14 +74,14 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                         </span>
                     </h1>
                 </div>
-                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8 overflow-y-scroll h-full max-h-[70vh] dataTable">
+                <div className={`${Number(filteredData?.length) > 5 ? "overflow-y-scroll h-full max-h-[70vh] dataTable" : "overflow-hidden"} -mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
                     <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                         <div className="shadow ring-1 ring-white ring-opacity-5 sm:rounded-lg">
                             <table className="min-w-full divide-y divide-secondary-500 relative">
                                 <thead className="bg-secondary-800 sticky -top-1 z-10">
                                     <tr>
                                         <th scope="col" className="sticky top-0 px-3 py-3.5 text-left text-sm font-semibold text-white">
-                                            To Address
+                                            Source Tx Hash
                                         </th>
                                         <th scope="col" className="sticky top-0 px-3 py-3.5 text-left text-sm font-semibold text-white">
                                             Source
@@ -82,7 +92,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-secondary-400 bg-secondary">
-                                    {data?.data?.filter(s => s?.input_transaction)?.map((swap, index) => {
+                                    {filteredData?.map((swap, index) => {
                                         const sourceLayer = swap?.source_exchange ? settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase()) : settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap.source_network?.toLowerCase());
                                         const destinationLayer = swap?.destination_exchange ? settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase()) : settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_network?.toLowerCase());
 
@@ -126,7 +136,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                 <div className="mx-0.5 text-white">
                                                                     <Link href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
                                                                         <span className="mx-0.5 hover:text-gray-300">{sourceLayer?.display_name}</span>
-                                                                        <ExternalLink width={16} height={16} />
+                                                                        {swap?.input_transaction?.explorer_url && <ExternalLink width={16} height={16} />}
                                                                     </Link>
                                                                 </div>
                                                             </div>
@@ -170,7 +180,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                 <div className="mx-0.5 text-white">
                                                                     <Link href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className={`${!swap?.output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
                                                                         <span className="mx-0.5 hover:text-gray-300">{destinationLayer?.display_name}</span>
-                                                                        <ExternalLink width={16} height={16} />
+                                                                        {swap?.output_transaction?.explorer_url && <ExternalLink width={16} height={16} />}
                                                                     </Link>
                                                                 </div>
                                                             </div>
@@ -197,7 +207,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             <div className="text-sm md:text-base text-[#475467] dark:text-white">
                                 <div className="flex mx-2 items-center text-base mb-0.5 text-white">
                                     <div className="mr-2 font-medium text-lg">
-                                        <span><StatusIcon swap={swap.status} /></span>
+                                        <span className="flex"><StatusIcon swap={swap.status} />
+                                            {swap?.status?.toLocaleLowerCase() == "completed" && swap?.output_transaction?.created_date && <span className="ml-1">in {timeElapsed}</span>}</span>
                                     </div>
                                 </div>
                                 <div className="flex mx-2 font-normal text-normal text-socket-secondary text-white">
@@ -216,17 +227,14 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             </div>
                             <div className="flex flex-col">
                                 <div className="text-base font-normal text-socket-secondary">Source Tx Hash</div>
-                                <div className="flex items-center">
-                                    <div className="text-sm lg:text-base font-medium text-tx-base w-fit">
-                                        <div className="flex items-center text-white">
-                                            <a href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit inline-flex items-center">
-                                                <span className="break-all w-11/12">{swap?.input_transaction?.transaction_id}</span>
-                                                <ExternalLink width={16} height={16} className="mx-1" />
-                                            </a>
-                                            <CopyButton toCopy={swap?.input_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="lg:-ml-3" />
-                                        </div>
+                                <div className="text-sm lg:text-base font-medium text-tx-base w-fit">
+                                    <div className="flex items-center text-white">
+                                        <a href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                            <span className="break-all w-11/12">{swap?.input_transaction?.transaction_id}</span>
+                                            <ExternalLink width={16} height={16} className="mx-1" />
+                                        </a>
+                                        <CopyButton toCopy={swap?.input_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} />
                                     </div>
-                                    <div className="cursor-pointer"></div>
                                 </div>
                             </div>
                             <div className="flex-1">
@@ -257,19 +265,15 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             </div>
                             <div className="flex flex-col">
                                 <div className="text-base font-normal text-socket-secondary">Sender Address</div>
-                                <div className="flex items-center text-sm lg:text-base font-medium text-tx-base w-fit">
+                                <div className="text-sm lg:text-base font-medium text-tx-base w-fit">
                                     <div className="flex items-center text-white">
-                                        <a href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit inline-flex items-center break-all">
-                                            <span className="w-11/12">{swap?.input_transaction?.from}</span>
+                                        <a href={`${sourceNetwork?.account_explorer_template?.replace('{0}', swap?.input_transaction?.from)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                            <span className="break-all w-11/12">{swap?.input_transaction?.from}</span>
                                             <ExternalLink width={16} height={16} className="mx-1" />
                                         </a>
                                         <CopyButton toCopy={swap?.input_transaction?.from} iconHeight={16} iconClassName="order-2" iconWidth={16} />
                                     </div>
                                 </div>
-                            </div>
-                            <div className="flex flex-col">
-                                <div className="text-base font-normal text-socket-secondary">Timestamp</div>
-                                <div className="flex items-center text-sm lg:text-base font-medium text-tx-base text-white">{new Date(swap?.input_transaction?.created_date)?.toLocaleString()}</div>
                             </div>
                         </div>
                         <div className="rotate-90 lg:rotate-0 self-center"><svg width="18" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" role="img"><path d="M11 .342c-.256 0-.512.1-.707.295l-.086.086a.999.999 0 0 0 0 1.414L14.07 6H1a1 1 0 0 0 0 2h13.07l-3.863 3.863a.999.999 0 0 0 0 1.414l.086.086a.999.999 0 0 0 1.414 0l5.656-5.656a.999.999 0 0 0 0-1.414L11.707.637A.998.998 0 0 0 11 .342Z" fill="#667085"></path></svg></div>
@@ -282,20 +286,18 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             </div>
                             <div className="flex flex-col">
                                 <div className="text-base font-normal text-socket-secondary">Destination Tx Hash</div>
-                                <div className="flex items-center">
-                                    <div className="text-sm lg:text-base font-medium text-tx-base w-fit">
-                                        {swap?.output_transaction?.transaction_id ?
-                                            <div className="flex items-center text-white">
-                                                <a href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit inline-flex items-center">
-                                                    <span className="break-all w-11/12">{swap?.output_transaction?.transaction_id}</span>
-                                                    <ExternalLink width={16} height={16} className="px-1" />
-                                                </a>
-                                                <CopyButton toCopy={swap?.output_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="lg:-ml-3" />
-                                            </div>
-                                            :
-                                            <span>-</span>
-                                        }
-                                    </div>
+                                <div className="text-sm lg:text-base font-medium text-tx-base w-fit">
+                                    {swap?.output_transaction?.transaction_id ?
+                                        <div className="flex items-center text-white">
+                                            <a href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                <span className="break-all w-11/12">{swap?.output_transaction?.transaction_id}</span>
+                                                <ExternalLink width={16} height={16} className="mx-1" />
+                                            </a>
+                                            <CopyButton toCopy={swap?.output_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} />
+                                        </div>
+                                        :
+                                        <span>-</span>
+                                    }
                                 </div>
                             </div>
                             <div className="flex justify-around">
@@ -322,23 +324,19 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             </div>
                             <div className="flex flex-col">
                                 <div className="text-base font-normal text-socket-secondary">Receiver Address</div>
-                                <div className="flex items-center text-sm lg:text-base font-medium text-tx-base w-fit">
-                                    <div className="flex items-center text-white">
-                                        <a href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit inline-flex items-center break-all">
-                                            <span className="w-11/12">{swap?.destination_address}</span>
-                                            <ExternalLink width={16} height={16} className="mx-1" />
-                                        </a>
-                                        <CopyButton toCopy={swap?.destination_address} iconHeight={16} iconClassName="order-2" iconWidth={16} />
-                                    </div>
+                                <div className="text-sm lg:text-base font-medium text-tx-base w-fit">
+                                    {swap?.output_transaction ?
+                                        <div className="flex items-center text-white">
+                                            <a href={`${destinationNetwork?.account_explorer_template?.replace("{0}", swap?.output_transaction?.to)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                <span className="break-all w-11/12">{swap?.output_transaction?.to}</span>
+                                                <ExternalLink width={16} height={16} className="mx-1" />
+                                            </a>
+                                            <CopyButton toCopy={swap?.destination_address} iconHeight={16} iconClassName="order-2" iconWidth={16} />
+                                        </div>
+                                        :
+                                        <span className="ml-1">-</span>
+                                    }
                                 </div>
-                            </div>
-                            <div className="flex flex-col">
-                                <div className="text-base font-normal text-socket-secondary">Timestamp</div>
-                                {swap?.output_transaction?.created_date ?
-                                    <div className="flex items-center text-sm lg:text-base font-medium text-tx-base text-white">{new Date(swap?.output_transaction?.created_date)?.toLocaleString()}</div>
-                                    :
-                                    <span>-</span>
-                                }
                             </div>
                         </div>
                     </div>
@@ -358,4 +356,10 @@ function DestTxStatus(swap: Swap) {
     } else if (swapStatus == SwapStatus.Completed) {
         return <span className="mx-1.5 font-medium uppercase md:text-sm text-xs border p-1 rounded-md text-green-200 bg-green-100/20 !border-green-200/50">Completed</span>
     }
+}
+
+function millisToMinutesAndSeconds(millis: number) {
+    var minutes = Math.floor(millis / 60000);
+    var seconds = Number(((millis % 60000) / 1000).toFixed(0));
+    return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
 }

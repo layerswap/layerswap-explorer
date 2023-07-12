@@ -75,7 +75,7 @@ export default function DataTable() {
                                         return (
                                             <tr key={index}>
                                                 <td className="whitespace-nowrap py-4 px-3 text-sm font-medium text-white flex flex-col">
-                                                    <Link href={`/${swap.destination_address}`} className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                    <Link href={`/${swap.input_transaction?.transaction_id}`} className="hover:text-gray-300 inline-flex items-center w-fit">
                                                         {shortenAddress(swap.destination_address)}
                                                     </Link>
                                                     <StatusIcon swap={swap.status} />
@@ -134,10 +134,14 @@ export default function DataTable() {
                                                                             <Image alt={`Destination token icon ${index}`} src={settings?.resolveImgSrc(settings?.currencies?.find(c => c?.asset === swap?.destination_network_asset)) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-full" />
                                                                         </span>
                                                                     </div>
-                                                                    <div className="mx-1">
-                                                                        <span className="text-white">{swap?.output_transaction?.amount}</span>
-                                                                        <span className="mx-1 text-white">{swap?.destination_network_asset}</span>
-                                                                    </div>
+                                                                    {swap?.output_transaction?.amount ?
+                                                                        <div className="mx-1">
+                                                                            <span className="text-white">{swap?.output_transaction?.amount}</span>
+                                                                            <span className="mx-1 text-white">{swap?.destination_network_asset}</span>
+                                                                        </div>
+                                                                        :
+                                                                        <span className="ml-1">-</span>
+                                                                    }
                                                                 </div>
                                                             </div>
                                                             <div className="text-sm md:text-base flex flex-row items-center ml-1">
@@ -150,7 +154,7 @@ export default function DataTable() {
                                                                 <div className="mx-0.5 text-white">
                                                                     <Link href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className={`${!swap?.output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
                                                                         <span className="mx-0.5 hover:text-gray-300">{destinationLayer?.display_name}</span>
-                                                                        <ExternalLink width={16} height={16} />
+                                                                        {swap?.output_transaction?.explorer_url && <ExternalLink width={16} height={16} />}
                                                                     </Link>
                                                                 </div>
                                                             </div>
