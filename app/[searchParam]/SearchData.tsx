@@ -373,11 +373,11 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
 
 function DestTxStatus(swap: Swap) {
     const swapStatus = swap?.status;
-    if (swapStatus == SwapStatus.LsTransferPending || SwapStatus.UserTransferPending) {
+    if (swapStatus == SwapStatus.Completed) {
+        return <span className="mx-1.5 font-medium uppercase md:text-sm text-xs border p-1 rounded-md text-green-200 bg-green-100/20 !border-green-200/50">Completed</span>
+    } else if (swapStatus == SwapStatus.LsTransferPending || swapStatus == SwapStatus.UserTransferPending) {
         return <span className="mx-1.5 font-medium uppercase md:text-sm text-xs border p-1 rounded-md text-yellow-200 bg-yellow-100/20 !border-yellow-200/50">Pending</span>
     } else if (swapStatus == SwapStatus.Failed && swap?.input_transaction) {
         return <span className="mx-1.5 font-medium uppercase md:text-sm text-xs border p-1 rounded-md text-red-200 bg-red-100/20 !border-red-200/50">Failed</span>
-    } else if (swapStatus == SwapStatus.Completed) {
-        return <span className="mx-1.5 font-medium uppercase md:text-sm text-xs border p-1 rounded-md text-green-200 bg-green-100/20 !border-green-200/50">Completed</span>
     }
 }
