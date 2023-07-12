@@ -261,14 +261,16 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex-1">
-                                <div className="text-base font-normal text-socket-secondary">
-                                    Confirmations
-                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-1">
-                                        {swap?.input_transaction?.confirmations >= swap?.input_transaction?.max_confirmations ? swap?.input_transaction?.max_confirmations : swap?.input_transaction?.confirmations}/{swap?.input_transaction?.max_confirmations}
-                                    </span>
+                            {swap?.input_transaction?.confirmations !== swap?.input_transaction?.max_confirmations &&
+                                <div className="flex-1">
+                                    <div className="text-base font-normal text-socket-secondary">
+                                        Confirmations
+                                        <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-1">
+                                            {swap?.input_transaction?.confirmations >= swap?.input_transaction?.max_confirmations ? swap?.input_transaction?.max_confirmations : swap?.input_transaction?.confirmations}/{swap?.input_transaction?.max_confirmations}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
+                            }
                             <div className="flex justify-around">
                                 <div className="flex-1">
                                     <div className="text-base font-normal text-socket-secondary">Token Sent</div>
