@@ -2,7 +2,7 @@
 import { shortenAddress } from "@/lib/utils";
 import { ApiResponse } from "@/models/ApiResponse";
 import CopyButton from "../../components/buttons/copyButton";
-import { ExternalLink, ServerOff } from 'lucide-react';
+import { ArrowRight, ExternalLink, ServerOff } from 'lucide-react';
 import useSWR from "swr";
 import StatusIcon from '../../components/SwapHistory/StatusIcons';
 import Link from "next/link";
@@ -221,7 +221,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                         <div className="ml-2 mb-4 sm:mb-0">
                             <div className="text-sm md:text-base text-[#475467] dark:text-white sm:flex justify-between w-full">
                                 <div className="items-center text-base mb-0.5 text-white">
-                                    <div className="mr-2 font-medium text-lg">
+                                    <div className="mr-2 font-medium text-xl">
                                         <span className="flex"><StatusIcon swap={swap.status} /></span>
                                     </div>
                                 </div>
@@ -241,8 +241,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             </div>
                         </div>
                     </div>
-                    <div className="flex flex-col lg:flex-row items-center lg:items-stretch md:border-[1px] border-tx-page border-slate-700 rounded-md p-2 text-primary-text">
-                        <div className="border-[1px] border-dashed border-slate-700 rounded-md border-tx-page w-full m-4 p-4 grid gap-y-3 lg:max-w-[50%]">
+                    <div className="flex flex-col lg:flex-row items-center lg:items-stretch rounded-md text-primary-text gap-4">
+                        <div className="border-[1px] border-slate-700 rounded-md border-tx-page w-full p-6 grid gap-y-3 lg:max-w-[50%] bg-secondary-700">
                             <div className="flex items-center text-white">
                                 <div className="mr-2 uppercase text-socket-table text-normal font-medium">Source Transaction</div>
                                 <div className="flex flex-row items-center text-btn-success bg-btn-success p-1 rounded">
@@ -300,8 +300,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                 </div>
                             </div>
                         </div>
-                        <div className="rotate-90 lg:rotate-0 self-center"><svg width="18" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" role="img"><path d="M11 .342c-.256 0-.512.1-.707.295l-.086.086a.999.999 0 0 0 0 1.414L14.07 6H1a1 1 0 0 0 0 2h13.07l-3.863 3.863a.999.999 0 0 0 0 1.414l.086.086a.999.999 0 0 0 1.414 0l5.656-5.656a.999.999 0 0 0 0-1.414L11.707.637A.998.998 0 0 0 11 .342Z" fill="#667085"></path></svg></div>
-                        <div className="border-[1px] border-dashed border-slate-700	border-tx-page rounded-md w-full m-4 p-4 grid gap-y-3 text-primary-text">
+                        <div className="rotate-90 lg:rotate-0 self-center"><ArrowRight className="text-white w-6 h-auto"/></div>
+                        <div className="border-[1px] border-slate-700	border-tx-page rounded-md w-full p-6 grid gap-y-3 text-primary-text bg-secondary-700">
                             <div className="flex items-center text-white">
                                 <div className="mr-2 uppercase text-socket-table text-normal font-medium">Destination Transaction</div>
                                 <div className="flex flex-row items-center text-btn-success bg-btn-success p-1 rounded">
