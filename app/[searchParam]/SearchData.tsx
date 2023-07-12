@@ -12,6 +12,7 @@ import LoadingBlocks from "@/components/LoadingBlocks";
 import { SwapStatus } from "@/models/SwapStatus";
 import AppSettings from "@/lib/AppSettings";
 import NotFound from "@/components/notFound";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/shadcn/tooltip";
 
 type Swap = {
     created_date: string,
@@ -53,11 +54,11 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const sourceNetwork = settings?.networks?.find(n => n.internal_name?.toLowerCase() === swap?.source_network?.toLowerCase());
     const destinationNetwork = settings?.networks?.find(n => n.internal_name?.toLowerCase() === swap?.destination_network?.toLowerCase());
 
-    const elapsedTimeInMiliseconds = new Date(swap?.output_transaction?.created_date || '')?.getTime() - new Date(swap?.input_transaction?.created_date || '')?.getTime();
-    const timeElapsed = millisToMinutesAndSeconds(elapsedTimeInMiliseconds);
+    // const elapsedTimeInMiliseconds = new Date(swap?.output_transaction?.created_date || '')?.getTime() - new Date(swap?.input_transaction?.created_date || '')?.getTime();
+    // const timeElapsed = millisToMinutesAndSeconds(elapsedTimeInMiliseconds);
 
     const filteredData = data?.data?.filter(s => s?.input_transaction);
-    if (error) return <div>failed to load</div>
+    if (error) return <div className="px-4 sm:px-6 lg:px-8 w-full">failed to load</div>
     if (isLoading) return <LoadingBlocks />
     if (data?.error) return <NotFound />
 
@@ -202,17 +203,26 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
         <div className="px-6 lg:px-8 w-full">
             <div className="bg-secondary-700 shadow-xl sm:rounded-lg border border-secondary-500 w-full lg:px-4">
                 {swap && <div className="py-4 lg:py-10 pt-4 px-3">
-                    <div className="flex items-stretch md:ml-0 md:mb-6 flex-col sm:flex-row sm:justify-between sm:items-start">
-                        <div className="flex flex-row ml-2 mb-4 sm:mb-0">
-                            <div className="text-sm md:text-base text-[#475467] dark:text-white">
-                                <div className="flex mx-2 items-center text-base mb-0.5 text-white">
+                    <div className="md:ml-0 md:mb-6 flex-col sm:flex-row sm:justify-between sm:items-start">
+                        <div className="ml-2 mb-4 sm:mb-0">
+                            <div className="text-sm md:text-base text-[#475467] dark:text-white sm:flex justify-between w-full">
+                                <div className="items-center text-base mb-0.5 text-white">
                                     <div className="mr-2 font-medium text-lg">
-                                        <span className="flex"><StatusIcon swap={swap.status} />
-                                            {swap?.status?.toLocaleLowerCase() == "completed" && swap?.output_transaction?.created_date && <span className="ml-1">in {timeElapsed}</span>}</span>
+                                        <span className="flex"><StatusIcon swap={swap.status} /></span>
                                     </div>
                                 </div>
-                                <div className="flex mx-2 font-normal text-normal text-socket-secondary text-white">
-                                    <div className="mr-1">{new Date(swap.created_date).toLocaleString()}</div>
+                                <div className="mx-2 font-normal text-normal text-socket-secondary text-primary-text">
+                                    <div>
+                                        <span className="mr-1">Created date:</span>
+                                        <TooltipProvider>
+                                            <Tooltip>
+                                                <TooltipTrigger className="cursor-default">{new Date(swap.created_date).toLocaleString()}</TooltipTrigger>
+                                                <TooltipContent>
+                                                    {new Date(swap.created_date).toUTCString()}
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                    </div>
                                 </div>
                             </div>
                         </div>
