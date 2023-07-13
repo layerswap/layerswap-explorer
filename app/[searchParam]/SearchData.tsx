@@ -265,7 +265,9 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     </div>
                                 </div>
                             </div>
-                            {swap?.input_transaction?.confirmations !== swap?.input_transaction?.max_confirmations &&
+                            {swap?.input_transaction?.confirmations >= swap?.input_transaction?.max_confirmations ?
+                                null
+                                :
                                 <div className="flex-1">
                                     <div className="text-base font-normal text-socket-secondary">
                                         Confirmations
@@ -306,7 +308,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             </div>
                         </div>
                         <div className="rotate-90 lg:rotate-0 self-center"><ArrowRight className="text-white w-6 h-auto" /></div>
-                        <div className="rounded-md w-full p-6 grid gap-y-3 text-primary-text bg-secondary-900 border-secondary-500 border-t-4 shadow-lg">
+                        <div className="rounded-md w-full p-6 grid gap-y-3 text-primary-text bg-secondary-900 border-secondary-500 border-t-4 shadow-lg relative">
+                            {swap.status == SwapStatus.LsTransferPending || swap.status == SwapStatus.UserTransferPending ? <span className="rainbow"></span> : null}
                             <div className="flex items-center text-white">
                                 <div className="mr-2 uppercase text-socket-table text-normal font-medium">Destination Transaction</div>
                                 <div className="flex flex-row items-center text-btn-success bg-btn-success p-1 rounded">
