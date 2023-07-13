@@ -125,8 +125,7 @@ export default function DataTable() {
                                                                 </div>
                                                                 <div className="mx-0.5 text-white">
                                                                     <Link href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
-                                                                        <span className="mx-0.5 hover:text-gray-300">{sourceLayer?.display_name}</span>
-                                                                        <ExternalLink width={16} height={16} />
+                                                                        <span className="mx-0.5 hover:text-gray-300 underline hover:no-underline">{sourceLayer?.display_name}</span>
                                                                     </Link>
                                                                 </div>
                                                             </div>
@@ -167,8 +166,7 @@ export default function DataTable() {
                                                                 </div>
                                                                 <div className="mx-0.5 text-white">
                                                                     <Link href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className={`${!swap?.output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
-                                                                        <span className="mx-0.5 hover:text-gray-300">{destinationLayer?.display_name}</span>
-                                                                        {swap?.output_transaction?.explorer_url && <ExternalLink width={16} height={16} />}
+                                                                        <span className={`${swap?.output_transaction?.explorer_url ? "underline" : ""} mx-0.5 hover:text-gray-300 hover:no-underline`}>{destinationLayer?.display_name}</span>
                                                                     </Link>
                                                                 </div>
                                                             </div>

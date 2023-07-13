@@ -2,7 +2,7 @@
 import { shortenAddress } from "@/lib/utils";
 import { ApiResponse } from "@/models/ApiResponse";
 import CopyButton from "../../components/buttons/copyButton";
-import { ExternalLink, ServerOff } from 'lucide-react';
+import { ArrowRight, ExternalLink, ServerOff } from 'lucide-react';
 import useSWR from "swr";
 import StatusIcon from '../../components/SwapHistory/StatusIcons';
 import Link from "next/link";
@@ -14,6 +14,8 @@ import AppSettings from "@/lib/AppSettings";
 import NotFound from "@/components/notFound";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/shadcn/tooltip";
 import { useRouter } from "next/navigation";
+import BackBtn from "@/helpers/BackButton";
+import { usePathname } from 'next/navigation'
 
 type Swap = {
     created_date: string,
@@ -49,7 +51,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>(`${AppSettings.LayerswapApiUri}/api/explorer/${searchParam}`, fetcher, { dedupingInterval: 60000 });
     const swap = data?.data?.[0];
     const settings = useSettingsState();
-    const router = useRouter()
+    const router = useRouter();
+    const pathname = usePathname();
 
     const swapSourceLayer = swap?.source_exchange ? settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase()) : settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap?.source_network?.toLowerCase());
     const swapDestinationLayer = swap?.destination_exchange ? settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase()) : settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap?.destination_network?.toLowerCase());
@@ -79,6 +82,9 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
 
     return (Number(data?.data?.length) > 1 ?
         <div className="px-4 sm:px-6 lg:px-8 w-full">
+            {pathname !== '/' && <div className='hidden xl:block w-fit mb-1 hover:bg-secondary-600 hover:text-accent-foreground rounded ring-offset-background transition-colors -ml-5'>
+                <BackBtn />
+            </div>}
             <div className="flow-root w-full">
                 <div className="inline-block min-w-full align-middle">
                     <h1 className="h5 mb-4 text-white flex gap-1">
@@ -150,8 +156,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                 </div>
                                                                 <div className="mx-0.5 text-white">
                                                                     <Link href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
-                                                                        <span className="mx-0.5 hover:text-gray-300">{sourceLayer?.display_name}</span>
-                                                                        {swap?.input_transaction?.explorer_url && <ExternalLink width={16} height={16} />}
+                                                                        <span className="mx-0.5 hover:text-gray-300 underline">{sourceLayer?.display_name}</span>
                                                                     </Link>
                                                                 </div>
                                                             </div>
@@ -194,8 +199,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                 </div>
                                                                 <div className="mx-0.5 text-white">
                                                                     <Link href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className={`${!swap?.output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
-                                                                        <span className="mx-0.5 hover:text-gray-300">{destinationLayer?.display_name}</span>
-                                                                        {swap?.output_transaction?.explorer_url && <ExternalLink width={16} height={16} />}
+                                                                        <span className={`${swap?.output_transaction?.explorer_url ? "underline" : ""} mx-0.5 hover:text-gray-300`}>{destinationLayer?.display_name}</span>
                                                                     </Link>
                                                                 </div>
                                                             </div>
@@ -214,35 +218,36 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
             </div>
         </div>
         :
-        <div className="px-6 lg:px-8 w-full">
-            <div className="bg-secondary-700 shadow-xl sm:rounded-lg border border-secondary-500 w-full lg:px-4">
-                {swap && <div className="py-2 lg:py-10 pt-4 px-3">
+        <div className="w-full">
+            <div className="sm:rounded-lg w-full">
+                {swap && <div className="py-2 lg:py-10 pt-4 sm:px-6 lg:px-8">
+                    {pathname !== '/' && <div className='hidden xl:block w-fit mb-1 hover:bg-secondary-600 hover:text-accent-foreground rounded ring-offset-background transition-colors -ml-5'>
+                        <BackBtn />
+                    </div>}
                     <div className="md:ml-0 md:mb-6 flex-col sm:flex-row sm:justify-between sm:items-start">
-                        <div className="ml-2 mb-4 sm:mb-0">
+                        <div className="mb-4 sm:mb-0">
                             <div className="text-sm md:text-base text-[#475467] dark:text-white sm:flex justify-between w-full">
                                 <div className="items-center text-base mb-0.5 text-white">
-                                    <div className="mr-2 font-medium text-lg">
+                                    <div className="mr-2 font-medium text-xl">
                                         <span className="flex"><StatusIcon swap={swap.status} /></span>
-                                    </div>
-                                </div>
-                                <div className="mx-2 font-normal text-normal text-socket-secondary text-primary-text">
-                                    <div>
-                                        <span className="mr-1">Created at:</span>
-                                        <TooltipProvider>
-                                            <Tooltip>
-                                                <TooltipTrigger className="cursor-default text-white">{new Date(swap.created_date).toLocaleString()}</TooltipTrigger>
-                                                <TooltipContent>
-                                                    {new Date(swap.created_date).toUTCString()}
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
+                                        <div className="text-sm mt-1 text-primary-text">
+                                            <span className="mr-1">Created at:</span>
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger className="cursor-default">{new Date(swap.created_date).toLocaleString()}</TooltipTrigger>
+                                                    <TooltipContent>
+                                                        {new Date(swap.created_date).toUTCString()}
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className="flex flex-col lg:flex-row items-center lg:items-stretch md:border-[1px] border-tx-page border-slate-700 rounded-md p-2 text-primary-text">
-                        <div className="border-[1px] border-dashed border-slate-700 rounded-md border-tx-page w-full m-4 p-4 grid gap-y-3 lg:max-w-[50%]">
+                    <div className="flex flex-col lg:flex-row items-center lg:items-stretch rounded-md text-primary-text gap-4">
+                        <div className="rounded-md w-full p-6 grid gap-y-3 lg:max-w-[50%] bg-secondary-900 rounded-t-lg border-secondary-500 border-t-4 shadow-lg">
                             <div className="flex items-center text-white">
                                 <div className="mr-2 uppercase text-socket-table text-normal font-medium">Source Transaction</div>
                                 <div className="flex flex-row items-center text-btn-success bg-btn-success p-1 rounded">
@@ -250,25 +255,26 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                 </div>
                             </div>
                             <div className="flex flex-col">
-                                <div className="text-base font-normal text-socket-secondary">Source Tx Hash</div>
+                                <div className="text-base font-normal text-socket-secondary">Hash</div>
                                 <div className="text-sm lg:text-base font-medium text-tx-base w-fit">
                                     <div className="flex items-center text-white">
-                                        <a href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                            <span className="break-all w-11/12">{swap?.input_transaction?.transaction_id}</span>
-                                            <ExternalLink width={16} height={16} className="mx-1" />
+                                        <a href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center second-link">
+                                            <span className="break-all link link-underline link-underline-black">{swap?.input_transaction?.transaction_id}</span>
                                         </a>
-                                        <CopyButton toCopy={swap?.input_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} />
+                                        <CopyButton toCopy={swap?.input_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex-1">
-                                <div className="text-base font-normal text-socket-secondary">
-                                    Confirmations
-                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-1">
-                                        {swap?.input_transaction?.confirmations >= swap?.input_transaction?.max_confirmations ? swap?.input_transaction?.max_confirmations : swap?.input_transaction?.confirmations}/{swap?.input_transaction?.max_confirmations}
-                                    </span>
+                            {swap?.input_transaction?.confirmations !== swap?.input_transaction?.max_confirmations &&
+                                <div className="flex-1">
+                                    <div className="text-base font-normal text-socket-secondary">
+                                        Confirmations
+                                        <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-1">
+                                            {swap?.input_transaction?.confirmations >= swap?.input_transaction?.max_confirmations ? swap?.input_transaction?.max_confirmations : swap?.input_transaction?.confirmations}/{swap?.input_transaction?.max_confirmations}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
+                            }
                             <div className="flex justify-around">
                                 <div className="flex-1">
                                     <div className="text-base font-normal text-socket-secondary">Token Sent</div>
@@ -292,16 +298,15 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                 <div className="text-sm lg:text-base font-medium text-tx-base w-fit">
                                     <div className="flex items-center text-white">
                                         <a href={`${sourceNetwork?.account_explorer_template?.replace('{0}', swap?.input_transaction?.from)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                            <span className="break-all w-11/12">{swap?.input_transaction?.from}</span>
-                                            <ExternalLink width={16} height={16} className="mx-1" />
+                                            <span className="break-all link link-underline link-underline-black">{swap?.input_transaction?.from}</span>
                                         </a>
-                                        <CopyButton toCopy={swap?.input_transaction?.from} iconHeight={16} iconClassName="order-2" iconWidth={16} />
+                                        <CopyButton toCopy={swap?.input_transaction?.from} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="rotate-90 lg:rotate-0 self-center"><svg width="18" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" role="img"><path d="M11 .342c-.256 0-.512.1-.707.295l-.086.086a.999.999 0 0 0 0 1.414L14.07 6H1a1 1 0 0 0 0 2h13.07l-3.863 3.863a.999.999 0 0 0 0 1.414l.086.086a.999.999 0 0 0 1.414 0l5.656-5.656a.999.999 0 0 0 0-1.414L11.707.637A.998.998 0 0 0 11 .342Z" fill="#667085"></path></svg></div>
-                        <div className="border-[1px] border-dashed border-slate-700	border-tx-page rounded-md w-full m-4 p-4 grid gap-y-3 text-primary-text">
+                        <div className="rotate-90 lg:rotate-0 self-center"><ArrowRight className="text-white w-6 h-auto" /></div>
+                        <div className="rounded-md w-full p-6 grid gap-y-3 text-primary-text bg-secondary-900 border-secondary-500 border-t-4 shadow-lg">
                             <div className="flex items-center text-white">
                                 <div className="mr-2 uppercase text-socket-table text-normal font-medium">Destination Transaction</div>
                                 <div className="flex flex-row items-center text-btn-success bg-btn-success p-1 rounded">
@@ -309,15 +314,14 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                 </div>
                             </div>
                             <div className="flex flex-col">
-                                <div className="text-base font-normal text-socket-secondary">Destination Tx Hash</div>
+                                <div className="text-base font-normal text-socket-secondary">Hash</div>
                                 <div className="text-sm lg:text-base font-medium text-tx-base w-fit">
                                     {swap?.output_transaction?.transaction_id ?
                                         <div className="flex items-center text-white">
                                             <a href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                                <span className="break-all w-11/12">{swap?.output_transaction?.transaction_id}</span>
-                                                <ExternalLink width={16} height={16} className="mx-1" />
+                                                <span className="break-all link link-underline link-underline-black">{swap?.output_transaction?.transaction_id}</span>
                                             </a>
-                                            <CopyButton toCopy={swap?.output_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} />
+                                            <CopyButton toCopy={swap?.output_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                         </div>
                                         :
                                         <span>-</span>
@@ -349,13 +353,12 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             <div className="flex flex-col">
                                 <div className="text-base font-normal text-socket-secondary">Receiver Address</div>
                                 <div className="text-sm lg:text-base font-medium text-tx-base w-fit">
-                                    {swap?.output_transaction ?
+                                    {swap?.output_transaction?.to ?
                                         <div className="flex items-center text-white">
                                             <a href={`${destinationNetwork?.account_explorer_template?.replace("{0}", swap?.output_transaction?.to)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                                <span className="break-all w-11/12">{swap?.output_transaction?.to}</span>
-                                                <ExternalLink width={16} height={16} className="mx-1" />
+                                                <span className="break-all link link-underline link-underline-black">{swap?.output_transaction?.to}</span>
                                             </a>
-                                            <CopyButton toCopy={swap?.destination_address} iconHeight={16} iconClassName="order-2" iconWidth={16} />
+                                            <CopyButton toCopy={swap?.destination_address} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                         </div>
                                         :
                                         <span className="ml-1">-</span>
