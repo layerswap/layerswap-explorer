@@ -14,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className='flex min-h-screen flex-col justify-between overflow- items-center max-w-6xl mx-auto'>
+      <body className='flex min-h-screen flex-col overflow- items-center max-w-6xl mx-auto'>
         <Header />
         {children}
         <Footer />
