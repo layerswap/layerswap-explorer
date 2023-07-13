@@ -124,7 +124,7 @@ export default function DataTable() {
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-0.5 text-white">
-                                                                    <Link href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                                    <Link href={`${swap?.input_transaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
                                                                         <span className="mx-0.5 hover:text-gray-300 underline hover:no-underline">{sourceLayer?.display_name}</span>
                                                                     </Link>
                                                                 </div>
@@ -165,7 +165,7 @@ export default function DataTable() {
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-0.5 text-white">
-                                                                    <Link href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className={`${!swap?.output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
+                                                                    <Link href={`${swap?.output_transaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!swap?.output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
                                                                         <span className={`${swap?.output_transaction?.explorer_url ? "underline" : ""} mx-0.5 hover:text-gray-300 hover:no-underline`}>{destinationLayer?.display_name}</span>
                                                                     </Link>
                                                                 </div>

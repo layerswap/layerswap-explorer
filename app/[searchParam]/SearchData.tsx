@@ -120,7 +120,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         return (
                                             <tr key={index} onClick={() => router.push(`/${swap?.input_transaction?.transaction_id}`)} className="hover:bg-secondary-600 hover:cursor-pointer">
                                                 <td className="whitespace-nowrap py-2 px-3 text-sm font-medium text-white flex flex-col">
-                                                    <Link href={`/${swap?.input_transaction?.transaction_id}`} className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                    <Link href={`/${swap?.input_transaction?.transaction_id}`} onClick={(e) => e.stopPropagation()} className="hover:text-gray-300 inline-flex items-center w-fit">
                                                         {shortenAddress(swap?.input_transaction?.transaction_id)}
                                                     </Link>
                                                     <StatusIcon swap={swap.status} />
@@ -155,7 +155,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-0.5 text-white">
-                                                                    <Link href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                                    <Link href={`${swap?.input_transaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
                                                                         <span className="mx-0.5 hover:text-gray-300 underline">{sourceLayer?.display_name}</span>
                                                                     </Link>
                                                                 </div>
@@ -198,7 +198,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-0.5 text-white">
-                                                                    <Link href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className={`${!swap?.output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
+                                                                    <Link href={`${swap?.output_transaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!swap?.output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
                                                                         <span className={`${swap?.output_transaction?.explorer_url ? "underline" : ""} mx-0.5 hover:text-gray-300`}>{destinationLayer?.display_name}</span>
                                                                     </Link>
                                                                 </div>
