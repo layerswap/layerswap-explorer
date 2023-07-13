@@ -309,7 +309,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                         </div>
                         <div className="rotate-90 lg:rotate-0 self-center"><ArrowRight className="text-white w-6 h-auto" /></div>
                         <div className="rounded-md w-full p-6 grid gap-y-3 text-primary-text bg-secondary-900 border-secondary-500 border-t-4 shadow-lg relative">
-                            {swap.status == SwapStatus.LsTransferPending || swap.status == SwapStatus.UserTransferPending ? <span className="rainbow"></span> : null}
+                            {swap.status == SwapStatus.LsTransferPending || swap.status == SwapStatus.UserTransferPending ? <span className="pendingAnim"></span> : null}
                             <div className="flex items-center text-white">
                                 <div className="mr-2 uppercase text-socket-table text-normal font-medium">Destination Transaction</div>
                                 <div className="flex flex-row items-center text-btn-success bg-btn-success p-1 rounded">
