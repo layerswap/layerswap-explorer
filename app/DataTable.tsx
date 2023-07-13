@@ -65,7 +65,7 @@ export default function DataTable() {
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full">
             <div className="mt-8 flow-root">
-                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8 h-full max-h-[60vh] dataTable">
+                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8 h-full max-h-[55vh] 2xl:max-h-[65vh] dataTable">
                     <div className="inline-block h-screen min-w-full pb-2 align-middle sm:px-6 lg:px-8">
                         <div className="shadow ring-1 ring-white ring-opacity-5 sm:rounded-lg">
                             <table className="min-w-full divide-y divide-secondary-500 relative">
