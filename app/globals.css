@@ -173,7 +173,7 @@ textarea:disabled::placeholder {
     #d0a90f
   );
   position: absolute;
-  animation: animateTop 3s linear infinite;
+  animation: animateTop 2s linear infinite;
 }
 
 @keyframes animateTop {
