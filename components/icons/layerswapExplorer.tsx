@@ -4,7 +4,7 @@ interface Props {
     className?: string
 }
 
-const LayerswapLogo: FC<Props> = (({ className }) => {
+const LayerswapExplorerLogo: FC<Props> = (({ className }) => {
     return (
         <>
             <svg className={className} xmlns="http://www.w3.org/2000/svg" width="213" height="75" viewBox="0 0 213 75" fill="none">
@@ -33,4 +33,4 @@ const LayerswapLogo: FC<Props> = (({ className }) => {
     )
 })
 
-export default LayerswapLogo;
+export default LayerswapExplorerLogo;
