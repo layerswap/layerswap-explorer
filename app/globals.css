@@ -16,7 +16,7 @@
   input[type="number"] {
     -moz-appearance: textfield;
   }
-  
+
 }
 
 @layer base {
@@ -79,28 +79,35 @@ input::-webkit-input-placeholder {
 body {
   overflow: overlay;
 }
-body::-webkit-scrollbar, .dataTable::-webkit-scrollbar {
+
+body::-webkit-scrollbar,
+.dataTable::-webkit-scrollbar {
   --tw-bg-opacity: 1;
   background-color: rgb(18 29 51 / var(--tw-bg-opacity));
 }
 
-body::-webkit-scrollbar, .dataTable::-webkit-scrollbar {
+body::-webkit-scrollbar,
+.dataTable::-webkit-scrollbar {
   width: 0.375rem !important;
 }
 
-body::-webkit-scrollbar, .dataTable::-webkit-scrollbar {
+body::-webkit-scrollbar,
+.dataTable::-webkit-scrollbar {
   height: 0.375rem !important;
 }
 
-body::-webkit-scrollbar-thumb, .dataTable::-webkit-scrollbar-thumb {
+body::-webkit-scrollbar-thumb,
+.dataTable::-webkit-scrollbar-thumb {
   background-color: rgb(100 116 139 / 0.5) !important;
 }
 
-body::-webkit-scrollbar-thumb, .dataTable::-webkit-scrollbar-thumb {
+body::-webkit-scrollbar-thumb,
+.dataTable::-webkit-scrollbar-thumb {
   --tw-bg-opacity: 1 !important;
 }
 
-body::-webkit-scrollbar-thumb, .dataTable::-webkit-scrollbar-thumb {
+body::-webkit-scrollbar-thumb,
+.dataTable::-webkit-scrollbar-thumb {
   border-radius: 0.25rem !important;
 }
 
@@ -121,6 +128,7 @@ textarea:disabled::placeholder {
 .space-y-reverse {
   --space-y-reverse: 1
 }
+
 .accordion .chevron-down {
   width: 16px;
   height: 16px;
@@ -149,4 +157,36 @@ textarea:disabled::placeholder {
 .link-underline:hover {
   background-size: 100% 2px;
   background-position: 0 100%
+}
+
+.rainbow {
+  top: -5px;
+  left: 0;
+  width: 0;
+  height: 4px;
+  border-radius: 10%;
+  background: linear-gradient(
+    90deg,
+    transparent 50%,
+    #facc15,
+    #d0a90f
+  );
+}
+
+.rainbow {
+  position: absolute;
+  border-radius: 100vmax;
+  animation: animateTop 3s ease-in-out infinite;
+}
+
+@keyframes animateTop {
+  25% {
+    width: 100%;
+    opacity: 1;
+  }
+
+  30%,
+  100% {
+    opacity: 0;
+  }
 }
