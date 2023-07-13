@@ -1,14 +1,11 @@
 'use client'
 
-import LayerSwapLogo from './icons/layerSwapLogo'
+import LayerSwapLogo from './icons/layerswapExplorer'
 import Search from './Search'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-
-const navigation = [
-    { name: 'App', href: 'https://layerswap.io' },
-    { name: 'Docs', href: 'https://docs.layerswap.io' },
-]
+import LayerswapLogo from './icons/layerswapLogo'
+import { FileText } from 'lucide-react'
 
 export default function Header() {
     const pathname = usePathname();
@@ -24,12 +21,14 @@ export default function Header() {
                         <Search hideLabel />
                     }
                 </div>
-                <div className="flex gap-x-5 lg:gap-x-12 order-2 lg:order-3 justify-self-end col-span-1">
-                    {navigation.map((item) => (
-                        <Link target='_blank' key={item.name} href={item.href} className="text-sm font-semibold leading-6 text-white hover:text-gray-300 transition-all duration-200">
-                            {item.name}
-                        </Link>
-                    ))}
+                <div className="flex gap-x-4 order-2 lg:order-3 justify-self-end col-span-1">
+                    <Link target='_blank' href={'https://www.layerswap.io/app'} className='px-3 py-2 bg-secondary-700 rounded-lg hover:bg-secondary/70'>
+                        <LayerswapLogo className='h-6 w-auto text-primary-logoColor' />
+                    </Link>
+                    <Link target='_blank' href={'https://docs.layerswap.io'} className='px-3 py-2 bg-secondary-700 rounded-lg flex items-center gap-1 text-white hover:bg-secondary/70'>
+                        <FileText className='h-4 w-4' />
+                        <span>Docs</span>
+                    </Link>
                 </div>
             </nav>
         </header>

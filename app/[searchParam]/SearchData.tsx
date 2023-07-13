@@ -220,7 +220,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
         :
         <div className="w-full">
             <div className="sm:rounded-lg w-full">
-                {swap && <div className="py-2 lg:py-10 pt-4 sm:px-6">
+                {swap && <div className="py-2 lg:py-10 pt-4 sm:px-6 lg:px-8">
                     {pathname !== '/' && <div className='hidden xl:block w-fit mb-1 hover:bg-secondary-600 hover:text-accent-foreground rounded ring-offset-background transition-colors -ml-5'>
                         <BackBtn />
                     </div>}
