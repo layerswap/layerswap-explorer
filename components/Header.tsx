@@ -5,6 +5,7 @@ import Search from './Search'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { FileText } from 'lucide-react'
+import LayerswapLogo from './icons/layerSwapLogo'
 
 export default function Header() {
     const pathname = usePathname();
@@ -22,7 +23,7 @@ export default function Header() {
                 </div>
                 <div className="flex gap-x-4 order-2 lg:order-3 justify-self-end col-span-1">
                     <Link target='_blank' href={'https://www.layerswap.io/app'} className='px-3 py-2 bg-secondary-700 rounded-lg hover:bg-secondary/70'>
-                        <LayerswapExplorerLogo className='h-6 w-auto text-primary-logoColor' />
+                        <LayerswapLogo className='h-6 w-auto text-primary-logoColor' />
                     </Link>
                     <Link target='_blank' href={'https://docs.layerswap.io'} className='px-3 py-2 bg-secondary-700 rounded-lg flex items-center gap-1 text-white hover:bg-secondary/70'>
                         <FileText className='h-4 w-4' />
