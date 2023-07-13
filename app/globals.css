@@ -173,7 +173,7 @@ textarea:disabled::placeholder {
     #d0a90f
   );
   position: absolute;
-  animation: animateTop 2s linear infinite;
+  animation: animateTop 3s linear infinite;
 }
 
 @keyframes animateTop {
@@ -182,15 +182,15 @@ textarea:disabled::placeholder {
     right:100%;
     width:0%;
   }
-  10% {
-    left:0%;
-    right:75%;
-    width:25%;
+  20% {
+    left: 0%;
+    right: 80%;
+    width: 20%;
   }
-  90% {
-    right:0%;
-    left:75%;
-    width:25%;
+  80% {
+    right: 0%;
+    left: 20%;
+    width: 60%; 
   }
   100% {
     left:100%;
