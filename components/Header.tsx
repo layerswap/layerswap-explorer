@@ -4,8 +4,9 @@ import LayerSwapLogo from './icons/layerswapExplorer'
 import Search from './Search'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import LayerswapLogo from './icons/layerswapLogo'
 import { FileText } from 'lucide-react'
+import LayerswapExplorerLogo from './icons/layerswapExplorer'
+import LayerswapLogo from './icons/layerswapLogo'
 
 export default function Header() {
     const pathname = usePathname();
@@ -14,7 +15,7 @@ export default function Header() {
         <header className="max-w-6xl w-full mx-auto">
             <nav className={`mx-auto max-w-6xl grid grid-cols-2 lg:grid-cols-6 lg:grid-rows-1 items-center py-6 px-6 lg:px-8 ${pathname !== '/' ? 'grid-rows-2' : 'grid-rows-1'}`} aria-label="Global">
                 <Link href="/" className="-m-1.5 p-1.5 order-1 col-span-1">
-                    <LayerSwapLogo className="h-14 w-auto text-primary-logoColor" />
+                    <LayerswapExplorerLogo className="h-14 w-auto text-primary-logoColor" />
                 </Link>
                 <div className='max-w-2xl w-full  mx-auto order-3 lg:order-2 col-span-4'>
                     {pathname !== '/' &&
