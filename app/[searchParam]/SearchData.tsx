@@ -82,7 +82,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
 
     return (Number(data?.data?.length) > 1 ?
         <div className="px-4 sm:px-6 lg:px-8 w-full">
-            {pathname !== '/' && <div className='hidden xl:block w-fit mb-2 hover:bg-secondary-600 hover:text-accent-foreground rounded ring-offset-background transition-colors'>
+            {pathname !== '/' && <div className='hidden xl:block w-fit mb-1 hover:bg-secondary-600 hover:text-accent-foreground rounded ring-offset-background transition-colors -ml-5'>
                 <BackBtn />
             </div>}
             <div className="flow-root w-full">
@@ -199,7 +199,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                 </div>
                                                                 <div className="mx-0.5 text-white">
                                                                     <Link href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className={`${!swap?.output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
-                                                                        <span className="mx-0.5 hover:text-gray-300 underline">{destinationLayer?.display_name}</span>
+                                                                        <span className={`${swap?.output_transaction?.explorer_url ? "underline" : ""} mx-0.5 hover:text-gray-300`}>{destinationLayer?.display_name}</span>
                                                                     </Link>
                                                                 </div>
                                                             </div>
@@ -219,13 +219,13 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
         </div>
         :
         <div className="w-full">
-            <div className="shadow-xl sm:rounded-lg w-full">
-                {swap && <div className="py-2 lg:py-10 pt-4 px-6">
-                    {pathname !== '/' && <div className='hidden xl:block w-fit hover:bg-secondary-600 hover:text-accent-foreground rounded ring-offset-background transition-colors'>
+            <div className="sm:rounded-lg w-full">
+                {swap && <div className="py-2 lg:py-10 pt-4 sm:px-6">
+                    {pathname !== '/' && <div className='hidden xl:block w-fit mb-1 hover:bg-secondary-600 hover:text-accent-foreground rounded ring-offset-background transition-colors -ml-5'>
                         <BackBtn />
                     </div>}
                     <div className="md:ml-0 md:mb-6 flex-col sm:flex-row sm:justify-between sm:items-start">
-                        <div className="ml-2 mb-4 sm:mb-0">
+                        <div className="mb-4 sm:mb-0">
                             <div className="text-sm md:text-base text-[#475467] dark:text-white sm:flex justify-between w-full">
                                 <div className="items-center text-base mb-0.5 text-white">
                                     <div className="mr-2 font-medium text-xl">
@@ -247,7 +247,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                         </div>
                     </div>
                     <div className="flex flex-col lg:flex-row items-center lg:items-stretch rounded-md text-primary-text gap-4">
-                        <div className="rounded-md w-full p-6 grid gap-y-3 lg:max-w-[50%] bg-secondary-900 rounded-t-lg border-secondary-500 border-t-4">
+                        <div className="rounded-md w-full p-6 grid gap-y-3 lg:max-w-[50%] bg-secondary-900 rounded-t-lg border-secondary-500 border-t-4 shadow-lg">
                             <div className="flex items-center text-white">
                                 <div className="mr-2 uppercase text-socket-table text-normal font-medium">Source Transaction</div>
                                 <div className="flex flex-row items-center text-btn-success bg-btn-success p-1 rounded">
@@ -255,7 +255,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                 </div>
                             </div>
                             <div className="flex flex-col">
-                                <div className="text-base font-normal text-socket-secondary">Source Tx Hash</div>
+                                <div className="text-base font-normal text-socket-secondary">Hash</div>
                                 <div className="text-sm lg:text-base font-medium text-tx-base w-fit">
                                     <div className="flex items-center text-white">
                                         <a href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center second-link">
@@ -306,7 +306,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             </div>
                         </div>
                         <div className="rotate-90 lg:rotate-0 self-center"><ArrowRight className="text-white w-6 h-auto" /></div>
-                        <div className="rounded-md w-full p-6 grid gap-y-3 text-primary-text bg-secondary-900 bg-secondary-900 rounded-t-lg border-secondary-500 border-t-4">
+                        <div className="rounded-md w-full p-6 grid gap-y-3 text-primary-text bg-secondary-900 border-secondary-500 border-t-4 shadow-lg">
                             <div className="flex items-center text-white">
                                 <div className="mr-2 uppercase text-socket-table text-normal font-medium">Destination Transaction</div>
                                 <div className="flex flex-row items-center text-btn-success bg-btn-success p-1 rounded">
@@ -314,7 +314,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                 </div>
                             </div>
                             <div className="flex flex-col">
-                                <div className="text-base font-normal text-socket-secondary">Destination Tx Hash</div>
+                                <div className="text-base font-normal text-socket-secondary">Hash</div>
                                 <div className="text-sm lg:text-base font-medium text-tx-base w-fit">
                                     {swap?.output_transaction?.transaction_id ?
                                         <div className="flex items-center text-white">
