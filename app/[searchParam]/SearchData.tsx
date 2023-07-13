@@ -95,7 +95,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                         </span>
                     </h1>
                 </div>
-                <div className={`${Number(filteredData?.length) > 5 ? "overflow-y-scroll h-full max-h-[60vh] 2xl:max-h-[75vh] dataTable" : "overflow-hidden"} -mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
+                <div className={`${Number(filteredData?.length) > 5 ? "overflow-y-scroll h-full max-h-[55vh] 2xl:max-h-[65vh] dataTable" : "overflow-hidden"} -mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
                     <div className="inline-block min-w-full pb-2 align-middle sm:px-6 lg:px-8">
                         <div className="shadow ring-1 ring-white ring-opacity-5 sm:rounded-lg">
                             <table className="min-w-full divide-y divide-secondary-500 relative">
