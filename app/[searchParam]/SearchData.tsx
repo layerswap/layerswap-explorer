@@ -120,11 +120,11 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 <td className="whitespace-nowrap px-3 py-2 text-sm text-primary-text">
                                                     <div className="flex flex-row">
                                                         <div className="flex flex-col items-end ">
-                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-2">Token:</span>
+                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-1">Token:</span>
                                                             <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end">{swap?.source_exchange ? 'Exchange' : 'Network'}:</span>
                                                         </div>
                                                         <div className="flex flex-col">
-                                                            <div className="text-sm md:text-base flex flex-row mb-2">
+                                                            <div className="text-sm md:text-base flex flex-row mb-1">
                                                                 <div className="flex flex-row items-center ml-4">
                                                                     <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                         <span>
@@ -157,12 +157,12 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 <td className="whitespace-nowrap px-3 py-2 text-sm text-primary-text">
                                                     <div className="flex flex-row">
                                                         <div className="flex flex-col items-end ">
-                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-2">Token:</span>
+                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-1">Token:</span>
                                                             <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end">{swap?.destination_exchange ? 'Exchange' : 'Network'}:</span>
                                                         </div>
                                                         <div className="flex flex-col">
                                                             <div className="text-sm md:text-base flex flex-row">
-                                                                <div className="flex flex-row items-center ml-4 mb-2">
+                                                                <div className="flex flex-row items-center ml-4 mb-1">
                                                                     <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                         <span>
                                                                             <Image alt={`Destination token icon ${index}`} src={settings?.resolveImgSrc(settings?.currencies?.find(c => c?.asset === swap?.destination_network_asset)) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
@@ -241,7 +241,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                     <div className="flex flex-col lg:flex-row items-center lg:items-stretch rounded-md text-primary-text gap-4">
                         <div className="rounded-md w-full p-6 grid gap-y-3 lg:max-w-[50%] bg-secondary-900 rounded-t-lg border-secondary-500 border-t-4 shadow-lg">
                             <div className="flex items-center text-white">
-                                <div className="mr-2 uppercase text-socket-table text-normal font-medium">Source Transaction</div>
+                                <div className="mr-2 text-socket-table text-normal font-medium">Source Transaction</div>
                                 <div className="flex flex-row items-center text-btn-success bg-btn-success p-1 rounded">
                                     <span className={`${swap?.input_transaction?.confirmations >= swap?.input_transaction?.max_confirmations ? "text-green-200 bg-green-100/20 !border-green-200/50" : ""} border border-transparent p-1 rounded-md mx-1.5 font-medium uppercase md:text-sm text-xs`}>{swap?.input_transaction?.confirmations >= swap?.input_transaction?.max_confirmations ? "COMPLETED" : "PENDING"}</span>
                                 </div>

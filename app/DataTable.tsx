@@ -89,11 +89,11 @@ export default function DataTable() {
                                                 <td className="whitespace-nowrap px-3 py-2 text-sm text-primary-text">
                                                     <div className="flex flex-row">
                                                         <div className="flex flex-col items-start ">
-                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-2">Token:</span>
+                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-1">Token:</span>
                                                             <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end">{swap?.source_exchange ? 'Exchange' : 'Network'}:</span>
                                                         </div>
                                                         <div className="flex flex-col">
-                                                            <div className="text-sm md:text-base flex flex-row mb-2">
+                                                            <div className="text-sm md:text-base flex flex-row mb-1">
                                                                 <div className="flex flex-row items-center ml-4">
                                                                     <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                         <span>
@@ -124,12 +124,12 @@ export default function DataTable() {
                                                 <td className="whitespace-nowrap px-3 py-2 text-sm text-primary-text">
                                                     <div className="flex flex-row">
                                                         <div className="flex flex-col items-start">
-                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-2">Token:</span>
+                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-1">Token:</span>
                                                             <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end">{swap?.destination_exchange ? 'Exchange' : 'Network'}:</span>
                                                         </div>
                                                         <div className="flex flex-col">
                                                             <div className="text-sm md:text-base flex flex-row">
-                                                                <div className="flex flex-row items-center ml-4 mb-2">
+                                                                <div className="flex flex-row items-center ml-4 mb-1">
                                                                     <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                         <span>
                                                                             <Image alt={`Destination token icon ${index}`} src={settings?.resolveImgSrc(settings?.currencies?.find(c => c?.asset === swap?.destination_network_asset)) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
