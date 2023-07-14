@@ -60,7 +60,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const swapDestinationLayer = swap?.destination_exchange ? settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase()) : settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap?.destination_network?.toLowerCase());
     const sourceNetwork = settings?.networks?.find(n => n.internal_name?.toLowerCase() === swap?.source_network?.toLowerCase());
     const destinationNetwork = settings?.networks?.find(n => n.internal_name?.toLowerCase() === swap?.destination_network?.toLowerCase());
-
+    const nativeCurency = destinationNetwork?.native_currency;
     // const elapsedTimeInMiliseconds = new Date(swap?.output_transaction?.created_date || '')?.getTime() - new Date(swap?.input_transaction?.created_date || '')?.getTime();
     // const timeElapsed = millisToMinutesAndSeconds(elapsedTimeInMiliseconds);
 
@@ -222,10 +222,17 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             <div className="text-sm md:text-base text-[#475467] dark:text-white sm:flex justify-between w-full">
                                 <div className="items-center text-base mb-0.5 text-white">
                                     <div className="mr-2 font-medium text-xl">
-                                        <span className="flex"><StatusIcon swap={swap.status} /></span>
-                                        <div className="text-sm mt-1 text-primary-text">
-                                            <span className="mr-1 text-primary-text-muted">Created at:</span>
-                                            <TooltipProvider>
+                                        <p className="flex flex-col sm:flex-row"><StatusIcon swap={swap.status} />
+                                            <span className="text-primary-text">&nbsp;at</span>
+                                            <span className="text-white">&nbsp;{new Date(swap?.output_transaction?.created_date)?.toUTCString()}.</span>
+                                            <span className="text-primary-text">&nbsp;Took</span>
+                                            <span className="text-white">&nbsp;{getMinutesDifference(swap?.input_transaction?.created_date, swap?.output_transaction?.created_date)} minutes</span>
+                                            <span className="text-primary-text">&nbsp;and cost</span>
+                                            <span className="text-white">&nbsp;{swap?.input_transaction?.amount - swap?.output_transaction?.amount} {swap?.source_network_asset}</span>
+                                        </p>
+                                        {/* <div className="text-sm mt-1 text-primary-text">
+                                            <span className="text-primary-text">at</span>
+                                            <TooltipProvider delayDuration={0}>
                                                 <Tooltip>
                                                     <TooltipTrigger className="cursor-default">{new Date(swap.created_date).toLocaleString()}</TooltipTrigger>
                                                     <TooltipContent>
@@ -233,133 +240,157 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                     </TooltipContent>
                                                 </Tooltip>
                                             </TooltipProvider>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div className="flex flex-col lg:flex-row items-center lg:items-stretch rounded-md text-primary-text gap-4">
-                        <div className="rounded-md w-full p-6 grid gap-y-3 lg:max-w-[50%] bg-secondary-900 rounded-t-lg border-secondary-500 border-t-4 shadow-lg">
+                        <div className="rounded-md w-full p-6 grid gap-y-3 items-baseline lg:max-w-[50%] bg-secondary-900 rounded-t-lg border-secondary-500 border-t-4 shadow-lg">
                             <div className="flex items-center text-white">
-                                <div className="mr-2 text-socket-table text-normal font-medium">Source Transaction</div>
-                                <div className="flex flex-row items-center text-btn-success bg-btn-success p-1 rounded">
-                                    <span className={`${swap?.input_transaction?.confirmations >= swap?.input_transaction?.max_confirmations ? "text-green-200 bg-green-100/20 !border-green-200/50" : ""} border border-transparent p-1 rounded-md mx-1.5 font-medium md:text-sm text-xs`}>{swap?.input_transaction?.confirmations >= swap?.input_transaction?.max_confirmations ? "Completed" : "Pending"}</span>
-                                </div>
+                                <div className="mr-2 text-primary-text text-2xl font-medium">You sent</div>
                             </div>
-                            <div className="flex flex-col">
-                                <div className="text-base font-normal text-socket-secondary">Hash</div>
-                                <div className="text-sm lg:text-base font-medium text-tx-base w-fit">
-                                    <div className="flex items-center text-white">
-                                        <a href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center second-link">
-                                            <span className="break-all link link-underline link-underline-black">{swap?.input_transaction?.transaction_id}</span>
-                                        </a>
-                                        <CopyButton toCopy={swap?.input_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
+                            <div className="rounded-md w-full p-6 grid gap-y-3 text-primary-text bg-secondary-700 shadow-lg relative">
+                                <div className="flex justify-around">
+                                    <div className="flex-1">
+                                        <div className="text-base font-normal text-socket-secondary">Asset</div>
+                                        <div className="flex items-center">
+                                            <span className="text-sm lg:text-base font-medium text-socket-table text-white flex items-center">
+                                                <Image alt="Source token icon" src={settings?.resolveImgSrc(settings?.currencies?.find(c => c?.asset === swap?.source_network_asset)) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                                {swap?.input_transaction?.amount} {swap?.source_network_asset}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="text-base font-normal text-socket-secondary">{swap?.source_exchange ? 'Exchange' : 'Network'}</div>
+                                        <div className="flex items-center">
+                                            <Image alt="Source chain icon" src={settings?.resolveImgSrc(swapSourceLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                            <span className="text-sm lg:text-base font-medium text-socket-table text-white">{swapSourceLayer?.display_name}</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            {swap?.input_transaction?.confirmations >= swap?.input_transaction?.max_confirmations ?
-                                null
-                                :
-                                <div className="flex-1">
-                                    <div className="text-base font-normal text-socket-secondary">
-                                        Confirmations
-                                        <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-1">
-                                            {swap?.input_transaction?.confirmations >= swap?.input_transaction?.max_confirmations ? swap?.input_transaction?.max_confirmations : swap?.input_transaction?.confirmations}/{swap?.input_transaction?.max_confirmations}
-                                        </span>
+                                <div className="flex flex-col">
+                                    <div className="text-base font-normal text-socket-secondary">From Address</div>
+                                    <div className="text-sm lg:text-base font-medium text-tx-base w-full">
+                                        <div className="flex justify-between items-center text-white">
+                                            <a href={`${sourceNetwork?.account_explorer_template?.replace('{0}', swap?.input_transaction?.from)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                <span className="break-all link link-underline link-underline-black">{swap?.input_transaction?.from}</span>
+                                            </a>
+                                            <CopyButton toCopy={swap?.input_transaction?.from} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
+                                        </div>
                                     </div>
                                 </div>
-                            }
-                            <div className="flex justify-around">
-                                <div className="flex-1">
-                                    <div className="text-base font-normal text-socket-secondary">Token Sent</div>
-                                    <div className="flex items-center">
-                                        <span className="text-sm lg:text-base font-medium text-socket-table text-white flex items-center">
-                                            <Image alt="Source token icon" src={settings?.resolveImgSrc(settings?.currencies?.find(c => c?.asset === swap?.source_network_asset)) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
-                                            {swap?.input_transaction?.amount} {swap?.source_network_asset}
-                                        </span>
+                                <div className="flex flex-col">
+                                    <div className="text-base font-normal text-socket-secondary">Transaction</div>
+                                    <div className="text-sm lg:text-base font-medium text-tx-base w-full">
+                                        <div className="flex items-center justify-between text-white">
+                                            <a href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center second-link">
+                                                <span className="break-all link link-underline link-underline-black">{swap?.input_transaction?.transaction_id}</span>
+                                            </a>
+                                            <CopyButton toCopy={swap?.input_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="flex-1">
-                                    <div className="text-base font-normal text-socket-secondary">{swap?.source_exchange ? 'Exchange' : 'Network'}</div>
-                                    <div className="flex items-center">
-                                        <Image alt="Source chain icon" src={settings?.resolveImgSrc(swapSourceLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
-                                        <span className="text-sm lg:text-base font-medium text-socket-table text-white">{swapSourceLayer?.display_name}</span>
+                                {swap?.input_transaction?.confirmations >= swap?.input_transaction?.max_confirmations ?
+                                    null
+                                    :
+                                    <div className="flex-1">
+                                        <div className="text-base font-normal text-socket-secondary">
+                                            Confirmations
+                                            <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-1">
+                                                {swap?.input_transaction?.confirmations >= swap?.input_transaction?.max_confirmations ? swap?.input_transaction?.max_confirmations : swap?.input_transaction?.confirmations}/{swap?.input_transaction?.max_confirmations}
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div className="flex flex-col">
-                                <div className="text-base font-normal text-socket-secondary">Sender Address</div>
-                                <div className="text-sm lg:text-base font-medium text-tx-base w-fit">
-                                    <div className="flex items-center text-white">
-                                        <a href={`${sourceNetwork?.account_explorer_template?.replace('{0}', swap?.input_transaction?.from)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                            <span className="break-all link link-underline link-underline-black">{swap?.input_transaction?.from}</span>
-                                        </a>
-                                        <CopyButton toCopy={swap?.input_transaction?.from} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
-                                    </div>
-                                </div>
+                                }
                             </div>
                         </div>
                         <div className="rotate-90 lg:rotate-0 self-center"><ArrowRight className="text-white w-6 h-auto" /></div>
                         <div className="rounded-md w-full p-6 grid gap-y-3 text-primary-text bg-secondary-900 border-secondary-500 border-t-4 shadow-lg relative">
                             {swap.status == SwapStatus.LsTransferPending || swap.status == SwapStatus.UserTransferPending ? <span className="pendingAnim"></span> : null}
                             <div className="flex items-center text-white">
-                                <div className="mr-2 uppercase text-socket-table text-normal font-medium">Destination Transaction</div>
-                                <div className="flex flex-row items-center text-btn-success bg-btn-success p-1 rounded">
-                                    {DestTxStatus(swap)}
-                                </div>
+                                <div className="mr-2 text-primary-text text-2xl font-medium">You received</div>
                             </div>
-                            <div className="flex flex-col">
-                                <div className="text-base font-normal text-socket-secondary">Hash</div>
-                                <div className="text-sm lg:text-base font-medium text-tx-base w-fit">
-                                    {swap?.output_transaction?.transaction_id ?
-                                        <div className="flex items-center text-white">
-                                            <a href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                                <span className="break-all link link-underline link-underline-black">{swap?.output_transaction?.transaction_id}</span>
-                                            </a>
-                                            <CopyButton toCopy={swap?.output_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
+                            <div className="rounded-md w-full p-6 grid gap-y-3 text-primary-text bg-secondary-700 shadow-lg relative">
+                                <div className="flex justify-around">
+                                    <div className="flex-1">
+                                        <div className="text-base font-normal text-socket-secondary">Asset</div>
+                                        <div className="flex items-center">
+                                            {swap?.output_transaction?.amount ?
+                                                <div className="flex items-center">
+                                                    <Image alt="Destination token icon" src={settings?.resolveImgSrc(settings?.currencies?.find(c => c?.asset === swap?.destination_network_asset)) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{swap?.output_transaction?.amount} {swap?.destination_network_asset}</span>
+                                                </div>
+                                                :
+                                                <span>-</span>
+                                            }
                                         </div>
-                                        :
-                                        <span>-</span>
-                                    }
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="text-base font-normal text-socket-secondary">{swap?.destination_exchange ? 'Exchange' : 'Network'}</div>
+                                        <div className="flex items-center">
+                                            <Image alt="Destination chain icon" src={settings?.resolveImgSrc(swapDestinationLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                            <span className="text-sm lg:text-base font-medium text-socket-table text-white">{swapDestinationLayer?.display_name}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="flex justify-around">
-                                <div className="flex-1">
-                                    <div className="text-base font-normal text-socket-secondary">Token Received</div>
-                                    <div className="flex items-center">
-                                        {swap?.output_transaction?.amount ?
-                                            <div className="flex items-center">
-                                                <Image alt="Destination token icon" src={settings?.resolveImgSrc(settings?.currencies?.find(c => c?.asset === swap?.destination_network_asset)) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
-                                                <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{swap?.output_transaction?.amount} {swap?.destination_network_asset}</span>
+                                <div className="flex flex-col">
+                                    <div className="text-base font-normal text-socket-secondary">To Address</div>
+                                    <div className="text-sm lg:text-base font-medium text-tx-base w-full">
+                                        {swap?.output_transaction?.to ?
+                                            <div className="flex items-center justify-between  text-white">
+                                                <a href={`${destinationNetwork?.account_explorer_template?.replace("{0}", swap?.output_transaction?.to)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                    <span className="break-all link link-underline link-underline-black">{swap?.output_transaction?.to}</span>
+                                                </a>
+                                                <CopyButton toCopy={swap?.destination_address} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
+                                            </div>
+                                            :
+                                            <span className="ml-1">-</span>
+                                        }
+                                    </div>
+                                </div>
+                                <div className="flex flex-col">
+                                    <div className="text-base font-normal text-socket-secondary">Transaction</div>
+                                    <div className="text-sm lg:text-base font-medium text-tx-base w-full">
+                                        {swap?.output_transaction?.transaction_id ?
+                                            <div className="flex items-center justify-between text-white">
+                                                <a href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                    <span className="break-all link link-underline link-underline-black">{swap?.output_transaction?.transaction_id}</span>
+                                                </a>
+                                                <CopyButton toCopy={swap?.output_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                             </div>
                                             :
                                             <span>-</span>
                                         }
                                     </div>
                                 </div>
-                                <div className="flex-1">
-                                    <div className="text-base font-normal text-socket-secondary">{swap?.destination_exchange ? 'Exchange' : 'Network'}</div>
-                                    <div className="flex items-center">
-                                        <Image alt="Destination chain icon" src={settings?.resolveImgSrc(swapDestinationLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
-                                        <span className="text-sm lg:text-base font-medium text-socket-table text-white">{swapDestinationLayer?.display_name}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex flex-col">
-                                <div className="text-base font-normal text-socket-secondary">Receiver Address</div>
-                                <div className="text-sm lg:text-base font-medium text-tx-base w-fit">
-                                    {swap?.output_transaction?.to ?
-                                        <div className="flex items-center text-white">
-                                            <a href={`${destinationNetwork?.account_explorer_template?.replace("{0}", swap?.output_transaction?.to)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                                <span className="break-all link link-underline link-underline-black">{swap?.output_transaction?.to}</span>
-                                            </a>
-                                            <CopyButton toCopy={swap?.destination_address} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
+                                {swap?.has_refuel &&
+                                    <div className="flex justify-around">
+                                        <div className="flex-1">
+                                            <div className="text-base font-normal text-socket-secondary">Native Asset</div>
+                                            <div className="flex items-center">
+                                                <div className="flex items-center">
+                                                    <Image alt="Destination token icon" src={settings?.resolveImgSrc(settings?.currencies?.find(c => c?.asset === destinationNetwork?.native_currency)) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{swap?.refuel_transaction?.amount} {destinationNetwork?.native_currency}</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        :
-                                        <span className="ml-1">-</span>
-                                    }
-                                </div>
+                                        <div className="flex-1">
+                                            <div className="text-base font-normal text-socket-secondary">Transaction</div>
+                                            {swap?.refuel_transaction?.transaction_id ?
+                                                <div className="flex items-center justify-between text-white">
+                                                    <a href={`${swap?.refuel_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                        <span className="break-all link link-underline link-underline-black">{shortenAddress(swap?.refuel_transaction?.transaction_id)}</span>
+                                                    </a>
+                                                    <CopyButton toCopy={swap?.refuel_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
+                                                </div>
+                                                :
+                                                <span>-</span>
+                                            }
+                                        </div>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -369,14 +400,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     )
 }
 
-
-function DestTxStatus(swap: Swap) {
-    const swapStatus = swap?.status;
-    if (swapStatus == SwapStatus.Completed) {
-        return <span className="mx-1.5 font-medium md:text-sm text-xs border p-1 rounded-md text-green-200 bg-green-100/20 !border-green-200/50">Completed</span>
-    } else if (swapStatus == SwapStatus.LsTransferPending || swapStatus == SwapStatus.UserTransferPending) {
-        return <span className="mx-1.5 font-medium md:text-sm text-xs border p-1 rounded-md text-yellow-200 bg-yellow-100/20 !border-yellow-200/50">Pending</span>
-    } else if (swapStatus == SwapStatus.Failed && swap?.input_transaction) {
-        return <span className="mx-1.5 font-medium md:text-sm text-xs border p-1 rounded-md text-red-200 bg-red-100/20 !border-red-200/50">Failed</span>
-    }
+function getMinutesDifference(date1: string, date2: string) {
+    const diffInMilliseconds = Math.abs(new Date(date2).getTime() - new Date(date1).getTime());
+    const minutes = Math.floor(diffInMilliseconds / (1000 * 60));
+    return minutes;
 }

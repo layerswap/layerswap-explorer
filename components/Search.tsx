@@ -10,7 +10,7 @@ const Search = () => {
 
     const handleKeyDown = (event: any) => {
         if (event.key === 'Enter') {
-            router.push(`/${searchParam}`)
+            handleSearch()
         }
     }
 
