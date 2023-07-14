@@ -64,7 +64,7 @@ export default function StatusIcon({ swap }: { swap: string | undefined }) {
 
 export const RedIcon = () => {
   return (
-    <svg className="w-2 h-2 rounded mr-1">
+    <svg className="w-2 h-2 rounded-sm mr-1">
       <rect fill="#E43636" width="100%" height="100%"></rect>
     </svg>
   )
@@ -72,15 +72,15 @@ export const RedIcon = () => {
 
 export const GreenIcon = () => {
   return (
-    <svg className="w-2 h-2 rounded mr-1">
-      <rect fill="#55B585" width="100%" height="100%"></rect>
+    <svg className="w-2 h-2 mr-1 rounded-sm">
+      <rect fill="#55B585" className="rounded-full" width="100%" height="100%"></rect>
     </svg>
   )
 }
 
 export const YellowIcon = () => {
   return (
-    <svg className="w-2 h-2 rounded mr-1">
+    <svg className="w-2 h-2 rounded-sm mr-1">
       <rect fill="#facc15" width="100%" height="100%"></rect>
     </svg>
   )
@@ -88,7 +88,7 @@ export const YellowIcon = () => {
 
 export const GreyIcon = () => {
   return (
-    <svg className="w-2 h-2 rounded mr-1">
+    <svg className="w-2 h-2 rounded-sm mr-1">
       <rect fill="#808080" width="100%" height="100%"></rect>
     </svg>
   )
@@ -96,7 +96,7 @@ export const GreyIcon = () => {
 
 export const PurpleIcon = () => {
   return (
-    <svg className="w-2 h-2 rounded mr-1">
+    <svg className="w-2 h-2 rounded-sm mr-1">
       <rect fill="#A020F0" width="100%" height="100%"></rect>
     </svg>
   )

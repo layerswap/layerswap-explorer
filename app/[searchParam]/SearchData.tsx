@@ -54,12 +54,15 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const fetcher = (url: string) => fetch(url).then(r => r.json())
     const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>(`${AppSettings.LayerswapApiUri}/api/explorer/${searchParam}`, fetcher, { dedupingInterval: 60000 });
     const swap = data?.data?.[0];
-
+    
     const swapSourceLayer = swap?.source_exchange ? settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase()) : settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap?.source_network?.toLowerCase());
     const swapDestinationLayer = swap?.destination_exchange ? settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase()) : settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap?.destination_network?.toLowerCase());
     const sourceNetwork = settings?.networks?.find(n => n.internal_name?.toLowerCase() === swap?.source_network?.toLowerCase());
     const destinationNetwork = settings?.networks?.find(n => n.internal_name?.toLowerCase() === swap?.destination_network?.toLowerCase());
-    const nativeCurency = destinationNetwork?.native_currency;
+
+    const cost = Number(swap?.input_transaction?.amount) - Number(swap?.output_transaction?.amount);
+    const precision = Number(settings?.currencies?.find(c => c?.asset == swap?.destination_network_asset)?.precision);
+
     // const elapsedTimeInMiliseconds = new Date(swap?.output_transaction?.created_date || '')?.getTime() - new Date(swap?.input_transaction?.created_date || '')?.getTime();
     // const timeElapsed = millisToMinutesAndSeconds(elapsedTimeInMiliseconds);
 
@@ -220,14 +223,14 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                         <div className="mb-4 sm:mb-0">
                             <div className="text-sm md:text-base text-[#475467] dark:text-white sm:flex justify-between w-full">
                                 <div className="items-center text-base mb-0.5 text-white">
-                                    <div className="mr-2 font-medium text-xl">
+                                    <div className="mr-2 font-xs text-xl">
                                         <p className="flex flex-col sm:flex-row"><StatusIcon swap={swap.status} />
                                             <span className="text-primary-text">&nbsp;at</span>
                                             <span className="text-white">&nbsp;{new Date(swap?.output_transaction?.created_date)?.toUTCString()}.</span>
                                             <span className="text-primary-text">&nbsp;Took</span>
                                             <span className="text-white">&nbsp;{getMinutesDifference(swap?.input_transaction?.created_date, swap?.output_transaction?.created_date)} minutes</span>
                                             <span className="text-primary-text">&nbsp;and cost</span>
-                                            <span className="text-white">&nbsp;{swap?.input_transaction?.amount - swap?.output_transaction?.amount} {swap?.source_network_asset}</span>
+                                            <span className="text-white">&nbsp;{truncateDecimals(cost, precision)} {swap?.source_network_asset}</span>
                                         </p>
                                         {/* <div className="text-sm mt-1 text-primary-text">
                                             <span className="text-primary-text">at</span>
@@ -285,7 +288,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
                                         <div className="flex items-center justify-between text-white">
                                             <a href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center second-link">
-                                                <span className="break-all link link-underline link-underline-black">{swap?.input_transaction?.transaction_id}</span>
+                                                <span className="break-all link link-underline link-underline-black">{shortenAddress(swap?.input_transaction?.transaction_id)}</span>
                                             </a>
                                             <CopyButton toCopy={swap?.input_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                         </div>
@@ -403,4 +406,8 @@ function getMinutesDifference(date1: string, date2: string) {
     const diffInMilliseconds = Math.abs(new Date(date2).getTime() - new Date(date1).getTime());
     const minutes = Math.floor(diffInMilliseconds / (1000 * 60));
     return minutes;
+}
+
+function truncateDecimals(value: number, decimals: number) {
+    return Number(value?.toFixed(decimals));
 }
