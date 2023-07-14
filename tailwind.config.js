@@ -30,7 +30,7 @@ module.exports = {
           '800': '#930863',
           '900': '#6e0040',
           'background': '#3e1240',
-          'text': '#abb5d1',
+          'text': '#bcccec',
           'text-muted': '#56617B',
           'text-placeholder': '#8C98C0',
           'buttonTextColor': '#ffffff',
