@@ -25,7 +25,7 @@ const Search = () => {
                         value={searchParam}
                         onChange={(v) => setSearchParam(v.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder="Search by Address / Deposit Address / Source Tx / Destination Tx"
+                        placeholder="Search by Address / Source Tx / Destination Tx"
                         className="block w-full rounded-md py-1 pl-3 pr-4 border-2 border-transparent placeholder:text-base placeholder:leading-3 focus:border-secondary-500 duration-200 transition-all outline-none text-white bg-secondary-700 shadow-sm placeholder:text-primary-text "
                     />
                     <div className="flex p-2">
