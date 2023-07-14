@@ -2,13 +2,13 @@
 
 import LayerswapExplorerLogo from './icons/layerswapExplorer'
 import Search from './Search'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { FileText, Layers } from 'lucide-react'
 
 export default function Header() {
     const pathname = usePathname();
-
+    const basePath = process.env.NEXT_PUBLIC_APP_BASE_PATH
     return (
         <header className="max-w-6xl w-full mx-auto">
             <nav className={`mx-auto max-w-6xl grid grid-cols-2 lg:grid-cols-6 lg:grid-rows-1 items-center gap-y-4 py-6 px-6 lg:px-8 ${pathname !== '/' ? 'grid-rows-2' : 'grid-rows-1'}`} aria-label="Global">
@@ -16,7 +16,7 @@ export default function Header() {
                     <LayerswapExplorerLogo className="h-14 w-auto text-primary-logoColor" />
                 </Link>
                 <div className='max-w-2xl w-full  mx-auto order-3 lg:order-2 col-span-4'>
-                    {pathname !== '/' &&
+                    {!(pathname === '/' || pathname === basePath || pathname === `${basePath}/`) &&
                         <Search />
                     }
                 </div>

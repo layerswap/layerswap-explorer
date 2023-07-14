@@ -51,6 +51,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const settings = useSettingsState();
     const router = useRouter();
     const pathname = usePathname();
+    const basePath = process.env.NEXT_PUBLIC_APP_BASE_PATH
     const fetcher = (url: string) => fetch(url).then(r => r.json())
     const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>(`${AppSettings.LayerswapApiUri}/api/explorer/${searchParam}`, fetcher, { dedupingInterval: 60000 });
     const swap = data?.data?.[0];
@@ -70,7 +71,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
 
     return (Number(data?.data?.length) > 1 ?
         <div className="px-4 sm:px-6 lg:px-8 w-full">
-            {pathname !== '/' && <div className='hidden xl:block w-fit mb-1 hover:bg-secondary-600 hover:text-accent-foreground rounded ring-offset-background transition-colors -ml-5'>
+            {!(pathname === '/' || pathname === basePath || pathname === `${basePath}/`) && <div className='hidden xl:block w-fit mb-1 hover:bg-secondary-600 hover:text-accent-foreground rounded ring-offset-background transition-colors -ml-5'>
                 <BackBtn />
             </div>}
             <div className="flow-root w-full">
