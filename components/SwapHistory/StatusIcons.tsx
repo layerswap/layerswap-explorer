@@ -64,40 +64,40 @@ export default function StatusIcon({ swap }: { swap: string | undefined }) {
 
 export const RedIcon = () => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" className="mr-1.5 w-2 h-2" viewBox="0 0 60 60" fill="none">
-      <circle cx="30" cy="30" r="30" fill="#E43636" />
+    <svg className="w-2 h-2 rounded mr-1">
+      <rect fill="#E43636" width="100%" height="100%"></rect>
     </svg>
   )
 }
 
 export const GreenIcon = () => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" className="mr-1.5 w-2 h-2" viewBox="0 0 60 60" fill="none">
-      <circle cx="30" cy="30" r="30" fill="#55B585" />
+    <svg className="w-2 h-2 rounded mr-1">
+      <rect fill="#55B585" width="100%" height="100%"></rect>
     </svg>
   )
 }
 
 export const YellowIcon = () => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" className="mr-1.5 w-2 h-2 lg:h-2 lg:w-2" viewBox="0 0 60 60" fill="none">
-      <circle cx="30" cy="30" r="30" fill="#facc15" />
+    <svg className="w-2 h-2 rounded mr-1">
+      <rect fill="#facc15" width="100%" height="100%"></rect>
     </svg>
   )
 }
 
 export const GreyIcon = () => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" className="mr-1.5 w-2 h-2 lg:h-2 lg:w-2" viewBox="0 0 60 60" fill="none">
-      <circle cx="30" cy="30" r="30" fill="#808080" />
+    <svg className="w-2 h-2 rounded mr-1">
+      <rect fill="#808080" width="100%" height="100%"></rect>
     </svg>
   )
 }
 
 export const PurpleIcon = () => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" className="mr-1.5 w-2 h-2 lg:h-2 lg:w-2" viewBox="0 0 60 60" fill="none">
-      <circle cx="30" cy="30" r="30" fill="#A020F0" />
+    <svg className="w-2 h-2 rounded mr-1">
+      <rect fill="#A020F0" width="100%" height="100%"></rect>
     </svg>
   )
 }
