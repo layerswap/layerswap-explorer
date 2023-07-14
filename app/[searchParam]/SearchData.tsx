@@ -243,7 +243,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             <div className="flex items-center text-white">
                                 <div className="mr-2 text-socket-table text-normal font-medium">Source Transaction</div>
                                 <div className="flex flex-row items-center text-btn-success bg-btn-success p-1 rounded">
-                                    <span className={`${swap?.input_transaction?.confirmations >= swap?.input_transaction?.max_confirmations ? "text-green-200 bg-green-100/20 !border-green-200/50" : ""} border border-transparent p-1 rounded-md mx-1.5 font-medium uppercase md:text-sm text-xs`}>{swap?.input_transaction?.confirmations >= swap?.input_transaction?.max_confirmations ? "COMPLETED" : "PENDING"}</span>
+                                    <span className={`${swap?.input_transaction?.confirmations >= swap?.input_transaction?.max_confirmations ? "text-green-200 bg-green-100/20 !border-green-200/50" : ""} border border-transparent p-1 rounded-md mx-1.5 font-medium md:text-sm text-xs`}>{swap?.input_transaction?.confirmations >= swap?.input_transaction?.max_confirmations ? "Completed" : "Pending"}</span>
                                 </div>
                             </div>
                             <div className="flex flex-col">
