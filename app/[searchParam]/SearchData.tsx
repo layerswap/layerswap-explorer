@@ -236,14 +236,23 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                             <div className="flex flex-col sm:flex-row">
                                                 <div><StatusIcon swap={swap.status} />
                                                     <span className="whitespace-nowrap text-primary-text align-bottom">&nbsp;at</span>
-                                                    <span className="whitespace-nowrap text-white align-bottom">&nbsp;{new Date(swap?.output_transaction?.created_date)?.toLocaleString('en-US', options)}.</span>
+                                                    <span className="whitespace-nowrap text-white align-bottom">&nbsp;
+                                                        <TooltipProvider delayDuration={0}>
+                                                            <Tooltip>
+                                                                <TooltipTrigger className="cursor-default">{new Date(swap?.output_transaction?.created_date)?.toLocaleString('en-US', options)}.</TooltipTrigger>
+                                                                <TooltipContent>
+                                                                    {new Date(swap.created_date).toUTCString()}
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        </TooltipProvider>
+                                                    </span>
                                                 </div>
                                                 <p className="sm:self-end">
                                                     <span className="sm:whitespace-nowrap sm:ml-0.5 text-primary-text">Took</span>
                                                     <span className="text-white">&nbsp;{getMinutesDifference(swap?.input_transaction?.created_date, swap?.output_transaction?.created_date)}</span>
                                                 </p>
                                                 <p className="sm:self-end">
-                                                    <span className="text-primary-text sm:ml-0.5">and cost</span>
+                                                    <span className="text-primary-text sm:ml-1">and cost</span>
                                                     <span className="text-white">&nbsp;{truncateDecimals(cost, precision)} {swap?.source_network_asset}</span>
                                                 </p>
                                             </div>
@@ -251,23 +260,12 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                             <div className="flex sm:flex-row"><StatusIcon swap={swap.status} />
                                             </div>
                                         }
-                                        {/* <div className="text-sm mt-1 text-primary-text">
-                                            <span className="text-primary-text">at</span>
-                                            <TooltipProvider delayDuration={0}>
-                                                <Tooltip>
-                                                    <TooltipTrigger className="cursor-default">{new Date(swap.created_date).toLocaleString()}</TooltipTrigger>
-                                                    <TooltipContent>
-                                                        {new Date(swap.created_date).toUTCString()}
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                            </TooltipProvider>
-                                        </div> */}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className="flex flex-col lg:flex-row items-center lg:items-stretch rounded-md text-primary-text gap-4">
+                    <div className="flex flex-col lg:flex-row items-start rounded-md text-primary-text gap-4">
                         <div className="rounded-md w-full p-6 grid gap-y-3 items-baseline lg:max-w-[50%] bg-secondary-900 rounded-t-lg border-secondary-500 border-t-4 shadow-lg">
                             <div className="flex items-center text-white">
                                 <div className="mr-2 text-primary-text text-2xl font-medium">You sent</div>
