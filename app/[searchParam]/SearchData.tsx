@@ -1,5 +1,5 @@
 "use client"
-import { shortenAddress } from "@/lib/utils";
+import { shortenAddress, shortenHash } from "@/lib/utils";
 import { ApiResponse } from "@/models/ApiResponse";
 import CopyButton from "../../components/buttons/copyButton";
 import { ArrowRight, ChevronRight } from 'lucide-react';
@@ -387,36 +387,39 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex items-center text-white">
-                                <div className="mr-2 text-primary-text text-2xl font-medium">... and for gus</div>
-                            </div>
-                            {!swap?.has_refuel &&
-                                <div className="rounded-md w-full grid gap-y-3 text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border">
-                                    <div className="flex justify-around">
-                                        <div className="flex-1 p-4">
-                                            <div className="text-base font-normal text-socket-secondary">Native Asset</div>
-                                            <div className="flex items-center">
+                            {swap?.has_refuel &&
+                                <>
+                                    <div className="flex items-center text-white">
+                                        <div className="mr-2 text-primary-text text-2xl font-medium">... and for gas</div>
+                                    </div>
+                                    <div className="rounded-md w-full grid gap-y-3 text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border">
+                                        <div className="flex justify-around">
+                                            <div className="flex-1 p-4">
+                                                <div className="text-base font-normal text-socket-secondary">Native Asset</div>
                                                 <div className="flex items-center">
-                                                    <Image alt="Destination token icon" src={settings?.resolveImgSrc(settings?.currencies?.find(c => c?.asset === destinationNetwork?.native_currency)) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
-                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{swap?.refuel_transaction?.amount} {destinationNetwork?.native_currency}</span>
+                                                    <div className="flex items-center">
+                                                        <Image alt="Destination token icon" src={settings?.resolveImgSrc(settings?.currencies?.find(c => c?.asset === destinationNetwork?.native_currency)) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                        <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{truncateDecimals(swap?.refuel_transaction?.amount, settings?.currencies?.find(c => c?.asset === destinationNetwork?.native_currency)?.precision)} {destinationNetwork?.native_currency}</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="flex-1 p-4 border-secondary-600 border-l">
-                                            <div className="text-base font-normal text-socket-secondary">Transaction</div>
-                                            {swap?.refuel_transaction?.transaction_id ?
-                                                <div className="flex items-center justify-between text-white hover:text-primary-text">
-                                                    <Link href={`${swap?.refuel_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                                        <span className="break-all link link-underline link-underline-black">{shortenAddress(swap?.refuel_transaction?.transaction_id)}</span>
-                                                    </Link>
-                                                    <CopyButton toCopy={swap?.refuel_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
-                                                </div>
-                                                :
-                                                <span>-</span>
-                                            }
+                                            <div className="flex-1 p-4 border-secondary-600 border-l">
+                                                <div className="text-base font-normal text-socket-secondary">Transaction</div>
+                                                {swap?.refuel_transaction?.transaction_id ?
+                                                    <div className="flex items-center justify-between text-white hover:text-primary-text">
+                                                        <Link href={`${swap?.refuel_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                            <span className="break-all link link-underline link-underline-black">{shortenHash(swap?.refuel_transaction?.transaction_id)}</span>
+                                                        </Link>
+                                                        <CopyButton toCopy={swap?.refuel_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
+                                                    </div>
+                                                    :
+                                                    <span>-</span>
+                                                }
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </>
+
                             }
                         </div>
                     </div>
@@ -446,6 +449,6 @@ function getMinutesDifference(date1: string, date2: string) {
     }
 }
 
-function truncateDecimals(value: number, decimals: number) {
+function truncateDecimals(value: number | undefined, decimals: number | undefined) {
     return Number(value?.toFixed(decimals));
 }
