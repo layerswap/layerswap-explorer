@@ -16,6 +16,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useRouter } from "next/navigation";
 import BackBtn from "@/helpers/BackButton";
 import { usePathname } from 'next/navigation'
+import Error500 from "@/components/Error500";
 
 type Swap = {
     created_date: string,
@@ -47,12 +48,12 @@ type Transaction = {
 }
 
 export default function SearchData({ searchParam }: { searchParam: string }) {
-    const fetcher = (url: string) => fetch(url).then(r => r.json())
-    const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>(`${AppSettings.LayerswapApiUri}/api/explorer/${searchParam}`, fetcher, { dedupingInterval: 60000 });
-    const swap = data?.data?.[0];
     const settings = useSettingsState();
     const router = useRouter();
     const pathname = usePathname();
+    const fetcher = (url: string) => fetch(url).then(r => r.json())
+    const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>(`${AppSettings.LayerswapApiUri}/api/explorer/${searchParam}`, fetcher, { dedupingInterval: 60000 });
+    const swap = data?.data?.[0];
 
     const swapSourceLayer = swap?.source_exchange ? settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase()) : settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap?.source_network?.toLowerCase());
     const swapDestinationLayer = swap?.destination_exchange ? settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase()) : settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap?.destination_network?.toLowerCase());
@@ -63,20 +64,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     // const timeElapsed = millisToMinutesAndSeconds(elapsedTimeInMiliseconds);
 
     const filteredData = data?.data?.filter(s => s?.input_transaction);
-    if (error) return <div className="flex h-full items-center justify-center p-5 w-full flex-1">
-        <div className="text-center">
-            <div className="inline-flex rounded-full relative">
-                <svg xmlns="http://www.w3.org/2000/svg" width="116" height="116" viewBox="0 0 116 116" fill="none">
-                    <circle cx="58" cy="58" r="58" fill="#E43636" fillOpacity="0.1" />
-                    <circle cx="58" cy="58" r="45" fill="#E43636" fillOpacity="0.5" />
-                    <circle cx="58" cy="58" r="30" fill="#E43636" />
-                </svg>
-                <ServerOff className="text-white absolute top-[calc(50%-16px)] right-[calc(50%-16px)] h-8 w-auto" />
-            </div>
-            <h1 className="mt-5 text-[36px] font-bold text-white lg:text-[50px]">500 - Server error</h1>
-            <p className="text-primary-text mt-5 lg:text-lg">Oops something went wrong. Try to refresh this page or <br /> feel free to contact us if the problem presists.</p>
-        </div>
-    </div>
+    if (error) return <Error500 />
     if (isLoading) return <LoadingBlocks />
     if (data?.error) return <NotFound />
 
@@ -231,7 +219,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     <div className="mr-2 font-medium text-xl">
                                         <span className="flex"><StatusIcon swap={swap.status} /></span>
                                         <div className="text-sm mt-1 text-primary-text">
-                                            <span className="mr-1">Created at:</span>
+                                            <span className="mr-1 text-primary-text-muted">Created at:</span>
                                             <TooltipProvider>
                                                 <Tooltip>
                                                     <TooltipTrigger className="cursor-default">{new Date(swap.created_date).toLocaleString()}</TooltipTrigger>
