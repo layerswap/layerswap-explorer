@@ -88,13 +88,13 @@ export default function DataTable() {
                                                 </td>
                                                 <td className="whitespace-nowrap px-3 py-2 text-sm text-primary-text">
                                                     <div className="flex flex-row">
-                                                        <div className="flex flex-col items-start ">
+                                                        <div className="flex flex-col items-start mr-4">
                                                             <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-1">Token:</span>
-                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end">{swap?.source_exchange ? 'Exchange' : 'Network'}:</span>
+                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end min-w-[70px]">{swap?.source_exchange ? 'Exchange' : 'Network'}:</span>
                                                         </div>
                                                         <div className="flex flex-col">
                                                             <div className="text-sm md:text-base flex flex-row mb-1">
-                                                                <div className="flex flex-row items-center ml-4">
+                                                                <div className="flex flex-row items-center">
                                                                     <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                         <span>
                                                                             <Image alt={`Source token icon ${index}`} src={settings?.resolveImgSrc(settings?.currencies?.find(c => c?.asset === swap?.source_network_asset)) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
@@ -106,7 +106,7 @@ export default function DataTable() {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div className="text-sm md:text-base flex flex-row items-center ml-4">
+                                                            <div className="text-sm md:text-base flex flex-row items-center">
                                                                 <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                     <span>
                                                                         <Image alt={`Source chain icon ${index}`} src={settings?.resolveImgSrc(sourceLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
@@ -125,7 +125,7 @@ export default function DataTable() {
                                                     <div className="flex flex-row">
                                                         <div className="flex flex-col items-start">
                                                             <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-1">Token:</span>
-                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end">{swap?.destination_exchange ? 'Exchange' : 'Network'}:</span>
+                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end min-w-[70px]">{swap?.destination_exchange ? 'Exchange' : 'Network'}:</span>
                                                         </div>
                                                         <div className="flex flex-col">
                                                             <div className="text-sm md:text-base flex flex-row">

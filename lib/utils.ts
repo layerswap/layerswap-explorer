@@ -20,7 +20,7 @@ export function shortenAddress(address: string) {
   function InnerShortenAddress(address: string) {
       if(address?.length<13)
           return address;
-      return `${address?.substring(0, 20)}...${address?.substring(address?.length - 4, address?.length)}`
+      return `${address?.substring(0, 10)}...${address?.substring(address?.length - 4, address?.length)}`
   }
 }
 export const shortenEmail = (email = '') => {
