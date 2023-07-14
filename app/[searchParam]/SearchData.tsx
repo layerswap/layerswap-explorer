@@ -231,7 +231,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                         <div className="mb-4 sm:mb-0">
                             <div className="text-sm md:text-base text-[#475467] dark:text-white sm:flex justify-between w-full">
                                 <div className="items-center text-base mb-0.5 text-white">
-                                    <div className="mr-2 text-lg">
+                                    <div className="mr-2 sm:text-xl text-base">
                                         {swap.status == SwapStatus.Completed ?
                                             <div className="flex flex-col sm:flex-row">
                                                 <div><StatusIcon swap={swap.status} />
@@ -241,13 +241,15 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 <p className="sm:self-end">
                                                     <span className="sm:whitespace-nowrap sm:ml-0.5 text-primary-text">Took</span>
                                                     <span className="text-white">&nbsp;{getMinutesDifference(swap?.input_transaction?.created_date, swap?.output_transaction?.created_date)}</span>
-                                                    <span className="text-primary-text">&nbsp;and cost</span>
+                                                </p>
+                                                <p className="sm:self-end">
+                                                    <span className="text-primary-text sm:ml-0.5">and cost</span>
                                                     <span className="text-white">&nbsp;{truncateDecimals(cost, precision)} {swap?.source_network_asset}</span>
                                                 </p>
                                             </div>
                                             :
-                                            <p className="flex sm:flex-row"><StatusIcon swap={swap.status} />
-                                            </p>
+                                            <div className="flex sm:flex-row"><StatusIcon swap={swap.status} />
+                                            </div>
                                         }
                                         {/* <div className="text-sm mt-1 text-primary-text">
                                             <span className="text-primary-text">at</span>
@@ -270,9 +272,9 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             <div className="flex items-center text-white">
                                 <div className="mr-2 text-primary-text text-2xl font-medium">You sent</div>
                             </div>
-                            <div className="rounded-md w-full p-6 grid gap-y-3 text-primary-text bg-secondary-700 shadow-lg relative">
+                            <div className="rounded-md w-full grid text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border divide-y divide-secondary-500">
                                 <div className="flex justify-around">
-                                    <div className="flex-1">
+                                    <div className="flex-1 p-4">
                                         <div className="text-base font-normal text-socket-secondary">Asset</div>
                                         <div className="flex items-center">
                                             <span className="text-sm lg:text-base font-medium text-socket-table text-white flex items-center">
@@ -281,7 +283,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="flex-1">
+                                    <div className="flex-1 p-4 border-secondary-600 border-l">
                                         <div className="text-base font-normal text-socket-secondary">{swap?.source_exchange ? 'Exchange' : 'Network'}</div>
                                         <div className="flex items-center">
                                             <Image alt="Source chain icon" src={settings?.resolveImgSrc(swapSourceLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
@@ -289,10 +291,10 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex flex-col">
+                                <div className="flex flex-col p-4">
                                     <div className="text-base font-normal text-socket-secondary">From Address</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
-                                        <div className="flex justify-between items-center text-white">
+                                        <div className="flex justify-between items-center text-white hover:text-primary-text">
                                             <Link href={`${sourceNetwork?.account_explorer_template?.replace('{0}', swap?.input_transaction?.from)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
                                                 <span className="break-all link link-underline link-underline-black">{swap?.input_transaction?.from}</span>
                                             </Link>
@@ -300,10 +302,10 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex flex-col">
+                                <div className="flex flex-col p-4">
                                     <div className="text-base font-normal text-socket-secondary">Transaction</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
-                                        <div className="flex items-center justify-between text-white">
+                                        <div className="flex items-center justify-between text-white hover:text-primary-text">
                                             <Link href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center second-link">
                                                 <span className="break-all link link-underline link-underline-black">{shortenAddress(swap?.input_transaction?.transaction_id)}</span>
                                             </Link>
@@ -329,11 +331,11 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                         <div className="rounded-md w-full p-6 grid gap-y-3 text-primary-text bg-secondary-900 border-secondary-500 border-t-4 shadow-lg relative">
                             {swap.status == SwapStatus.LsTransferPending || swap.status == SwapStatus.UserTransferPending ? <span className="pendingAnim"></span> : null}
                             <div className="flex items-center text-white">
-                                <div className="mr-2 text-primary-text text-2xl font-medium">You received</div>
+                                <div className="mr-2 text-primary-text text-2xl font-medium">{swap.status == SwapStatus.LsTransferPending || swap.status == SwapStatus.UserTransferPending ? "Your assets are one the way" : "You received"}</div>
                             </div>
-                            <div className="rounded-md w-full p-6 grid gap-y-3 text-primary-text bg-secondary-700 shadow-lg relative">
+                            <div className="rounded-md w-full grid text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border divide-y divide-secondary-500">
                                 <div className="flex justify-around">
-                                    <div className="flex-1">
+                                    <div className="flex-1 p-4">
                                         <div className="text-base font-normal text-socket-secondary">Asset</div>
                                         <div className="flex items-center">
                                             {swap?.output_transaction?.amount ?
@@ -346,7 +348,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                             }
                                         </div>
                                     </div>
-                                    <div className="flex-1">
+                                    <div className="flex-1 p-4 border-secondary-600 border-l">
                                         <div className="text-base font-normal text-socket-secondary">{swap?.destination_exchange ? 'Exchange' : 'Network'}</div>
                                         <div className="flex items-center">
                                             <Image alt="Destination chain icon" src={settings?.resolveImgSrc(swapDestinationLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
@@ -354,11 +356,11 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex flex-col">
+                                <div className="flex flex-col p-4">
                                     <div className="text-base font-normal text-socket-secondary">To Address</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
                                         {swap?.output_transaction?.to ?
-                                            <div className="flex items-center justify-between  text-white">
+                                            <div className="flex items-center justify-between text-white hover:text-primary-text">
                                                 <Link href={`${destinationNetwork?.account_explorer_template?.replace("{0}", swap?.output_transaction?.to)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
                                                     <span className="break-all link link-underline link-underline-black">{swap?.output_transaction?.to}</span>
                                                 </Link>
@@ -369,11 +371,11 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         }
                                     </div>
                                 </div>
-                                <div className="flex flex-col">
+                                <div className="flex flex-col p-4">
                                     <div className="text-base font-normal text-socket-secondary">Transaction</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
                                         {swap?.output_transaction?.transaction_id ?
-                                            <div className="flex items-center justify-between text-white">
+                                            <div className="flex items-center justify-between text-white hover:text-primary-text">
                                                 <Link href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
                                                     <span className="break-all link link-underline link-underline-black">{shortenAddress(swap?.output_transaction?.transaction_id)}</span>
                                                 </Link>
@@ -384,9 +386,14 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         }
                                     </div>
                                 </div>
-                                {swap?.has_refuel &&
+                            </div>
+                            <div className="flex items-center text-white">
+                                <div className="mr-2 text-primary-text text-2xl font-medium">... and for gus</div>
+                            </div>
+                            {!swap?.has_refuel &&
+                                <div className="rounded-md w-full grid gap-y-3 text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border">
                                     <div className="flex justify-around">
-                                        <div className="flex-1">
+                                        <div className="flex-1 p-4">
                                             <div className="text-base font-normal text-socket-secondary">Native Asset</div>
                                             <div className="flex items-center">
                                                 <div className="flex items-center">
@@ -395,10 +402,10 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="flex-1">
+                                        <div className="flex-1 p-4 border-secondary-600 border-l">
                                             <div className="text-base font-normal text-socket-secondary">Transaction</div>
                                             {swap?.refuel_transaction?.transaction_id ?
-                                                <div className="flex items-center justify-between text-white">
+                                                <div className="flex items-center justify-between text-white hover:text-primary-text">
                                                     <Link href={`${swap?.refuel_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
                                                         <span className="break-all link link-underline link-underline-black">{shortenAddress(swap?.refuel_transaction?.transaction_id)}</span>
                                                     </Link>
@@ -409,8 +416,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                             }
                                         </div>
                                     </div>
-                                }
-                            </div>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>}
@@ -424,10 +431,18 @@ function getMinutesDifference(date1: string, date2: string) {
 
     if (diffInMilliseconds < 60000) {
         const seconds = Math.floor(diffInMilliseconds / 1000);
-        return seconds + " seconds";
+        if (seconds === 1) {
+            return "1 second";
+        } else {
+            return seconds + " seconds";
+        }
     } else {
         const minutes = Math.floor(diffInMilliseconds / (1000 * 60));
-        return minutes + " minutes";
+        if (minutes === 1) {
+            return "1 minute";
+        } else {
+            return minutes + " minutes";
+        }
     }
 }
 
