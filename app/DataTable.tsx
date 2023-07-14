@@ -9,6 +9,7 @@ import LoadingBlocks from "@/components/LoadingBlocks";
 import { SwapStatus } from "@/models/SwapStatus";
 import { useRouter } from "next/navigation";
 import AppSettings from "@/lib/AppSettings";
+import Error500 from "@/components/Error500";
 
 type Swap = {
     created_date: string,
@@ -46,20 +47,7 @@ export default function DataTable() {
     const settings = useSettingsState();
     const router = useRouter();
 
-    if (error) return <div className="flex h-full items-center justify-center p-5 w-full flex-1">
-        <div className="text-center">
-            <div className="inline-flex rounded-full relative">
-                <svg xmlns="http://www.w3.org/2000/svg" width="116" height="116" viewBox="0 0 116 116" fill="none">
-                    <circle cx="58" cy="58" r="58" fill="#E43636" fillOpacity="0.1" />
-                    <circle cx="58" cy="58" r="45" fill="#E43636" fillOpacity="0.5" />
-                    <circle cx="58" cy="58" r="30" fill="#E43636" />
-                </svg>
-                <ServerOff className="text-white absolute top-[calc(50%-16px)] right-[calc(50%-16px)] h-8 w-auto" />
-            </div>
-            <h1 className="mt-5 text-[36px] font-bold text-white lg:text-[50px]">500 - Server error</h1>
-            <p className="text-primary-text mt-5 lg:text-lg">Oops something went wrong. Try to refresh this page or <br /> feel free to contact us if the problem presists.</p>
-        </div>
-    </div>
+    if (error) return <Error500 />
     if (isLoading) return <LoadingBlocks />
 
     return (
