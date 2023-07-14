@@ -3,14 +3,11 @@ import DataTable from "./DataTable";
 import LayerSwapApiClient from '../lib/layerSwapApiClient';
 import { mapNetworkCurrencies } from "../helpers/settingsHelper";
 import { SettingsProvider } from "@/context/settings";
-import LayerSwapAuthApiClient from "@/lib/userAuthApiClient";
 
 export default async function Home() {
 
   const settingsData = await getServerSideProps();
   const settings = settingsData?.props?.settings || undefined;
-
-  LayerSwapAuthApiClient.identityBaseEndpoint = settings?.discovery?.identity_url || '';
 
   return (
     <SettingsProvider data={settings}>
@@ -24,10 +21,11 @@ export default async function Home() {
 
 
 async function getServerSideProps() {
-  "use server"
   try {
-    var apiClient = new LayerSwapApiClient();
-    const { data: settings } = await apiClient.GetSettingsAsync();
+    const fetcher = (url: string) => fetch(url).then(r => r.json())
+    const version = process.env.NEXT_PUBLIC_API_VERSION
+    const settingsResult = await fetcher(`${LayerSwapApiClient.apiBaseEndpoint}/api/settings?version=${version}`)
+    const settings = settingsResult?.data || undefined;
 
     if (!settings) {
       return
