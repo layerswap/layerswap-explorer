@@ -364,7 +364,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         }
                                     </div>
                                 </div>
-                                {!swap?.has_refuel &&
+                                {swap?.has_refuel &&
                                     <div className="flex justify-around">
                                         <div className="flex-1">
                                             <div className="text-base font-normal text-socket-secondary">Native Asset</div>
