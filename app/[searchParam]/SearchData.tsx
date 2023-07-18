@@ -130,7 +130,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 </td>
                                                 <td className="whitespace-nowrap px-3 py-2 text-sm text-primary-text">
                                                     <div className="flex flex-row">
-                                                        <div className="flex flex-col items-end ">
+                                                        <div className="flex flex-col items-start ">
                                                             <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-1">Token:</span>
                                                             <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end min-w-[70px]">{swap?.source_exchange ? 'Exchange' : 'Network'}:</span>
                                                         </div>
@@ -167,7 +167,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 </td>
                                                 <td className="whitespace-nowrap px-3 py-2 text-sm text-primary-text">
                                                     <div className="flex flex-row">
-                                                        <div className="flex flex-col items-end ">
+                                                        <div className="flex flex-col items-start ">
                                                             <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-1">Token:</span>
                                                             <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end min-w-[70px]">{swap?.destination_exchange ? 'Exchange' : 'Network'}:</span>
                                                         </div>
