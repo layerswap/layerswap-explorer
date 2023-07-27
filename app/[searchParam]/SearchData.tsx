@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import BackBtn from "@/helpers/BackButton";
 import { usePathname } from 'next/navigation'
 import Error500 from "@/components/Error500";
+import { getMinutesDifference, getTimeDifferenceFromNow } from "@/components/utils/CalcTime";
 
 type Swap = {
     created_date: string,
@@ -66,8 +67,11 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const input_transaction = swap?.transactions?.find(t => t?.type == 'input');
     const output_transaction = swap?.transactions?.find(t => t?.type == 'output');
     const refuel_transaction = swap?.transactions?.find(t => t?.type == 'refuel');
-
     const swapSourceLayer = swap?.source_exchange ? settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase()) : settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap?.source_network?.toLowerCase());
+
+    const swapSourceExchange = swap?.source_exchange && settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap.source_network?.toLowerCase());
+    const swapDestExchange = swap?.destination_exchange && settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap.destination_network?.toLowerCase());
+
     const swapDestinationLayer = swap?.destination_exchange ? settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase()) : settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap?.destination_network?.toLowerCase());
     const sourceNetwork = settings?.networks?.find(n => n.internal_name?.toLowerCase() === swap?.source_network?.toLowerCase());
     const destinationNetwork = settings?.networks?.find(n => n.internal_name?.toLowerCase() === swap?.destination_network?.toLowerCase());
@@ -124,7 +128,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         const destinationLayer = swap?.destination_exchange ? settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase()) : settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_network?.toLowerCase());
                                         const inputTransaction = swap?.transactions?.find(t => t?.type == 'input');
                                         const outputTransaction = swap?.transactions?.find(t => t?.type == 'output');
-                                        
+
                                         if (!inputTransaction)
                                             return
 
@@ -266,8 +270,29 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 </p>
                                             </div>
                                             :
-                                            <div className="flex sm:flex-row"><StatusIcon swap={swap.status} />
-                                            </div>
+                                            swap.status !== SwapStatus.Completed ?
+                                                <div className="flex flex-col sm:flex-row">
+                                                    <div>
+                                                        <StatusIcon swap={swap.status} />
+                                                        <span className="whitespace-nowrap text-primary-text align-bottom">&nbsp;Published at</span>
+                                                        <span className="whitespace-nowrap text-white align-bottom">&nbsp;
+                                                            <TooltipProvider delayDuration={0}>
+                                                                <Tooltip>
+                                                                    <TooltipTrigger className="cursor-default">{new Date(input_transaction?.created_date)?.toLocaleString('en-US', options)}.</TooltipTrigger>
+                                                                    <TooltipContent>
+                                                                        {new Date(swap.created_date).toUTCString()}
+                                                                    </TooltipContent>
+                                                                </Tooltip>
+                                                            </TooltipProvider>
+                                                        </span>
+                                                    </div>
+                                                    <p className="sm:self-end">
+                                                        <span className="text-primary-text">&nbsp;({getTimeDifferenceFromNow(input_transaction?.timestamp)} ago)</span>
+                                                    </p>
+                                                </div>
+                                                :
+                                                <div className="flex sm:flex-row"><StatusIcon swap={swap.status} />
+                                                </div>
                                         }
                                     </div>
                                 </div>
@@ -296,6 +321,16 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                             <Image alt="Source chain icon" src={settings?.resolveImgSrc(swapSourceLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
                                             <span className="text-sm lg:text-base font-medium text-socket-table text-white">{swapSourceLayer?.display_name}</span>
                                         </div>
+                                        {
+                                            swap?.source_exchange && swapSourceExchange &&
+                                            <div>
+                                                <div className="text-base font-normal text-socket-secondary">Via</div>
+                                                <div className="flex items-center">
+                                                    <Image alt="Source chain icon" src={settings?.resolveImgSrc(swapSourceExchange) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white">{swapSourceExchange?.display_name}</span>
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                                 <div className="flex flex-col p-4">
@@ -361,6 +396,16 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                             <Image alt="Destination chain icon" src={settings?.resolveImgSrc(swapDestinationLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
                                             <span className="text-sm lg:text-base font-medium text-socket-table text-white">{swapDestinationLayer?.display_name}</span>
                                         </div>
+                                        {
+                                            swap?.destination_exchange && swapDestExchange &&
+                                            <div>
+                                                <div className="text-base font-normal text-socket-secondary">Via</div>
+                                                <div className="flex items-center">
+                                                    <Image alt="Source chain icon" src={settings?.resolveImgSrc(swapDestExchange) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white">{swapDestExchange?.display_name}</span>
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                                 <div className="flex flex-col p-4">
@@ -434,26 +479,6 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
             </div>
         </div>
     )
-}
-
-function getMinutesDifference(date1: string, date2: string) {
-    const diffInMilliseconds = Math.abs(new Date(date2).getTime() - new Date(date1).getTime());
-
-    if (diffInMilliseconds < 60000) {
-        const seconds = Math.ceil(diffInMilliseconds / 1000);
-        if (seconds === 1) {
-            return "1 second";
-        } else {
-            return seconds + " seconds";
-        }
-    } else {
-        const minutes = Math.floor(diffInMilliseconds / (1000 * 60));
-        if (minutes === 1) {
-            return "1 minute";
-        } else {
-            return minutes + " minutes";
-        }
-    }
 }
 
 function truncateDecimals(value: number | undefined, decimals: number | undefined) {
