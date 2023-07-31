@@ -18,6 +18,7 @@ import BackBtn from "@/helpers/BackButton";
 import { usePathname } from 'next/navigation'
 import Error500 from "@/components/Error500";
 import { getMinutesDifference, getTimeDifferenceFromNow } from "@/components/utils/CalcTime";
+import { TransactionType } from "@/models/TransactionTypes";
 
 type Swap = {
     created_date: string,
@@ -64,9 +65,9 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>(`${AppSettings.LayerswapApiUri}/api/explorer/${searchParam}`, fetcher, { dedupingInterval: 60000 });
     const swap = data?.data?.[0];
 
-    const input_transaction = swap?.transactions?.find(t => t?.type == 'input');
-    const output_transaction = swap?.transactions?.find(t => t?.type == 'output');
-    const refuel_transaction = swap?.transactions?.find(t => t?.type == 'refuel');
+    const input_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Input);
+    const output_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Output);
+    const refuel_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Refuel);
     const swapSourceLayer = swap?.source_exchange ? settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase()) : settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap?.source_network?.toLowerCase());
 
     const swapSourceExchange = swap?.source_exchange && settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap.source_network?.toLowerCase());
@@ -82,7 +83,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     // const elapsedTimeInMiliseconds = new Date(swap?.output_transaction?.created_date || '')?.getTime() - new Date(swap?.input_transaction?.created_date || '')?.getTime();
     // const timeElapsed = millisToMinutesAndSeconds(elapsedTimeInMiliseconds);
 
-    const filteredData = data?.data?.filter(s => s.transactions?.some(t => t?.type == 'input'));
+    const filteredData = data?.data?.filter(s => s.transactions?.some(t => t?.type == TransactionType.Input));
     if (error) return <Error500 />
     if (isLoading) return <LoadingBlocks />
     if (data?.error) return <NotFound />
@@ -126,8 +127,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     {filteredData?.map((swap, index) => {
                                         const sourceLayer = swap?.source_exchange ? settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase()) : settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap.source_network?.toLowerCase());
                                         const destinationLayer = swap?.destination_exchange ? settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase()) : settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_network?.toLowerCase());
-                                        const inputTransaction = swap?.transactions?.find(t => t?.type == 'input');
-                                        const outputTransaction = swap?.transactions?.find(t => t?.type == 'output');
+                                        const inputTransaction = swap?.transactions?.find(t => t?.type == TransactionType.Input);
+                                        const outputTransaction = swap?.transactions?.find(t => t?.type == TransactionType.Output);
 
                                         if (!inputTransaction)
                                             return

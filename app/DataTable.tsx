@@ -10,6 +10,7 @@ import { SwapStatus } from "@/models/SwapStatus";
 import { useRouter } from "next/navigation";
 import AppSettings from "@/lib/AppSettings";
 import Error500 from "@/components/Error500";
+import { TransactionType } from "@/models/TransactionTypes";
 
 type Swap = {
     created_date: string,
@@ -73,11 +74,11 @@ export default function DataTable() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-secondary-400 bg-secondary overflow-y-scroll">
-                                    {swapsData?.filter(s => s.transactions?.some(t => t?.type == 'input'))?.map((swap, index) => {
+                                    {swapsData?.filter(s => s.transactions?.some(t => t?.type == TransactionType.Input))?.map((swap, index) => {
                                         const sourceLayer = swap?.source_exchange ? settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase()) : settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap.source_network?.toLowerCase())
                                         const destinationLayer = swap?.destination_exchange ? settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase()) : settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_network?.toLowerCase())
-                                        const input_transaction = swap?.transactions?.find(t => t?.type == 'input');
-                                        const output_transaction = swap?.transactions?.find(t => t?.type == 'output');
+                                        const input_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Input);
+                                        const output_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Output);
 
                                         return (
                                             <tr key={index} onClick={() => router.push(`/${input_transaction?.transaction_id}`)} className="cursor-pointer hover:bg-secondary-600">
@@ -181,7 +182,7 @@ export default function DataTable() {
 
 function DestTxStatus(swap: Swap) {
     const swapStatus = swap?.status;
-    const input_transaction = swap?.transactions?.find(t => t?.type == 'input');
+    const input_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Input);
     if (swapStatus == SwapStatus.LsTransferPending) {
         return <span className="font-medium md:text-sm text-xs border p-1 rounded-md text-yellow-200 bg-yellow-100/20 !border-yellow-200/50">Pending</span>
     } else if (swapStatus == SwapStatus.Failed && input_transaction) {
