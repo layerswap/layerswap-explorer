@@ -146,7 +146,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                     <div className="flex flex-row">
                                                         <div className="flex flex-col items-start ">
                                                             <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-1">Token:</span>
-                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end min-w-[70px]">{swap?.source_exchange ? 'Source' : 'Destination'}:</span>
+                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end min-w-[70px]">Source:</span>
                                                         </div>
                                                         <div className="flex flex-col">
                                                             <div className="text-sm md:text-base flex flex-row mb-1">
@@ -183,7 +183,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                     <div className="flex flex-row">
                                                         <div className="flex flex-col items-start ">
                                                             <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-1">Token:</span>
-                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end min-w-[70px]">{swap?.destination_exchange ? 'Source' : 'Destination'}:</span>
+                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end min-w-[70px]">Destination:</span>
                                                         </div>
                                                         <div className="flex flex-col">
                                                             <div className="text-sm md:text-base flex flex-row">
@@ -317,7 +317,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         </div>
                                     </div>
                                     <div className="flex-1 p-4 border-secondary-600 border-l">
-                                        <div className="text-base font-normal text-socket-secondary">{swap?.source_exchange ? 'Source' : 'Destination'}</div>
+                                        <div className="text-base font-normal text-socket-secondary">Source</div>
                                         <div className="flex items-center">
                                             <Image alt="Source chain icon" src={settings?.resolveImgSrc(swapSourceLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
                                             <span className="text-sm lg:text-base font-medium text-socket-table text-white">{swapSourceLayer?.display_name}</span>
@@ -392,7 +392,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         </div>
                                     </div>
                                     <div className="flex-1 p-4 border-secondary-600 border-l">
-                                        <div className="text-base font-normal text-socket-secondary">{swap?.destination_exchange ? 'Source' : 'Destination'}</div>
+                                        <div className="text-base font-normal text-socket-secondary">Destination</div>
                                         <div className="flex items-center">
                                             <Image alt="Destination chain icon" src={settings?.resolveImgSrc(swapDestinationLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
                                             <span className="text-sm lg:text-base font-medium text-socket-table text-white">{swapDestinationLayer?.display_name}</span>
