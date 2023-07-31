@@ -17,6 +17,8 @@ import { useRouter } from "next/navigation";
 import BackBtn from "@/helpers/BackButton";
 import { usePathname } from 'next/navigation'
 import Error500 from "@/components/Error500";
+import { getMinutesDifference, getTimeDifferenceFromNow } from "@/components/utils/CalcTime";
+import { TransactionType } from "@/models/TransactionTypes";
 
 type Swap = {
     created_date: string,
@@ -29,22 +31,22 @@ type Swap = {
     destination_network: string,
     destination_exchange: string,
     has_refuel: boolean,
-    input_transaction: Transaction,
-    output_transaction: Transaction,
-    refuel_transaction: Transaction
+    transactions: Transaction[]
 }
 
 type Transaction = {
     from: string,
     to: string,
     created_date: string,
+    timestamp: string,
     transaction_id: string,
     explorer_url: string,
     confirmations: number,
     max_confirmations: number,
     amount: number,
     usd_price: number,
-    usd_value: number
+    usd_value: number,
+    type: string
 }
 
 const options = {
@@ -63,18 +65,25 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>(`${AppSettings.LayerswapApiUri}/api/explorer/${searchParam}`, fetcher, { dedupingInterval: 60000 });
     const swap = data?.data?.[0];
 
+    const input_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Input);
+    const output_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Output);
+    const refuel_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Refuel);
     const swapSourceLayer = swap?.source_exchange ? settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase()) : settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap?.source_network?.toLowerCase());
+
+    const swapSourceExchange = swap?.source_exchange && settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap.source_network?.toLowerCase());
+    const swapDestExchange = swap?.destination_exchange && settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap.destination_network?.toLowerCase());
+
     const swapDestinationLayer = swap?.destination_exchange ? settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase()) : settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap?.destination_network?.toLowerCase());
     const sourceNetwork = settings?.networks?.find(n => n.internal_name?.toLowerCase() === swap?.source_network?.toLowerCase());
     const destinationNetwork = settings?.networks?.find(n => n.internal_name?.toLowerCase() === swap?.destination_network?.toLowerCase());
 
-    const cost = Number(swap?.input_transaction?.amount) - Number(swap?.output_transaction?.amount);
+    const cost = Number(input_transaction?.amount) - Number(output_transaction?.amount);
     const precision = Number(settings?.currencies?.find(c => c?.asset == swap?.destination_network_asset)?.precision);
 
     // const elapsedTimeInMiliseconds = new Date(swap?.output_transaction?.created_date || '')?.getTime() - new Date(swap?.input_transaction?.created_date || '')?.getTime();
     // const timeElapsed = millisToMinutesAndSeconds(elapsedTimeInMiliseconds);
 
-    const filteredData = data?.data?.filter(s => s?.input_transaction);
+    const filteredData = data?.data?.filter(s => s.transactions?.some(t => t?.type == TransactionType.Input));
     if (error) return <Error500 />
     if (isLoading) return <LoadingBlocks />
     if (data?.error) return <NotFound />
@@ -118,19 +127,24 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     {filteredData?.map((swap, index) => {
                                         const sourceLayer = swap?.source_exchange ? settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase()) : settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap.source_network?.toLowerCase());
                                         const destinationLayer = swap?.destination_exchange ? settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase()) : settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_network?.toLowerCase());
+                                        const inputTransaction = swap?.transactions?.find(t => t?.type == TransactionType.Input);
+                                        const outputTransaction = swap?.transactions?.find(t => t?.type == TransactionType.Output);
+
+                                        if (!inputTransaction)
+                                            return
 
                                         return (
-                                            <tr key={index} onClick={() => router.push(`/${swap?.input_transaction?.transaction_id}`)} className="hover:bg-secondary-600 hover:cursor-pointer">
+                                            <tr key={index} onClick={() => router.push(`/${input_transaction?.transaction_id}`)} className="hover:bg-secondary-600 hover:cursor-pointer">
                                                 <td className="whitespace-nowrap py-2 px-3 text-sm font-medium text-white flex flex-col">
-                                                    <Link href={`/${swap?.input_transaction?.transaction_id}`} onClick={(e) => e.stopPropagation()} className="hover:text-gray-300 inline-flex items-center w-fit">
-                                                        {shortenAddress(swap?.input_transaction?.transaction_id)}
+                                                    <Link href={`/${inputTransaction?.transaction_id}`} onClick={(e) => e.stopPropagation()} className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                        {shortenAddress(inputTransaction?.transaction_id)}
                                                     </Link>
                                                     <StatusIcon swap={swap.status} />
                                                     <span className="text-primary-text">{new Date(swap.created_date).toLocaleString()}</span>
                                                 </td>
                                                 <td className="whitespace-nowrap px-3 py-2 text-sm text-primary-text">
                                                     <div className="flex flex-row">
-                                                        <div className="flex flex-col items-end ">
+                                                        <div className="flex flex-col items-start ">
                                                             <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-1">Token:</span>
                                                             <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end min-w-[70px]">{swap?.source_exchange ? 'Exchange' : 'Network'}:</span>
                                                         </div>
@@ -144,7 +158,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                         </span>
                                                                     </div>
                                                                     <div className="mx-2.5">
-                                                                        <span className="text-white">{swap?.input_transaction?.amount}</span>
+                                                                        <span className="text-white">{inputTransaction?.amount}</span>
                                                                         <span className="mx-1 text-white">{swap?.source_network_asset}</span>
                                                                     </div>
                                                                 </div>
@@ -157,7 +171,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-2 text-white">
-                                                                    <Link href={`${swap?.input_transaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                                    <Link href={`${inputTransaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
                                                                         <span className="mx-0.5 hover:text-gray-300 underline">{sourceLayer?.display_name}</span>
                                                                     </Link>
                                                                 </div>
@@ -167,7 +181,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 </td>
                                                 <td className="whitespace-nowrap px-3 py-2 text-sm text-primary-text">
                                                     <div className="flex flex-row">
-                                                        <div className="flex flex-col items-end ">
+                                                        <div className="flex flex-col items-start ">
                                                             <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-1">Token:</span>
                                                             <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end min-w-[70px]">{swap?.destination_exchange ? 'Exchange' : 'Network'}:</span>
                                                         </div>
@@ -180,9 +194,9 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                         </span>
                                                                     </div>
                                                                     {
-                                                                        swap?.output_transaction?.amount ?
+                                                                        outputTransaction?.amount ?
                                                                             <div className="mx-2.5">
-                                                                                <span className="text-white mx-0.5">{swap?.output_transaction?.amount}</span>
+                                                                                <span className="text-white mx-0.5">{outputTransaction?.amount}</span>
                                                                                 <span className="text-white">{swap?.destination_network_asset}</span>
                                                                             </div>
                                                                             :
@@ -198,8 +212,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-2 text-white">
-                                                                    <Link href={`${swap?.output_transaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!swap?.output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
-                                                                        <span className={`${swap?.output_transaction?.explorer_url ? "underline" : ""} mx-0.5 hover:text-gray-300`}>{destinationLayer?.display_name}</span>
+                                                                    <Link href={`${outputTransaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!outputTransaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
+                                                                        <span className={`${outputTransaction?.explorer_url ? "underline" : ""} mx-0.5 hover:text-gray-300`}>{destinationLayer?.display_name}</span>
                                                                     </Link>
                                                                 </div>
                                                             </div>
@@ -223,7 +237,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
         :
         <div className="w-full">
             <div className="sm:rounded-lg w-full">
-                {swap && <div className="py-2 lg:py-10 pt-4 sm:px-6 lg:px-8">
+                {swap && input_transaction && <div className="py-2 lg:py-10 pt-4 sm:px-6 lg:px-8">
                     {pathname !== '/' && <div className='hidden xl:block w-fit mb-1 hover:bg-secondary-600 hover:text-accent-foreground rounded ring-offset-background transition-colors -ml-5'>
                         <BackBtn />
                     </div>}
@@ -232,14 +246,14 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             <div className="text-sm md:text-base text-[#475467] dark:text-white sm:flex justify-between w-full">
                                 <div className="items-center text-base mb-0.5 text-white">
                                     <div className="mr-2 sm:text-xl text-base">
-                                        {swap.status == SwapStatus.Completed ?
+                                        {swap.status == SwapStatus.Completed && output_transaction ?
                                             <div className="flex flex-col sm:flex-row">
                                                 <div><StatusIcon swap={swap.status} />
                                                     <span className="whitespace-nowrap text-primary-text align-bottom">&nbsp;at</span>
                                                     <span className="whitespace-nowrap text-white align-bottom">&nbsp;
                                                         <TooltipProvider delayDuration={0}>
                                                             <Tooltip>
-                                                                <TooltipTrigger className="cursor-default">{new Date(swap?.output_transaction?.created_date)?.toLocaleString('en-US', options)}.</TooltipTrigger>
+                                                                <TooltipTrigger className="cursor-default">{new Date(input_transaction?.created_date)?.toLocaleString('en-US', options)}.</TooltipTrigger>
                                                                 <TooltipContent>
                                                                     {new Date(swap.created_date).toUTCString()}
                                                                 </TooltipContent>
@@ -249,7 +263,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 </div>
                                                 <p className="sm:self-end">
                                                     <span className="sm:whitespace-nowrap sm:ml-0.5 text-primary-text">Took</span>
-                                                    <span className="text-white">&nbsp;{getMinutesDifference(swap?.input_transaction?.created_date, swap?.output_transaction?.created_date)}</span>
+                                                    <span className="text-white">&nbsp;{getMinutesDifference(input_transaction?.timestamp, output_transaction?.timestamp)}</span>
                                                 </p>
                                                 <p className="sm:self-end">
                                                     <span className="text-primary-text sm:ml-1">and cost</span>
@@ -257,8 +271,29 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 </p>
                                             </div>
                                             :
-                                            <div className="flex sm:flex-row"><StatusIcon swap={swap.status} />
-                                            </div>
+                                            swap.status !== SwapStatus.Completed ?
+                                                <div className="flex flex-col sm:flex-row">
+                                                    <div>
+                                                        <StatusIcon swap={swap.status} />
+                                                        <span className="whitespace-nowrap text-primary-text align-bottom">&nbsp;Published at</span>
+                                                        <span className="whitespace-nowrap text-white align-bottom">&nbsp;
+                                                            <TooltipProvider delayDuration={0}>
+                                                                <Tooltip>
+                                                                    <TooltipTrigger className="cursor-default">{new Date(input_transaction?.created_date)?.toLocaleString('en-US', options)}.</TooltipTrigger>
+                                                                    <TooltipContent>
+                                                                        {new Date(swap.created_date).toUTCString()}
+                                                                    </TooltipContent>
+                                                                </Tooltip>
+                                                            </TooltipProvider>
+                                                        </span>
+                                                    </div>
+                                                    <p className="sm:self-end">
+                                                        <span className="text-primary-text">&nbsp;({getTimeDifferenceFromNow(input_transaction?.timestamp)} ago)</span>
+                                                    </p>
+                                                </div>
+                                                :
+                                                <div className="flex sm:flex-row"><StatusIcon swap={swap.status} />
+                                                </div>
                                         }
                                     </div>
                                 </div>
@@ -268,7 +303,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                     <div className="flex flex-col lg:flex-row items-start rounded-md text-primary-text gap-4">
                         <div className="rounded-md w-full p-6 grid gap-y-3 items-baseline lg:max-w-[50%] bg-secondary-900 rounded-t-lg border-secondary-500 border-t-4 shadow-lg">
                             <div className="flex items-center text-white">
-                                <div className="mr-2 text-primary-text text-2xl font-medium">You sent</div>
+                                <div className="mr-2 text-primary-text text-2xl font-medium">Sent</div>
                             </div>
                             <div className="rounded-md w-full grid text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border divide-y divide-secondary-500">
                                 <div className="flex justify-around">
@@ -277,7 +312,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         <div className="flex items-center">
                                             <span className="text-sm lg:text-base font-medium text-socket-table text-white flex items-center">
                                                 <Image alt="Source token icon" src={settings?.resolveImgSrc(settings?.currencies?.find(c => c?.asset === swap?.source_network_asset)) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
-                                                {swap?.input_transaction?.amount} {swap?.source_network_asset}
+                                                {input_transaction?.amount} {swap?.source_network_asset}
                                             </span>
                                         </div>
                                     </div>
@@ -287,16 +322,26 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                             <Image alt="Source chain icon" src={settings?.resolveImgSrc(swapSourceLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
                                             <span className="text-sm lg:text-base font-medium text-socket-table text-white">{swapSourceLayer?.display_name}</span>
                                         </div>
+                                        {
+                                            swap?.source_exchange && swapSourceExchange &&
+                                            <div>
+                                                <div className="text-base font-normal text-socket-secondary">Via</div>
+                                                <div className="flex items-center">
+                                                    <Image alt="Source chain icon" src={settings?.resolveImgSrc(swapSourceExchange) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white">{swapSourceExchange?.display_name}</span>
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                                 <div className="flex flex-col p-4">
                                     <div className="text-base font-normal text-socket-secondary">From Address</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
                                         <div className="flex justify-between items-center text-white hover:text-primary-text">
-                                            <Link href={`${sourceNetwork?.account_explorer_template?.replace('{0}', swap?.input_transaction?.from)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                                <span className="break-all link link-underline link-underline-black">{swap?.input_transaction?.from}</span>
+                                            <Link href={`${sourceNetwork?.account_explorer_template?.replace('{0}', input_transaction?.from)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                <span className="break-all link link-underline link-underline-black">{input_transaction?.from}</span>
                                             </Link>
-                                            <CopyButton toCopy={swap?.input_transaction?.from} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
+                                            <CopyButton toCopy={input_transaction?.from} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                         </div>
                                     </div>
                                 </div>
@@ -304,21 +349,21 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     <div className="text-base font-normal text-socket-secondary">Transaction</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
                                         <div className="flex items-center justify-between text-white hover:text-primary-text">
-                                            <Link href={`${swap?.input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center second-link">
-                                                <span className="break-all link link-underline link-underline-black">{shortenAddress(swap?.input_transaction?.transaction_id)}</span>
+                                            <Link href={`${input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center second-link">
+                                                <span className="break-all link link-underline link-underline-black">{shortenAddress(input_transaction?.transaction_id)}</span>
                                             </Link>
-                                            <CopyButton toCopy={swap?.input_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
+                                            <CopyButton toCopy={input_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                         </div>
                                     </div>
                                 </div>
-                                {swap?.input_transaction?.confirmations >= swap?.input_transaction?.max_confirmations ?
+                                {input_transaction?.confirmations >= input_transaction?.max_confirmations ?
                                     null
                                     :
                                     <div className="flex-1">
                                         <div className="text-base font-normal text-socket-secondary">
                                             Confirmations
                                             <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-1">
-                                                {swap?.input_transaction?.confirmations >= swap?.input_transaction?.max_confirmations ? swap?.input_transaction?.max_confirmations : swap?.input_transaction?.confirmations}/{swap?.input_transaction?.max_confirmations}
+                                                {input_transaction?.confirmations >= input_transaction?.max_confirmations ? input_transaction?.max_confirmations : input_transaction?.confirmations}/{input_transaction?.max_confirmations}
                                             </span>
                                         </div>
                                     </div>
@@ -329,17 +374,17 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                         <div className="rounded-md w-full p-6 grid gap-y-3 text-primary-text bg-secondary-900 border-secondary-500 border-t-4 shadow-lg relative">
                             {swap.status == SwapStatus.LsTransferPending || swap.status == SwapStatus.UserTransferPending ? <span className="pendingAnim"></span> : null}
                             <div className="flex items-center text-white">
-                                <div className="mr-2 text-primary-text text-2xl font-medium">{swap.status == SwapStatus.LsTransferPending || swap.status == SwapStatus.UserTransferPending ? "Your assets are one the way" : "You received"}</div>
+                                <div className="mr-2 text-primary-text text-2xl font-medium">{swap.status == SwapStatus.LsTransferPending || swap.status == SwapStatus.UserTransferPending ? "Your assets are one the way" : "Received"}</div>
                             </div>
                             <div className="rounded-md w-full grid text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border divide-y divide-secondary-500">
                                 <div className="flex justify-around">
                                     <div className="flex-1 p-4">
                                         <div className="text-base font-normal text-socket-secondary">Asset</div>
                                         <div className="flex items-center">
-                                            {swap?.output_transaction?.amount ?
+                                            {output_transaction?.amount ?
                                                 <div className="flex items-center">
                                                     <Image alt="Destination token icon" src={settings?.resolveImgSrc(settings?.currencies?.find(c => c?.asset === swap?.destination_network_asset)) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
-                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{swap?.output_transaction?.amount} {swap?.destination_network_asset}</span>
+                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{output_transaction?.amount} {swap?.destination_network_asset}</span>
                                                 </div>
                                                 :
                                                 <span>-</span>
@@ -352,15 +397,25 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                             <Image alt="Destination chain icon" src={settings?.resolveImgSrc(swapDestinationLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
                                             <span className="text-sm lg:text-base font-medium text-socket-table text-white">{swapDestinationLayer?.display_name}</span>
                                         </div>
+                                        {
+                                            swap?.destination_exchange && swapDestExchange &&
+                                            <div>
+                                                <div className="text-base font-normal text-socket-secondary">Via</div>
+                                                <div className="flex items-center">
+                                                    <Image alt="Source chain icon" src={settings?.resolveImgSrc(swapDestExchange) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white">{swapDestExchange?.display_name}</span>
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                                 <div className="flex flex-col p-4">
                                     <div className="text-base font-normal text-socket-secondary">To Address</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
-                                        {swap?.output_transaction?.to ?
+                                        {output_transaction?.to ?
                                             <div className="flex items-center justify-between text-white hover:text-primary-text">
-                                                <Link href={`${destinationNetwork?.account_explorer_template?.replace("{0}", swap?.output_transaction?.to)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                                    <span className="break-all link link-underline link-underline-black">{swap?.output_transaction?.to}</span>
+                                                <Link href={`${destinationNetwork?.account_explorer_template?.replace("{0}", output_transaction?.to)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                    <span className="break-all link link-underline link-underline-black">{output_transaction?.to}</span>
                                                 </Link>
                                                 <CopyButton toCopy={swap?.destination_address} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                             </div>
@@ -372,12 +427,12 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                 <div className="flex flex-col p-4">
                                     <div className="text-base font-normal text-socket-secondary">Transaction</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
-                                        {swap?.output_transaction?.transaction_id ?
+                                        {output_transaction?.transaction_id ?
                                             <div className="flex items-center justify-between text-white hover:text-primary-text">
-                                                <Link href={`${swap?.output_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                                    <span className="break-all link link-underline link-underline-black">{shortenAddress(swap?.output_transaction?.transaction_id)}</span>
+                                                <Link href={`${output_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                    <span className="break-all link link-underline link-underline-black">{shortenAddress(output_transaction?.transaction_id)}</span>
                                                 </Link>
-                                                <CopyButton toCopy={swap?.output_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
+                                                <CopyButton toCopy={output_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                             </div>
                                             :
                                             <span>-</span>
@@ -397,18 +452,18 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 <div className="flex items-center">
                                                     <div className="flex items-center">
                                                         <Image alt="Destination token icon" src={settings?.resolveImgSrc(settings?.currencies?.find(c => c?.asset === destinationNetwork?.native_currency)) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
-                                                        <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{truncateDecimals(swap?.refuel_transaction?.amount, settings?.currencies?.find(c => c?.asset === destinationNetwork?.native_currency)?.precision)} {destinationNetwork?.native_currency}</span>
+                                                        <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{truncateDecimals(refuel_transaction?.amount, settings?.currencies?.find(c => c?.asset === destinationNetwork?.native_currency)?.precision)} {destinationNetwork?.native_currency}</span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="flex-1 p-4 border-secondary-600 border-l">
                                                 <div className="text-base font-normal text-socket-secondary">Transaction</div>
-                                                {swap?.refuel_transaction?.transaction_id ?
+                                                {refuel_transaction?.transaction_id ?
                                                     <div className="flex items-center justify-between text-white hover:text-primary-text">
-                                                        <Link href={`${swap?.refuel_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                                            <span className="break-all link link-underline link-underline-black">{shortenHash(swap?.refuel_transaction?.transaction_id)}</span>
+                                                        <Link href={`${refuel_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                            <span className="break-all link link-underline link-underline-black">{shortenHash(refuel_transaction?.transaction_id)}</span>
                                                         </Link>
-                                                        <CopyButton toCopy={swap?.refuel_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
+                                                        <CopyButton toCopy={refuel_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                                     </div>
                                                     :
                                                     <span>-</span>
@@ -425,26 +480,6 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
             </div>
         </div>
     )
-}
-
-function getMinutesDifference(date1: string, date2: string) {
-    const diffInMilliseconds = Math.abs(new Date(date2).getTime() - new Date(date1).getTime());
-
-    if (diffInMilliseconds < 60000) {
-        const seconds = Math.floor(diffInMilliseconds / 1000);
-        if (seconds === 1) {
-            return "1 second";
-        } else {
-            return seconds + " seconds";
-        }
-    } else {
-        const minutes = Math.floor(diffInMilliseconds / (1000 * 60));
-        if (minutes === 1) {
-            return "1 minute";
-        } else {
-            return minutes + " minutes";
-        }
-    }
 }
 
 function truncateDecimals(value: number | undefined, decimals: number | undefined) {

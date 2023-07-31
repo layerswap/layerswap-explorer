@@ -10,6 +10,7 @@ import { SwapStatus } from "@/models/SwapStatus";
 import { useRouter } from "next/navigation";
 import AppSettings from "@/lib/AppSettings";
 import Error500 from "@/components/Error500";
+import { TransactionType } from "@/models/TransactionTypes";
 
 type Swap = {
     created_date: string,
@@ -22,9 +23,7 @@ type Swap = {
     destination_network: string,
     destination_exchange: string,
     has_refuel: boolean,
-    input_transaction: Transaction,
-    output_transaction: Transaction,
-    refuel_transaction: Transaction
+    transactions: Transaction[]
 }
 
 type Transaction = {
@@ -37,7 +36,8 @@ type Transaction = {
     max_confirmations: number,
     amount: number,
     usd_price: number,
-    usd_value: number
+    usd_value: number,
+    type: string
 }
 
 export default function DataTable() {
@@ -69,17 +69,19 @@ export default function DataTable() {
                                             Destination
                                         </th>
                                         <th scope="col" className="sticky top-0 px-4 py-3.5 text-left text-sm font-semibold text-white rounded-tr-lg">
-                                            
+
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-secondary-400 bg-secondary overflow-y-scroll">
-                                    {swapsData?.filter(s => s.input_transaction)?.map((swap, index) => {
+                                    {swapsData?.filter(s => s.transactions?.some(t => t?.type == TransactionType.Input))?.map((swap, index) => {
                                         const sourceLayer = swap?.source_exchange ? settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase()) : settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap.source_network?.toLowerCase())
                                         const destinationLayer = swap?.destination_exchange ? settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase()) : settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_network?.toLowerCase())
+                                        const input_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Input);
+                                        const output_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Output);
 
                                         return (
-                                            <tr key={index} onClick={() => router.push(`/${swap.input_transaction?.transaction_id}`)} className="cursor-pointer hover:bg-secondary-600">
+                                            <tr key={index} onClick={() => router.push(`/${input_transaction?.transaction_id}`)} className="cursor-pointer hover:bg-secondary-600">
                                                 <td className="whitespace-nowrap py-2 px-3 text-sm font-medium text-white flex flex-col">
                                                     <div className="flex flex-row items-center text-btn-success bg-btn-success py-1 rounded">
                                                         {DestTxStatus(swap)}
@@ -101,7 +103,7 @@ export default function DataTable() {
                                                                         </span>
                                                                     </div>
                                                                     <div className="mx-2.5">
-                                                                        <span className="text-white">{swap?.input_transaction?.amount}</span>
+                                                                        <span className="text-white">{input_transaction?.amount}</span>
                                                                         <span className="mx-1 text-white">{swap?.source_network_asset}</span>
                                                                     </div>
                                                                 </div>
@@ -113,7 +115,7 @@ export default function DataTable() {
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-2 text-white">
-                                                                    <Link href={`${swap?.input_transaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                                    <Link href={`${input_transaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
                                                                         <span className="mx-0.5 hover:text-gray-300 underline hover:no-underline">{sourceLayer?.display_name}</span>
                                                                     </Link>
                                                                 </div>
@@ -135,9 +137,9 @@ export default function DataTable() {
                                                                             <Image alt={`Destination token icon ${index}`} src={settings?.resolveImgSrc(settings?.currencies?.find(c => c?.asset === swap?.destination_network_asset)) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
                                                                         </span>
                                                                     </div>
-                                                                    {swap?.output_transaction?.amount ?
+                                                                    {output_transaction?.amount ?
                                                                         <div className="mx-2.5">
-                                                                            <span className="text-white">{swap?.output_transaction?.amount}</span>
+                                                                            <span className="text-white">{output_transaction?.amount}</span>
                                                                             <span className="mx-1 text-white">{swap?.destination_network_asset}</span>
                                                                         </div>
                                                                         :
@@ -152,8 +154,8 @@ export default function DataTable() {
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-2 text-white">
-                                                                    <Link href={`${swap?.output_transaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!swap?.output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
-                                                                        <span className={`${swap?.output_transaction?.explorer_url ? "underline" : ""} mx-0.5 hover:text-gray-300 hover:no-underline`}>{destinationLayer?.display_name}</span>
+                                                                    <Link href={`${output_transaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
+                                                                        <span className={`${output_transaction?.explorer_url ? "underline" : ""} mx-0.5 hover:text-gray-300 hover:no-underline`}>{destinationLayer?.display_name}</span>
                                                                     </Link>
                                                                 </div>
                                                             </div>
@@ -180,9 +182,10 @@ export default function DataTable() {
 
 function DestTxStatus(swap: Swap) {
     const swapStatus = swap?.status;
+    const input_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Input);
     if (swapStatus == SwapStatus.LsTransferPending) {
         return <span className="font-medium md:text-sm text-xs border p-1 rounded-md text-yellow-200 bg-yellow-100/20 !border-yellow-200/50">Pending</span>
-    } else if (swapStatus == SwapStatus.Failed && swap?.input_transaction) {
+    } else if (swapStatus == SwapStatus.Failed && input_transaction) {
         return <span className="font-medium md:text-sm text-xs border p-1 rounded-md text-red-200 bg-red-100/20 !border-red-200/50">Failed</span>
     } else if (swapStatus == SwapStatus.Completed) {
         return <span className="font-medium md:text-sm text-xs border p-1 rounded-md text-green-200 bg-green-100/20 !border-green-200/50">Completed</span>
