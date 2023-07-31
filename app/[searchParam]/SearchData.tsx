@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import BackBtn from "@/helpers/BackButton";
 import { usePathname } from 'next/navigation'
 import Error500 from "@/components/Error500";
-import { getMinutesDifference, getTimeDifferenceFromNow } from "@/components/utils/CalcTime";
+import { getTimeDifferenceFromNow } from "@/components/utils/CalcTime";
 import { TransactionType } from "@/models/TransactionTypes";
 
 type Swap = {
@@ -146,7 +146,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                     <div className="flex flex-row">
                                                         <div className="flex flex-col items-start ">
                                                             <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-1">Token:</span>
-                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end min-w-[70px]">{swap?.source_exchange ? 'Exchange' : 'Network'}:</span>
+                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end min-w-[70px]">{swap?.source_exchange ? 'Source' : 'Destination'}:</span>
                                                         </div>
                                                         <div className="flex flex-col">
                                                             <div className="text-sm md:text-base flex flex-row mb-1">
@@ -183,7 +183,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                     <div className="flex flex-row">
                                                         <div className="flex flex-col items-start ">
                                                             <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-1">Token:</span>
-                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end min-w-[70px]">{swap?.destination_exchange ? 'Exchange' : 'Network'}:</span>
+                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end min-w-[70px]">{swap?.destination_exchange ? 'Source' : 'Destination'}:</span>
                                                         </div>
                                                         <div className="flex flex-col">
                                                             <div className="text-sm md:text-base flex flex-row">
@@ -263,7 +263,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 </div>
                                                 <p className="sm:self-end">
                                                     <span className="sm:whitespace-nowrap sm:ml-0.5 text-primary-text">Took</span>
-                                                    <span className="text-white">&nbsp;{getMinutesDifference(input_transaction?.timestamp, output_transaction?.timestamp)}</span>
+                                                    <span className="text-white">&nbsp;{getTimeDifferenceFromNow(input_transaction?.timestamp, output_transaction?.timestamp)}</span>
                                                 </p>
                                                 <p className="sm:self-end">
                                                     <span className="text-primary-text sm:ml-1">and cost</span>
@@ -288,7 +288,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                         </span>
                                                     </div>
                                                     <p className="sm:self-end">
-                                                        <span className="text-primary-text">&nbsp;({getTimeDifferenceFromNow(input_transaction?.timestamp)} ago)</span>
+                                                        <span className="text-primary-text">&nbsp;({getTimeDifferenceFromNow(input_transaction?.timestamp, new Date().toString())} ago)</span>
                                                     </p>
                                                 </div>
                                                 :
@@ -303,7 +303,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                     <div className="flex flex-col lg:flex-row items-start rounded-md text-primary-text gap-4">
                         <div className="rounded-md w-full p-6 grid gap-y-3 items-baseline lg:max-w-[50%] bg-secondary-900 rounded-t-lg border-secondary-500 border-t-4 shadow-lg">
                             <div className="flex items-center text-white">
-                                <div className="mr-2 text-primary-text text-2xl font-medium">Sent</div>
+                                <div className="mr-2 text-primary-text text-2xl font-medium">From</div>
                             </div>
                             <div className="rounded-md w-full grid text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border divide-y divide-secondary-500">
                                 <div className="flex justify-around">
@@ -317,7 +317,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         </div>
                                     </div>
                                     <div className="flex-1 p-4 border-secondary-600 border-l">
-                                        <div className="text-base font-normal text-socket-secondary">{swap?.source_exchange ? 'Exchange' : 'Network'}</div>
+                                        <div className="text-base font-normal text-socket-secondary">{swap?.source_exchange ? 'Source' : 'Destination'}</div>
                                         <div className="flex items-center">
                                             <Image alt="Source chain icon" src={settings?.resolveImgSrc(swapSourceLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
                                             <span className="text-sm lg:text-base font-medium text-socket-table text-white">{swapSourceLayer?.display_name}</span>
@@ -374,7 +374,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                         <div className="rounded-md w-full p-6 grid gap-y-3 text-primary-text bg-secondary-900 border-secondary-500 border-t-4 shadow-lg relative">
                             {swap.status == SwapStatus.LsTransferPending || swap.status == SwapStatus.UserTransferPending ? <span className="pendingAnim"></span> : null}
                             <div className="flex items-center text-white">
-                                <div className="mr-2 text-primary-text text-2xl font-medium">{swap.status == SwapStatus.LsTransferPending || swap.status == SwapStatus.UserTransferPending ? "Your assets are one the way" : "Received"}</div>
+                                <div className="mr-2 text-primary-text text-2xl font-medium">{swap.status == SwapStatus.LsTransferPending || swap.status == SwapStatus.UserTransferPending && "To"}</div>
                             </div>
                             <div className="rounded-md w-full grid text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border divide-y divide-secondary-500">
                                 <div className="flex justify-around">
@@ -392,7 +392,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         </div>
                                     </div>
                                     <div className="flex-1 p-4 border-secondary-600 border-l">
-                                        <div className="text-base font-normal text-socket-secondary">{swap?.destination_exchange ? 'Exchange' : 'Network'}</div>
+                                        <div className="text-base font-normal text-socket-secondary">{swap?.destination_exchange ? 'Source' : 'Destination'}</div>
                                         <div className="flex items-center">
                                             <Image alt="Destination chain icon" src={settings?.resolveImgSrc(swapDestinationLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
                                             <span className="text-sm lg:text-base font-medium text-socket-table text-white">{swapDestinationLayer?.display_name}</span>
