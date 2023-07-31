@@ -374,7 +374,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                         <div className="rounded-md w-full p-6 grid gap-y-3 text-primary-text bg-secondary-900 border-secondary-500 border-t-4 shadow-lg relative">
                             {swap.status == SwapStatus.LsTransferPending || swap.status == SwapStatus.UserTransferPending ? <span className="pendingAnim"></span> : null}
                             <div className="flex items-center text-white">
-                                <div className="mr-2 text-primary-text text-2xl font-medium">{swap.status == SwapStatus.LsTransferPending || swap.status == SwapStatus.UserTransferPending && "To"}</div>
+                                <div className="mr-2 text-primary-text text-2xl font-medium">To</div>
                             </div>
                             <div className="rounded-md w-full grid text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border divide-y divide-secondary-500">
                                 <div className="flex justify-around">
