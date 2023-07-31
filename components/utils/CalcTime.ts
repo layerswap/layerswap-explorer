@@ -1,25 +1,5 @@
-export function getMinutesDifference(date1: string, date2: string) {
+export function getTimeDifferenceFromNow(date1: string, date2: string) {
     const diffInMilliseconds = Math.abs(new Date(date2).getTime() - new Date(date1).getTime());
-
-    if (diffInMilliseconds < 60000) {
-        const seconds = Math.ceil(diffInMilliseconds / 1000);
-        if (seconds === 1) {
-            return "1 second";
-        } else {
-            return seconds + " seconds";
-        }
-    } else {
-        const minutes = Math.floor(diffInMilliseconds / (1000 * 60));
-        if (minutes === 1) {
-            return "1 minute";
-        } else {
-            return minutes + " minutes";
-        }
-    }
-}
-
-export function getTimeDifferenceFromNow(date1: string) {
-    const diffInMilliseconds = Math.abs(new Date().getTime() - new Date(date1).getTime());
 
     if (diffInMilliseconds < 60000) {
         const seconds = Math.ceil(diffInMilliseconds / 1000);

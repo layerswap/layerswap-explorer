@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import BackBtn from "@/helpers/BackButton";
 import { usePathname } from 'next/navigation'
 import Error500 from "@/components/Error500";
-import { getMinutesDifference, getTimeDifferenceFromNow } from "@/components/utils/CalcTime";
+import { getTimeDifferenceFromNow } from "@/components/utils/CalcTime";
 import { TransactionType } from "@/models/TransactionTypes";
 
 type Swap = {
@@ -263,7 +263,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 </div>
                                                 <p className="sm:self-end">
                                                     <span className="sm:whitespace-nowrap sm:ml-0.5 text-primary-text">Took</span>
-                                                    <span className="text-white">&nbsp;{getMinutesDifference(input_transaction?.timestamp, output_transaction?.timestamp)}</span>
+                                                    <span className="text-white">&nbsp;{getTimeDifferenceFromNow(input_transaction?.timestamp, output_transaction?.timestamp)}</span>
                                                 </p>
                                                 <p className="sm:self-end">
                                                     <span className="text-primary-text sm:ml-1">and cost</span>
@@ -288,7 +288,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                         </span>
                                                     </div>
                                                     <p className="sm:self-end">
-                                                        <span className="text-primary-text">&nbsp;({getTimeDifferenceFromNow(input_transaction?.timestamp)} ago)</span>
+                                                        <span className="text-primary-text">&nbsp;({getTimeDifferenceFromNow(input_transaction?.timestamp, new Date().toString())} ago)</span>
                                                     </p>
                                                 </div>
                                                 :
