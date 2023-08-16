@@ -154,9 +154,13 @@ export default function DataTable() {
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-2 text-white">
-                                                                    <Link href={`${output_transaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
-                                                                        <span className={`${output_transaction?.explorer_url ? "underline" : ""} mx-0.5 hover:text-gray-300 hover:no-underline`}>{destinationLayer?.display_name}</span>
-                                                                    </Link>
+                                                                    {output_transaction?.explorer_url ?
+                                                                        <Link href={`${output_transaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
+                                                                            <span className={`underline mx-0.5 hover:text-gray-300 hover:no-underline`}>{destinationLayer?.display_name}</span>
+                                                                        </Link>
+                                                                        :
+                                                                        <span className={`mx-0.5`}>{destinationLayer?.display_name}</span>
+                                                                    }
                                                                 </div>
                                                             </div>
                                                         </div>
