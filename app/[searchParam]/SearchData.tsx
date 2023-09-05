@@ -61,8 +61,9 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const router = useRouter();
     const pathname = usePathname();
     const basePath = process.env.NEXT_PUBLIC_APP_BASE_PATH
+    const version = process.env.NEXT_PUBLIC_API_VERSION
     const fetcher = (url: string) => fetch(url).then(r => r.json())
-    const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>(`${AppSettings.LayerswapApiUri}/api/explorer/${searchParam}`, fetcher, { dedupingInterval: 60000 });
+    const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>(`${AppSettings.LayerswapApiUri}/api/explorer/${searchParam}?version=${version}`, fetcher, { dedupingInterval: 60000 });
     const swap = data?.data?.[0];
 
     const input_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Input);

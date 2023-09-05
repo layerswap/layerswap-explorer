@@ -42,7 +42,8 @@ type Transaction = {
 
 export default function DataTable() {
     const fetcher = (url: string) => fetch(url).then(r => r.json())
-    const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>(`${AppSettings.LayerswapApiUri}/api/explorer/?statuses=1&statuses=4`, fetcher, { dedupingInterval: 60000 });
+    const version = process.env.NEXT_PUBLIC_API_VERSION
+    const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>(`${AppSettings.LayerswapApiUri}/api/explorer/?statuses=1&statuses=4&version=${version}`, fetcher, { dedupingInterval: 60000 });
     const swapsData = data?.data;
     const settings = useSettingsState();
     const router = useRouter();
