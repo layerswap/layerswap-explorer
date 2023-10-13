@@ -83,11 +83,11 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
 
     // const elapsedTimeInMiliseconds = new Date(swap?.output_transaction?.created_date || '')?.getTime() - new Date(swap?.input_transaction?.created_date || '')?.getTime();
     // const timeElapsed = millisToMinutesAndSeconds(elapsedTimeInMiliseconds);
-
     const filteredData = data?.data?.filter(s => s.transactions?.some(t => t?.type == TransactionType.Input));
+    const emptyData = data?.data?.every(s => !s.transactions.length);
     if (error) return <Error500 />
     if (isLoading) return <LoadingBlocks />
-    if (data?.error) return <NotFound />
+    if (data?.error || emptyData) return <NotFound />
 
     return (Number(data?.data?.length) > 1 ?
         <div className="px-4 sm:px-6 lg:px-8 w-full">
