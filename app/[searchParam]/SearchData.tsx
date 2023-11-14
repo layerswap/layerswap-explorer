@@ -83,11 +83,11 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
 
     // const elapsedTimeInMiliseconds = new Date(swap?.output_transaction?.created_date || '')?.getTime() - new Date(swap?.input_transaction?.created_date || '')?.getTime();
     // const timeElapsed = millisToMinutesAndSeconds(elapsedTimeInMiliseconds);
-
     const filteredData = data?.data?.filter(s => s.transactions?.some(t => t?.type == TransactionType.Input));
+    const emptyData = data?.data?.every(s => !s.transactions.length);
     if (error) return <Error500 />
     if (isLoading) return <LoadingBlocks />
-    if (data?.error) return <NotFound />
+    if (data?.error || emptyData) return <NotFound />
 
     return (Number(data?.data?.length) > 1 ?
         <div className="px-4 sm:px-6 lg:px-8 w-full">
@@ -135,7 +135,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                             return
 
                                         return (
-                                            <tr key={index} onClick={() => router.push(`/${input_transaction?.transaction_id}`)} className="hover:bg-secondary-600 hover:cursor-pointer">
+                                            <tr key={index} onClick={(e) => router.push(`/${inputTransaction?.transaction_id}`)} className="hover:bg-secondary-600 hover:cursor-pointer">
                                                 <td className="whitespace-nowrap py-2 px-3 text-sm font-medium text-white flex flex-col">
                                                     <Link href={`/${inputTransaction?.transaction_id}`} onClick={(e) => e.stopPropagation()} className="hover:text-gray-300 inline-flex items-center w-fit">
                                                         {shortenAddress(inputTransaction?.transaction_id)}
