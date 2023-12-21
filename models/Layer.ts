@@ -1,37 +1,24 @@
-import { CryptoNetwork, NetworkAddressType } from "./CryptoNetwork";
+import { ManagedAccount, Metadata, NetworkCurrency, NetworkType } from "./CryptoNetwork";
 
 export type LayerStatus = "active" | "inactive" | 'insufficient_liquidity';
 export type Layer = {
-    display_name?: string;
-    internal_name?: string;
+    display_name: string;
+    internal_name: string;
     status: LayerStatus;
-} & LayerData
-
-type LayerData = ({
-    isExchange: true;
-    assets?: ExchangeL2Asset[];
-    type: "cex" | "fiat",
-    authorization_flow: "o_auth2" | "api_credentials" | 'none';
-} | {
-    isExchange: false;
-    assets?: BaseL2Asset[];
-    native_currency?: string;
-    average_completion_time?: string;
-    chain_id?: string;
-    address_type?: NetworkAddressType
-})
-
-export type BaseL2Asset = {
-    asset?: string;
-    network_internal_name?: string;
-    network?: CryptoNetwork;
-    is_default?: boolean;
-    status?: LayerStatus;
-    contract_address?: string;
-    decimals?: number
+    is_featured: boolean;
+    created_date: string;
+    img_url: string;
+    metadata: Metadata | null | undefined;
+    assets: NetworkCurrency[];
+    chain_id: string | null | undefined;
+    refuel_amount_in_usd: number
+    transaction_explorer_template: string
+    account_explorer_template: string,
+    type: NetworkType,
+    managed_accounts: ManagedAccount[];
+    nodes: NetworkNodes[];
 }
 
-export type ExchangeL2Asset = {
-    withdrawal_fee: number;
-    min_deposit_amount: number;
-} & BaseL2Asset
+export type NetworkNodes = {
+    url: string;
+}

@@ -1,40 +1,59 @@
 import { LayerStatus } from "./Layer";
 
-export enum NetworkAddressType {
-    "evm" = "evm",
-    'starknet' = "starknet",
-    'solana' = "solana",
-    'osmosis' = "osmosis",
-    'immutable_x' = "immutable_x",
-    'loopring' = "loopring"
+export enum NetworkType {
+    EVM = "evm",
+    Starknet = "starknet",
+    Solana = "solana",
+    Cosmos = "cosmos",
+    StarkEx = "stark_ex",
+    ZkSyncLite = "zk_sync_lite",
+    TON = 'ton'
 }
-
-export type CryptoNetwork = {
-    display_name: string;
-    internal_name: string;
-    native_currency: string;
-    average_completion_time: string;
-    fee_multiplier: number;
-    transaction_explorer_template: string;
-    account_explorer_template: string;
-    status: LayerStatus;
-    currencies?: NetworkCurrency[];
-    refuel_amount_in_usd: number;
-    chain_id: string;
-    address_type: NetworkAddressType;
+export class CryptoNetwork {
+    display_name?: string;
+    internal_name?: string;
+    transaction_explorer_template?: string;
+    account_explorer_template?: string;
+    status?: LayerStatus;
+    currencies!: NetworkCurrency[];
+    refuel_amount_in_usd?: number;
+    chain_id?: string;
+    type?: NetworkType;
+    created_date?: string;
+    is_featured?: boolean;
+    nodes?: NetworkNode[];
+    managed_accounts?: ManagedAccount[];
+    metadata: Metadata | null | undefined;
+    img_url?: string
 }
-
-export type NetworkCurrency = {
-    name: string;
-    asset: string;
-    status: LayerStatus;
-    is_deposit_enabled: boolean;
-    is_withdrawal_enabled: boolean;
-    is_refuel_enabled: boolean;
-    max_withdrawal_amount: number;
-    deposit_fee: number;
-    withdrawal_fee: number;
-    contract_address: string;
-    decimals: number;
-    base_fee: number;
+export class NetworkCurrency {
+    asset?: string;
+    status?: LayerStatus;
+    is_refuel_enabled?: boolean;
+    is_native?: boolean
+    //TODO may be plain string
+    contract_address?: `0x${string}` | null | undefined;
+    decimals?: number;
+    precision?: number;
+    usd_price?: number;
+}
+export class NetworkNode {
+    url?: string;
+}
+export class ManagedAccount {
+    address?: `0x${string}`;
+}
+export class Metadata {
+    multicall3?: {
+        address: `0x${string}`
+        blockCreated: number
+    }
+    ensRegistry?: {
+        address: `0x${string}`
+    }
+    ensUniversalResolver?: {
+        address: `0x${string}`
+    }
+    WatchdogContractAddress?: `0x${string}`
+    L1Network?: string
 }

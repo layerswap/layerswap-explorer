@@ -43,9 +43,10 @@ type Transaction = {
 export default function DataTable() {
     const fetcher = (url: string) => fetch(url).then(r => r.json())
     const version = process.env.NEXT_PUBLIC_API_VERSION
+    const settings = useSettingsState()
+
     const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>(`${AppSettings.LayerswapApiUri}/api/explorer/?statuses=1&statuses=4&version=${version}`, fetcher, { dedupingInterval: 60000 });
     const swapsData = data?.data;
-    const settings = useSettingsState();
     const router = useRouter();
 
     if (error) return <Error500 />
@@ -76,8 +77,15 @@ export default function DataTable() {
                                 </thead>
                                 <tbody className="divide-y divide-secondary-400 bg-secondary overflow-y-scroll">
                                     {swapsData?.filter(s => s.transactions?.some(t => t?.type == TransactionType.Input))?.map((swap, index) => {
-                                        const sourceLayer = swap?.source_exchange ? settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase()) : settings?.networks?.find(l => l.internal_name?.toLowerCase() === swap.source_network?.toLowerCase())
-                                        const destinationLayer = swap?.destination_exchange ? settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase()) : settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_network?.toLowerCase())
+                                        const sourceLayer = settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.source_network?.toLowerCase())
+                                        const sourceToken = sourceLayer?.assets?.find(a => a?.asset == swap?.source_network_asset)
+
+                                        const sourceExchange = settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase())
+                                        const destinationExchange = settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase())
+
+                                        const destinationLayer = settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_network?.toLowerCase())
+                                        const destinationToken = destinationLayer?.assets?.find(a => a?.asset == swap?.source_network_asset)
+
                                         const input_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Input);
                                         const output_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Output);
 
@@ -100,7 +108,7 @@ export default function DataTable() {
                                                                 <div className="flex flex-row items-center">
                                                                     <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                         <span>
-                                                                            <Image alt={`Source token icon ${index}`} src={settings?.resolveImgSrc(settings?.currencies?.find(c => c?.asset === swap?.source_network_asset)) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                                            <Image alt={`Source token icon ${index}`} src={settings?.resolveImgSrc(sourceToken) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
                                                                         </span>
                                                                     </div>
                                                                     <div className="mx-2.5">
@@ -112,12 +120,12 @@ export default function DataTable() {
                                                             <div className="text-sm md:text-base flex flex-row items-center">
                                                                 <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                     <span>
-                                                                        <Image alt={`Source chain icon ${index}`} src={settings?.resolveImgSrc(sourceLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                                        <Image alt={`Source chain icon ${index}`} src={settings?.resolveImgSrc(sourceExchange ? sourceExchange : sourceLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-2 text-white">
                                                                     <Link href={`${input_transaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
-                                                                        <span className="mx-0.5 hover:text-gray-300 underline hover:no-underline">{sourceLayer?.display_name}</span>
+                                                                        <span className="mx-0.5 hover:text-gray-300 underline hover:no-underline">{sourceExchange ? sourceExchange?.display_name : sourceLayer?.display_name}</span>
                                                                     </Link>
                                                                 </div>
                                                             </div>
@@ -135,7 +143,7 @@ export default function DataTable() {
                                                                 <div className="flex flex-row items-center ml-4 mb-1">
                                                                     <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                         <span>
-                                                                            <Image alt={`Destination token icon ${index}`} src={settings?.resolveImgSrc(settings?.currencies?.find(c => c?.asset === swap?.destination_network_asset)) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                                            <Image alt={`Destination token icon ${index}`} src={settings?.resolveImgSrc(destinationToken) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
                                                                         </span>
                                                                     </div>
                                                                     {output_transaction?.amount ?
@@ -151,16 +159,16 @@ export default function DataTable() {
                                                             <div className="text-sm md:text-base flex flex-row items-center ml-4">
                                                                 <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                     <span>
-                                                                        <Image alt={`Destination chain icon ${index}`} src={settings?.resolveImgSrc(destinationLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                                        <Image alt={`Destination chain icon ${index}`} src={settings?.resolveImgSrc(destinationExchange ? destinationExchange : destinationLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-2 text-white">
                                                                     {output_transaction?.explorer_url ?
                                                                         <Link href={`${output_transaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
-                                                                            <span className={`underline mx-0.5 hover:text-gray-300 hover:no-underline`}>{destinationLayer?.display_name}</span>
+                                                                            <span className={`underline mx-0.5 hover:text-gray-300 hover:no-underline`}>{destinationExchange ? destinationExchange?.display_name : destinationLayer?.display_name}</span>
                                                                         </Link>
                                                                         :
-                                                                        <span className={`mx-0.5`}>{destinationLayer?.display_name}</span>
+                                                                        <span className={`mx-0.5`}>{destinationExchange ? destinationExchange?.display_name : destinationLayer?.display_name}</span>
                                                                     }
                                                                 </div>
                                                             </div>
