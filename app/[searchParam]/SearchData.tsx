@@ -73,8 +73,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const sourceLayer = settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap?.source_network?.toLowerCase());
     const sourceToken = sourceLayer?.assets?.find(a => a?.asset == swap?.source_network_asset)
 
-    const sourceExchange = swap?.source_exchange && settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_network?.toLowerCase());
-    const destinationExchange = swap?.destination_exchange && settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.destination_network?.toLowerCase());
+    const sourceExchange = swap?.source_exchange && settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase());
+    const destinationExchange = swap?.destination_exchange && settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase());
 
     const destinationLayer = settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap?.destination_network?.toLowerCase())
     const destinationToken = destinationLayer?.assets?.find(a => a?.asset == swap?.source_network_asset)
@@ -336,8 +336,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                             <div>
                                                 <div className="text-base font-normal text-socket-secondary">Via</div>
                                                 <div className="flex items-center">
-                                                    <Image alt="Source chain icon" src={settings?.resolveImgSrc(sourceExchange) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
-                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white">{sourceExchange?.display_name}</span>
+                                                    <Image alt="Source chain icon" src={settings?.resolveImgSrc(sourceLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white">{sourceLayer?.display_name}</span>
                                                 </div>
                                             </div>
                                         }
@@ -411,8 +411,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                             <div>
                                                 <div className="text-base font-normal text-socket-secondary">Via</div>
                                                 <div className="flex items-center">
-                                                    <Image alt="Source chain icon" src={settings?.resolveImgSrc(destinationExchange) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
-                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white">{destinationExchange?.display_name}</span>
+                                                    <Image alt="Source chain icon" src={settings?.resolveImgSrc(destinationLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white">{destinationLayer?.display_name}</span>
                                                 </div>
                                             </div>
                                         }
