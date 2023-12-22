@@ -84,7 +84,7 @@ export default function DataTable() {
                                         const destinationExchange = settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase())
 
                                         const destinationLayer = settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_network?.toLowerCase())
-                                        const destinationToken = destinationLayer?.assets?.find(a => a?.asset == swap?.source_network_asset)
+                                        const destinationToken = destinationLayer?.assets?.find(a => a?.asset == swap?.destination_network_asset)
 
                                         const input_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Input);
                                         const output_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Output);

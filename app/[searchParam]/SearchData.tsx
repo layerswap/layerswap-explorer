@@ -77,7 +77,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const destinationExchange = swap?.destination_exchange && settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase());
 
     const destinationLayer = settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap?.destination_network?.toLowerCase())
-    const destinationToken = destinationLayer?.assets?.find(a => a?.asset == swap?.source_network_asset)
+    const destinationToken = destinationLayer?.assets?.find(a => a?.asset == swap?.destination_network_asset)
 
     const cost = Number(input_transaction?.amount) - Number(output_transaction?.amount);
 
@@ -134,7 +134,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         const destinationExchange = settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase())
 
                                         const destinationLayer = settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_network?.toLowerCase())
-                                        const destinationToken = destinationLayer?.assets?.find(a => a?.asset == swap?.source_network_asset)
+                                        const destinationToken = destinationLayer?.assets?.find(a => a?.asset == swap?.destination_network_asset)
 
                                         const inputTransaction = swap?.transactions?.find(t => t?.type == TransactionType.Input);
                                         const outputTransaction = swap?.transactions?.find(t => t?.type == TransactionType.Output);
