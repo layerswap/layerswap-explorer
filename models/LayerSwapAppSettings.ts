@@ -1,87 +1,67 @@
 import { CryptoNetwork, NetworkCurrency } from "./CryptoNetwork";
-import { Currency } from "./Currency";
-import { Exchange, ExchangeCurrency } from "./Exchange";
-import { BaseL2Asset, ExchangeL2Asset, Layer } from "./Layer";
+import { Exchange } from "./Exchange";
+import { Layer } from "./Layer";
 import { LayerSwapSettings } from "./LayerSwapSettings";
 
-export class LayerSwapAppSettings extends LayerSwapSettings {
-    constructor(settings?: LayerSwapSettings) {
-        super();
-        Object.assign(this, settings)
-
-        this.layers = LayerSwapAppSettings.ResolveLayers(this.exchanges || [], this.networks || []);
+export class LayerSwapAppSettings {
+    constructor(settings: LayerSwapSettings | any) {
+        this.layers = LayerSwapAppSettings.ResolveLayers(settings.networks);
+        this.exchanges = settings.exchanges
     }
 
+    exchanges: Exchange[]
+    layers: Layer[] 
 
-    layers?: Layer[]
+    resolveImgSrc = (item: Layer | NetworkCurrency | Pick<Layer, 'internal_name'> | { asset: string } | undefined) => {
 
-    resolveImgSrc = (item: Layer | undefined | Currency | Pick<Layer, 'internal_name'> | { asset: string }) => {
         if (!item) {
             return "/images/logo_placeholder.png";
         }
+
+        const resource_storage_url = process.env.NEXT_PUBLIC_RESOURCE_STORAGE_URL
+        if (!resource_storage_url)
+            throw new Error("NEXT_PUBLIC_RESOURCE_STORAGE_URL is not set up in env vars")
+
+        const basePath = new URL(resource_storage_url);
+
         // Shitty way to check for partner
-        else if ((item as any)?.internal_name != undefined) {
-            return `${this?.discovery?.resource_storage_url}layerswap/networks/${(item as any)?.internal_name?.toLowerCase()}.png`;
+        if ((item as any)?.internal_name != undefined) {
+            basePath.pathname = `/layerswap/networks/${(item as any)?.internal_name?.toLowerCase()}.png`;
         }
         else if ((item as any)?.asset != undefined) {
-            return `${this?.discovery?.resource_storage_url}layerswap/currencies/${(item as any)?.asset?.toLowerCase()}.png`;
+            basePath.pathname = `/layerswap/currencies/${(item as any)?.asset?.toLowerCase()}.png`;
         }
+
+        return basePath.href;
     }
 
-    static ResolveLayers(exchanges: Exchange[], networks: CryptoNetwork[]): Layer[] {
-        const exchangeLayers: Layer[] = exchanges.map((e): Layer => ({
-            isExchange: true,
-            internal_name: e.internal_name,
-            display_name: e.display_name,
-            status: e.status || "inactive",
-            authorization_flow: e.authorization_flow || "none",
-            type: e.type || "cex",
-            assets: LayerSwapAppSettings.ResolveExchangeL2Assets(e.currencies || [], networks)
-        }))
-        const networkLayers: Layer[] = networks.map((n): Layer =>
+    static ResolveLayers(networks: any[]): Layer[] {
+        const resource_storage_url = process.env.NEXT_PUBLIC_RESOURCE_STORAGE_URL
+        if (!resource_storage_url)
+            throw new Error("NEXT_PUBLIC_RESOURCE_STORAGE_URL is not set up in env vars")
+
+        const basePath = new URL(resource_storage_url);
+
+        const networkLayers: Layer[] = networks?.map((n): Layer =>
         ({
             isExchange: false,
-            internal_name: n.internal_name || '',
-            display_name: n.display_name || '',
-            status: n.status || "inactive",
-            native_currency: n.native_currency,
-            average_completion_time: n.average_completion_time,
-            chain_id: n.chain_id,
-            address_type: n.address_type,
-            assets: LayerSwapAppSettings.ResolveNetworkL2Assets(n)
+            assets: LayerSwapAppSettings.ResolveNetworkL2Assets(n),
+            img_url: `${basePath}layerswap/networks/${n?.internal_name?.toLowerCase()}.png`,
+            ...n,
         }))
-        const result = exchangeLayers.concat(networkLayers)
-        return result
+        return networkLayers
     }
 
-    static ResolveExchangeL2Assets(
-        currencies: ExchangeCurrency[],
-        networks: CryptoNetwork[]): ExchangeL2Asset[] {
-        return currencies?.map(exchangecurrency => {
-            const network = networks.find(n => n.internal_name === exchangecurrency.network) as CryptoNetwork;
-            const networkCurrencies = network?.currencies?.find(nc => nc.asset === exchangecurrency.asset) as NetworkCurrency
-            return {
-                asset: exchangecurrency.asset,
-                status: exchangecurrency.status,
-                is_default: exchangecurrency.is_default,
-                network_internal_name: exchangecurrency.network,
-                network: { ...network, currencies: [networkCurrencies] },
-                min_deposit_amount: exchangecurrency.min_deposit_amount,
-                withdrawal_fee: exchangecurrency.withdrawal_fee,
-            }
-        }) || []
-    }
-
-
-    static ResolveNetworkL2Assets(network: CryptoNetwork): BaseL2Asset[] {
+    static ResolveNetworkL2Assets(network: CryptoNetwork): NetworkCurrency[] {
         return network?.currencies?.map(c => ({
             asset: c.asset,
             status: c.status,
-            is_default: true,
-            network_internal_name: network?.internal_name,
-            network: { ...network, currencies: [c] },
             contract_address: c.contract_address,
-            decimals: c.decimals
-        })) || []
+            decimals: c.decimals,
+            precision: c.precision,
+            usd_price: c.usd_price,
+            is_native: c.is_native,
+            is_refuel_enabled: c.is_refuel_enabled,
+        }))
     }
 }
