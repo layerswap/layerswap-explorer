@@ -19,35 +19,7 @@ import { usePathname } from 'next/navigation'
 import Error500 from "@/components/Error500";
 import { getTimeDifferenceFromNow } from "@/components/utils/CalcTime";
 import { TransactionType } from "@/models/TransactionTypes";
-
-type Swap = {
-    created_date: string,
-    status: string;
-    destination_address: string,
-    source_network_asset: string,
-    source_network: string,
-    source_exchange: string,
-    destination_network_asset: string,
-    destination_network: string,
-    destination_exchange: string,
-    has_refuel: boolean,
-    transactions: Transaction[]
-}
-
-type Transaction = {
-    from: string,
-    to: string,
-    created_date: string,
-    timestamp: string,
-    transaction_id: string,
-    explorer_url: string,
-    confirmations: number,
-    max_confirmations: number,
-    amount: number,
-    usd_price: number,
-    usd_value: number,
-    type: string
-}
+import { Swap } from "@/models/Swap";
 
 const options = {
     month: 'short' as const,
@@ -86,6 +58,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     // const timeElapsed = millisToMinutesAndSeconds(elapsedTimeInMiliseconds);
     const filteredData = data?.data?.filter(s => s.transactions?.some(t => t?.type == TransactionType.Input));
     const emptyData = data?.data?.every(s => !s.transactions.length);
+
     if (error) return <Error500 />
     if (isLoading) return <LoadingBlocks />
     if (data?.error || emptyData) return <NotFound />
@@ -180,7 +153,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-2 text-white">
-                                                                    <Link href={`${inputTransaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                                    <Link href={`${sourceLayer?.transaction_explorer_template?.replace('{0}', (input_transaction?.from || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
                                                                         <span className="mx-0.5 hover:text-gray-300 underline">{sourceExchange ? sourceExchange?.display_name : sourceLayer?.display_name}</span>
                                                                     </Link>
                                                                 </div>
@@ -221,8 +194,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-2 text-white">
-                                                                    <Link href={`${outputTransaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!outputTransaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
-                                                                        <span className={`${outputTransaction?.explorer_url ? "underline" : ""} mx-0.5 hover:text-gray-300`}>{destinationExchange ? destinationExchange?.display_name : destinationLayer?.display_name}</span>
+                                                                    <Link href={`${destinationLayer?.transaction_explorer_template?.replace('{0}', (output_transaction?.transaction_id || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!outputTransaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
+                                                                        <span className={`${outputTransaction?.transaction_id ? "underline" : ""} mx-0.5 hover:text-gray-300`}>{destinationExchange ? destinationExchange?.display_name : destinationLayer?.display_name}</span>
                                                                     </Link>
                                                                 </div>
                                                             </div>
@@ -358,7 +331,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     <div className="text-base font-normal text-socket-secondary">Transaction</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
                                         <div className="flex items-center justify-between text-white hover:text-primary-text">
-                                            <Link href={`${input_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center second-link">
+                                            <Link href={`${sourceLayer?.transaction_explorer_template?.replace('{0}', input_transaction?.transaction_id)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center second-link">
                                                 <span className="break-all link link-underline link-underline-black">{shortenAddress(input_transaction?.transaction_id)}</span>
                                             </Link>
                                             <CopyButton toCopy={input_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
@@ -438,7 +411,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
                                         {output_transaction?.transaction_id ?
                                             <div className="flex items-center justify-between text-white hover:text-primary-text">
-                                                <Link href={`${output_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                <Link href={`${destinationLayer?.transaction_explorer_template?.replace('{0}', output_transaction?.transaction_id)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
                                                     <span className="break-all link link-underline link-underline-black">{shortenAddress(output_transaction?.transaction_id)}</span>
                                                 </Link>
                                                 <CopyButton toCopy={output_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
@@ -469,7 +442,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 <div className="text-base font-normal text-socket-secondary">Transaction</div>
                                                 {refuel_transaction?.transaction_id ?
                                                     <div className="flex items-center justify-between text-white hover:text-primary-text">
-                                                        <Link href={`${refuel_transaction?.explorer_url}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                        <Link href={`${sourceLayer?.transaction_explorer_template?.replace('{0}', refuel_transaction?.transaction_id)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
                                                             <span className="break-all link link-underline link-underline-black">{shortenHash(refuel_transaction?.transaction_id)}</span>
                                                         </Link>
                                                         <CopyButton toCopy={refuel_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />

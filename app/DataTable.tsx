@@ -11,34 +11,7 @@ import { useRouter } from "next/navigation";
 import AppSettings from "@/lib/AppSettings";
 import Error500 from "@/components/Error500";
 import { TransactionType } from "@/models/TransactionTypes";
-
-type Swap = {
-    created_date: string,
-    status: string;
-    destination_address: string,
-    source_network_asset: string,
-    source_network: string,
-    source_exchange: string,
-    destination_network_asset: string,
-    destination_network: string,
-    destination_exchange: string,
-    has_refuel: boolean,
-    transactions: Transaction[]
-}
-
-type Transaction = {
-    from: string,
-    to: string,
-    created_date: string,
-    transaction_id: string,
-    explorer_url: string,
-    confirmations: number,
-    max_confirmations: number,
-    amount: number,
-    usd_price: number,
-    usd_value: number,
-    type: string
-}
+import { Swap } from "@/models/Swap";
 
 export default function DataTable() {
     const fetcher = (url: string) => fetch(url).then(r => r.json())
@@ -124,7 +97,7 @@ export default function DataTable() {
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-2 text-white">
-                                                                    <Link href={`${input_transaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                                    <Link href={`${sourceLayer?.transaction_explorer_template?.replace('{0}', (input_transaction?.transaction_id || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
                                                                         <span className="mx-0.5 hover:text-gray-300 underline hover:no-underline">{sourceExchange ? sourceExchange?.display_name : sourceLayer?.display_name}</span>
                                                                     </Link>
                                                                 </div>
@@ -163,12 +136,13 @@ export default function DataTable() {
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-2 text-white">
-                                                                    {output_transaction?.explorer_url ?
-                                                                        <Link href={`${output_transaction?.explorer_url}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
-                                                                            <span className={`underline mx-0.5 hover:text-gray-300 hover:no-underline`}>{destinationExchange ? destinationExchange?.display_name : destinationLayer?.display_name}</span>
-                                                                        </Link>
-                                                                        :
-                                                                        <span className={`mx-0.5`}>{destinationExchange ? destinationExchange?.display_name : destinationLayer?.display_name}</span>
+                                                                    {
+                                                                        output_transaction?.transaction_id ?
+                                                                            <Link href={`${destinationLayer?.transaction_explorer_template?.replace('{0}', (output_transaction?.transaction_id || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
+                                                                                <span className={`underline mx-0.5 hover:text-gray-300 hover:no-underline`}>{destinationExchange ? destinationExchange?.display_name : destinationLayer?.display_name}</span>
+                                                                            </Link>
+                                                                            :
+                                                                            <span className={`mx-0.5`}>{destinationExchange ? destinationExchange?.display_name : destinationLayer?.display_name}</span>
                                                                     }
                                                                 </div>
                                                             </div>
