@@ -396,7 +396,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
                                         {output_transaction?.to ?
                                             <div className="flex items-center justify-between text-white hover:text-primary-text">
-                                                <Link href={`${(destinationExchange ? destinationLayer : sourceLayer)?.account_explorer_template?.replace("{0}", output_transaction?.to)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                <Link href={`${destinationLayer?.account_explorer_template?.replace("{0}", output_transaction?.to)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
                                                     <span className="break-all link link-underline link-underline-black">{output_transaction?.to}</span>
                                                 </Link>
                                                 <CopyButton toCopy={swap?.destination_address} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
