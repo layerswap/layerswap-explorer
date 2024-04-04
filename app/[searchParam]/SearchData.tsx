@@ -18,8 +18,7 @@ import BackBtn from "@/helpers/BackButton";
 import { usePathname } from 'next/navigation'
 import Error500 from "@/components/Error500";
 import { getTimeDifferenceFromNow } from "@/components/utils/CalcTime";
-import { TransactionType } from "@/models/TransactionTypes";
-import { Swap } from "@/models/Swap";
+import { SwapData, TransactionType } from "@/models/Swap";
 
 const options = {
     month: 'short' as const,
@@ -35,29 +34,29 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const basePath = process.env.NEXT_PUBLIC_APP_BASE_PATH
     const version = process.env.NEXT_PUBLIC_API_VERSION
     const fetcher = (url: string) => fetch(url).then(r => r.json())
-    const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>(`${AppSettings.LayerswapApiUri}/api/explorer/${searchParam}?version=${version}`, fetcher, { dedupingInterval: 60000 });
-    const swap = data?.data?.[0];
+    const { data, error, isLoading } = useSWR<ApiResponse<SwapData[]>>(`${AppSettings.LayerswapApiUri}/api/v2-alpha/explorer/${searchParam}?version=${version}`, fetcher, { dedupingInterval: 60000 });
+    
+    const swap = data?.data?.[0]?.swap
+    const quote = data?.data?.[0]?.quote
+    const refuel = data?.data?.[0]?.refuel
 
-    const input_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Input);
-    const output_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Output);
+    const input_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Input)
+    const output_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Output)
     const refuel_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Refuel);
 
-    const sourceLayer = settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap?.source_network?.toLowerCase());
-    const sourceToken = sourceLayer?.assets?.find(a => a?.asset == swap?.source_network_asset)
+    const sourceNetwork = swap?.source_network
+    const sourceToken = swap?.source_token
 
-    const sourceExchange = swap?.source_exchange && settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase());
-    const destinationExchange = swap?.destination_exchange && settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase());
+    const sourceExchange = swap?.source_exchange
+    const destinationExchange = swap?.destination_exchange
 
-    const destinationLayer = settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap?.destination_network?.toLowerCase())
-    const destinationToken = destinationLayer?.assets?.find(a => a?.asset == swap?.destination_network_asset)
+    const destinationNetwork = swap?.destination_network
+    const destinationToken = swap?.destination_token
 
-    const cost = Number(input_transaction?.amount) - Number(output_transaction?.amount);
-
-    const DestinationNativeToken = destinationLayer?.assets?.find(a => a.is_native);
-    // const elapsedTimeInMiliseconds = new Date(swap?.output_transaction?.created_date || '')?.getTime() - new Date(swap?.input_transaction?.created_date || '')?.getTime();
-    // const timeElapsed = millisToMinutesAndSeconds(elapsedTimeInMiliseconds);
-    const filteredData = data?.data?.filter(s => s.transactions?.some(t => t?.type == TransactionType.Input));
-    const emptyData = data?.data?.every(s => !s.transactions.length);
+    const elapsedTimeInMiliseconds = new Date(output_transaction?.timestamp || '')?.getTime() - new Date(input_transaction?.timestamp || '')?.getTime();
+    const timeElapsed = millisToMinutesAndSeconds(elapsedTimeInMiliseconds);
+    const filteredData = data?.data?.filter(s => s?.swap?.transactions?.some(t => t?.type == TransactionType.Input))?.map(s => s?.swap);
+    const emptyData = data?.data?.every(s => !s?.swap?.transactions.length);
 
     if (error) return <Error500 />
     if (isLoading) return <LoadingBlocks />
@@ -100,14 +99,14 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                 </thead>
                                 <tbody className="divide-y divide-secondary-400 bg-secondary">
                                     {filteredData?.map((swap, index) => {
-                                        const sourceLayer = settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.source_network?.toLowerCase())
-                                        const sourceToken = sourceLayer?.assets?.find(a => a?.asset == swap?.source_network_asset)
+                                        const sourceNetwork = swap?.source_network
+                                        const sourceToken = swap?.source_token
 
-                                        const sourceExchange = settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase())
-                                        const destinationExchange = settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase())
+                                        const sourceExchange = swap?.source_exchange
+                                        const destinationExchange = swap?.destination_exchange
 
-                                        const destinationLayer = settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_network?.toLowerCase())
-                                        const destinationToken = destinationLayer?.assets?.find(a => a?.asset == swap?.destination_network_asset)
+                                        const destinationNetwork = swap?.destination_network
+                                        const destinationToken = swap?.destination_token
 
                                         const inputTransaction = swap?.transactions?.find(t => t?.type == TransactionType.Input);
                                         const outputTransaction = swap?.transactions?.find(t => t?.type == TransactionType.Output);
@@ -116,10 +115,10 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                             return
 
                                         return (
-                                            <tr key={index} onClick={(e) => router.push(`/${inputTransaction?.transaction_id}`)} className="hover:bg-secondary-600 hover:cursor-pointer">
+                                            <tr key={index} onClick={(e) => router.push(`/${inputTransaction?.transaction_hash}`)} className="hover:bg-secondary-600 hover:cursor-pointer">
                                                 <td className="whitespace-nowrap py-2 px-3 text-sm font-medium text-white flex flex-col">
-                                                    <Link href={`/${inputTransaction?.transaction_id}`} onClick={(e) => e.stopPropagation()} className="hover:text-gray-300 inline-flex items-center w-fit">
-                                                        {shortenAddress(inputTransaction?.transaction_id)}
+                                                    <Link href={`/${inputTransaction?.transaction_hash}`} onClick={(e) => e.stopPropagation()} className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                        {shortenAddress(inputTransaction?.transaction_hash)}
                                                     </Link>
                                                     <StatusIcon swap={swap.status} />
                                                     <span className="text-primary-text">{new Date(swap.created_date).toLocaleString()}</span>
@@ -136,12 +135,12 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                     <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                         <span>
                                                                             <span></span>
-                                                                            <Image alt={`Source token icon ${index}`} src={settings?.resolveImgSrc(sourceToken) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                                            <Image alt={`Source token icon ${index}`} src={sourceNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
                                                                         </span>
                                                                     </div>
                                                                     <div className="mx-2.5">
                                                                         <span className="text-white">{inputTransaction?.amount}</span>
-                                                                        <span className="mx-1 text-white">{swap?.source_network_asset}</span>
+                                                                        <span className="mx-1 text-white">{swap?.source_token?.symbol}</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -149,12 +148,12 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                 <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                     <span>
                                                                         <span></span>
-                                                                        <Image alt={`Source chain icon ${index}`} src={settings?.resolveImgSrc(sourceExchange ? sourceExchange : sourceLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                                        <Image alt={`Source chain icon ${index}`} src={sourceExchange ? sourceExchange?.logo : sourceNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-2 text-white">
-                                                                    <Link href={`${sourceLayer?.transaction_explorer_template?.replace('{0}', (input_transaction?.from || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
-                                                                        <span className="mx-0.5 hover:text-gray-300 underline">{sourceExchange ? sourceExchange?.display_name : sourceLayer?.display_name}</span>
+                                                                    <Link href={`${sourceNetwork?.transaction_explorer_template?.replace('{0}', (input_transaction?.from || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                                        <span className="mx-0.5 hover:text-gray-300 underline">{sourceExchange ? sourceExchange?.display_name : sourceNetwork?.display_name}</span>
                                                                     </Link>
                                                                 </div>
                                                             </div>
@@ -172,14 +171,14 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                 <div className="flex flex-row items-center ml-4 mb-1">
                                                                     <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                         <span>
-                                                                            <Image alt={`Destination token icon ${index}`} src={settings?.resolveImgSrc(destinationToken) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                                            <Image alt={`Destination token icon ${index}`} src={destinationNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
                                                                         </span>
                                                                     </div>
                                                                     {
                                                                         outputTransaction?.amount ?
                                                                             <div className="mx-2.5">
                                                                                 <span className="text-white mx-0.5">{outputTransaction?.amount}</span>
-                                                                                <span className="text-white">{swap?.destination_network_asset}</span>
+                                                                                <span className="text-white">{swap?.destination_token?.symbol}</span>
                                                                             </div>
                                                                             :
                                                                             <span className="ml-2.5">-</span>
@@ -190,12 +189,12 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                 <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                     <span>
                                                                         <span></span>
-                                                                        <Image alt={`Destination chain icon ${index}`} src={settings?.resolveImgSrc(destinationExchange ? destinationExchange : destinationLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                                        <Image alt={`Destination chain icon ${index}`} src={destinationExchange ? destinationExchange?.logo : destinationNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-2 text-white">
-                                                                    <Link href={`${destinationLayer?.transaction_explorer_template?.replace('{0}', (output_transaction?.transaction_id || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!outputTransaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
-                                                                        <span className={`${outputTransaction?.transaction_id ? "underline" : ""} mx-0.5 hover:text-gray-300`}>{destinationExchange ? destinationExchange?.display_name : destinationLayer?.display_name}</span>
+                                                                    <Link href={`${destinationNetwork?.transaction_explorer_template?.replace('{0}', (output_transaction?.transaction_hash || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!outputTransaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
+                                                                        <span className={`${outputTransaction?.transaction_hash ? "underline" : ""} mx-0.5 hover:text-gray-300`}>{destinationExchange ? destinationExchange?.display_name : destinationNetwork?.display_name}</span>
                                                                     </Link>
                                                                 </div>
                                                             </div>
@@ -235,7 +234,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                     <span className="whitespace-nowrap text-white align-bottom">&nbsp;
                                                         <TooltipProvider delayDuration={0}>
                                                             <Tooltip>
-                                                                <TooltipTrigger className="cursor-default">{new Date(input_transaction?.created_date)?.toLocaleString('en-US', options)}.</TooltipTrigger>
+                                                                <TooltipTrigger className="cursor-default">{new Date(input_transaction?.timestamp)?.toLocaleString('en-US', options)}.</TooltipTrigger>
                                                                 <TooltipContent>
                                                                     {new Date(swap.created_date).toUTCString()}
                                                                 </TooltipContent>
@@ -249,7 +248,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 </p>
                                                 <p className="sm:self-end">
                                                     <span className="text-primary-text sm:ml-1">and cost</span>
-                                                    <span className="text-white">&nbsp;{truncateDecimals(cost, sourceToken?.precision)} {swap?.source_network_asset}</span>
+                                                    <span className="text-white">&nbsp;{truncateDecimals(quote?.total_fee, sourceToken?.precision)} {swap?.source_token?.symbol}</span>
                                                 </p>
                                             </div>
                                             :
@@ -261,7 +260,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                         <span className="whitespace-nowrap text-white align-bottom">&nbsp;
                                                             <TooltipProvider delayDuration={0}>
                                                                 <Tooltip>
-                                                                    <TooltipTrigger className="cursor-default">{new Date(input_transaction?.created_date)?.toLocaleString('en-US', options)}.</TooltipTrigger>
+                                                                    <TooltipTrigger className="cursor-default">{new Date(input_transaction?.timestamp)?.toLocaleString('en-US', options)}.</TooltipTrigger>
                                                                     <TooltipContent>
                                                                         {new Date(swap.created_date).toUTCString()}
                                                                     </TooltipContent>
@@ -293,24 +292,24 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         <div className="text-base font-normal text-socket-secondary">Asset</div>
                                         <div className="flex items-center">
                                             <span className="text-sm lg:text-base font-medium text-socket-table text-white flex items-center">
-                                                <Image alt="Source token icon" src={settings?.resolveImgSrc(sourceToken) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
-                                                {input_transaction?.amount} {swap?.source_network_asset}
+                                                <Image alt="Source token icon" src={sourceToken?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                                {input_transaction?.amount} {swap?.source_token?.symbol}
                                             </span>
                                         </div>
                                     </div>
                                     <div className="flex-1 p-4 border-secondary-600 border-l">
                                         <div className="text-base font-normal text-socket-secondary">Source</div>
                                         <div className="flex items-center">
-                                            <Image alt="Source chain icon" src={settings?.resolveImgSrc(sourceExchange ? sourceExchange : sourceLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
-                                            <span className="text-sm lg:text-base font-medium text-socket-table text-white">{sourceExchange ? sourceExchange?.display_name : sourceLayer?.display_name}</span>
+                                            <Image alt="Source chain icon" src={sourceExchange ? sourceExchange?.logo : sourceNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                            <span className="text-sm lg:text-base font-medium text-socket-table text-white">{sourceExchange ? sourceExchange?.display_name : sourceNetwork?.display_name}</span>
                                         </div>
                                         {
                                             swap?.source_exchange && sourceExchange &&
                                             <div>
                                                 <div className="text-base font-normal text-socket-secondary">Via</div>
                                                 <div className="flex items-center">
-                                                    <Image alt="Source chain icon" src={settings?.resolveImgSrc(sourceLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
-                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white">{sourceLayer?.display_name}</span>
+                                                    <Image alt="Source chain icon" src={sourceNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white">{sourceNetwork?.display_name}</span>
                                                 </div>
                                             </div>
                                         }
@@ -320,7 +319,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     <div className="text-base font-normal text-socket-secondary">From Address</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
                                         <div className="flex justify-between items-center text-white hover:text-primary-text">
-                                            <Link href={`${sourceLayer?.account_explorer_template?.replace('{0}', input_transaction?.from)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                            <Link href={`${sourceNetwork?.account_explorer_template?.replace('{0}', input_transaction?.from)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
                                                 <span className="break-all link link-underline link-underline-black">{input_transaction?.from}</span>
                                             </Link>
                                             <CopyButton toCopy={input_transaction?.from} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
@@ -331,10 +330,10 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     <div className="text-base font-normal text-socket-secondary">Transaction</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
                                         <div className="flex items-center justify-between text-white hover:text-primary-text">
-                                            <Link href={`${sourceLayer?.transaction_explorer_template?.replace('{0}', input_transaction?.transaction_id)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center second-link">
-                                                <span className="break-all link link-underline link-underline-black">{shortenAddress(input_transaction?.transaction_id)}</span>
+                                            <Link href={`${sourceNetwork?.transaction_explorer_template?.replace('{0}', input_transaction?.transaction_hash)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center second-link">
+                                                <span className="break-all link link-underline link-underline-black">{shortenAddress(input_transaction?.transaction_hash)}</span>
                                             </Link>
-                                            <CopyButton toCopy={input_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
+                                            <CopyButton toCopy={input_transaction?.transaction_hash} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                         </div>
                                     </div>
                                 </div>
@@ -365,8 +364,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         <div className="flex items-center">
                                             {output_transaction?.amount ?
                                                 <div className="flex items-center">
-                                                    <Image alt="Destination token icon" src={settings?.resolveImgSrc(destinationToken) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
-                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{output_transaction?.amount} {swap?.destination_network_asset}</span>
+                                                    <Image alt="Destination token icon" src={destinationToken?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{output_transaction?.amount} {swap?.destination_token?.symbol}</span>
                                                 </div>
                                                 :
                                                 <span>-</span>
@@ -376,16 +375,16 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     <div className="flex-1 p-4 border-secondary-600 border-l">
                                         <div className="text-base font-normal text-socket-secondary">Destination</div>
                                         <div className="flex items-center">
-                                            <Image alt="Destination chain icon" src={settings?.resolveImgSrc(destinationExchange ? destinationExchange : destinationLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
-                                            <span className="text-sm lg:text-base font-medium text-socket-table text-white">{destinationExchange ? destinationExchange?.display_name : destinationLayer?.display_name}</span>
+                                            <Image alt="Destination chain icon" src={destinationExchange ? destinationExchange?.logo : destinationNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                            <span className="text-sm lg:text-base font-medium text-socket-table text-white">{destinationExchange ? destinationExchange?.display_name : destinationNetwork?.display_name}</span>
                                         </div>
                                         {
                                             swap?.destination_exchange && destinationExchange &&
                                             <div>
                                                 <div className="text-base font-normal text-socket-secondary">Via</div>
                                                 <div className="flex items-center">
-                                                    <Image alt="Source chain icon" src={settings?.resolveImgSrc(destinationLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
-                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white">{destinationLayer?.display_name}</span>
+                                                    <Image alt="Source chain icon" src={destinationNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white">{destinationNetwork?.display_name}</span>
                                                 </div>
                                             </div>
                                         }
@@ -396,7 +395,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
                                         {output_transaction?.to ?
                                             <div className="flex items-center justify-between text-white hover:text-primary-text">
-                                                <Link href={`${destinationLayer?.account_explorer_template?.replace("{0}", output_transaction?.to)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                <Link href={`${destinationNetwork?.account_explorer_template?.replace("{0}", output_transaction?.to)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
                                                     <span className="break-all link link-underline link-underline-black">{output_transaction?.to}</span>
                                                 </Link>
                                                 <CopyButton toCopy={swap?.destination_address} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
@@ -409,12 +408,12 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                 <div className="flex flex-col p-4">
                                     <div className="text-base font-normal text-socket-secondary">Transaction</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
-                                        {output_transaction?.transaction_id ?
+                                        {output_transaction?.transaction_hash ?
                                             <div className="flex items-center justify-between text-white hover:text-primary-text">
-                                                <Link href={`${destinationLayer?.transaction_explorer_template?.replace('{0}', output_transaction?.transaction_id)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                                    <span className="break-all link link-underline link-underline-black">{shortenAddress(output_transaction?.transaction_id)}</span>
+                                                <Link href={`${destinationNetwork?.transaction_explorer_template?.replace('{0}', output_transaction?.transaction_hash)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                    <span className="break-all link link-underline link-underline-black">{shortenAddress(output_transaction?.transaction_hash)}</span>
                                                 </Link>
-                                                <CopyButton toCopy={output_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
+                                                <CopyButton toCopy={output_transaction?.transaction_hash} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                             </div>
                                             :
                                             <span>-</span>
@@ -422,7 +421,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     </div>
                                 </div>
                             </div>
-                            {swap?.has_refuel &&
+                            {swap?.transactions?.find(t => t?.type == TransactionType.Refuel) &&
                                 <>
                                     <div className="flex items-center text-white">
                                         <div className="mr-2 text-primary-text text-2xl font-medium">... and for gas</div>
@@ -433,19 +432,19 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 <div className="text-base font-normal text-socket-secondary">Native Asset</div>
                                                 <div className="flex items-center">
                                                     <div className="flex items-center">
-                                                        <Image alt="Destination token icon" src={settings?.resolveImgSrc(destinationToken) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
-                                                        <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{truncateDecimals(refuel_transaction?.amount, DestinationNativeToken?.precision)} {DestinationNativeToken?.asset}</span>
+                                                        <Image alt="Destination token icon" src={destinationToken?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                        <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{truncateDecimals(refuel?.amount, refuel?.token?.precision)} {refuel?.token?.symbol}</span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="flex-1 p-4 border-secondary-600 border-l">
                                                 <div className="text-base font-normal text-socket-secondary">Transaction</div>
-                                                {refuel_transaction?.transaction_id ?
+                                                {refuel_transaction?.transaction_hash ?
                                                     <div className="flex items-center justify-between text-white hover:text-primary-text">
-                                                        <Link href={`${sourceLayer?.transaction_explorer_template?.replace('{0}', refuel_transaction?.transaction_id)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                                            <span className="break-all link link-underline link-underline-black">{shortenHash(refuel_transaction?.transaction_id)}</span>
+                                                        <Link href={`${sourceNetwork?.transaction_explorer_template?.replace('{0}', refuel_transaction?.transaction_hash)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                            <span className="break-all link link-underline link-underline-black">{shortenHash(refuel_transaction?.transaction_hash)}</span>
                                                         </Link>
-                                                        <CopyButton toCopy={refuel_transaction?.transaction_id} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
+                                                        <CopyButton toCopy={refuel_transaction?.transaction_hash} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                                     </div>
                                                     :
                                                     <span>-</span>
@@ -467,3 +466,14 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
 function truncateDecimals(value: number | undefined, decimals: number | undefined) {
     return Number(value?.toFixed(decimals));
 }
+
+function millisToMinutesAndSeconds(milliseconds:number) {
+    var totalSeconds = Math.floor(milliseconds / 1000);
+    var minutes = Math.floor(totalSeconds / 60);
+    var seconds = totalSeconds % 60;
+  
+    return {
+      minutes: minutes,
+      seconds: seconds
+    };
+  }
