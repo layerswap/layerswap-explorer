@@ -7,10 +7,8 @@ import useSWR from "swr";
 import StatusIcon from '../../components/SwapHistory/StatusIcons';
 import Link from "next/link";
 import Image from "next/image";
-import { useSettingsState } from "@/context/settings";
 import LoadingBlocks from "@/components/LoadingBlocks";
 import { SwapStatus } from "@/models/SwapStatus";
-import AppSettings from "@/lib/AppSettings";
 import NotFound from "@/components/notFound";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/shadcn/tooltip";
 import { useRouter } from "next/navigation";
@@ -19,6 +17,7 @@ import { usePathname } from 'next/navigation'
 import Error500 from "@/components/Error500";
 import { getTimeDifferenceFromNow } from "@/components/utils/CalcTime";
 import { SwapData, TransactionType } from "@/models/Swap";
+import LayerSwapApiClient from "@/lib/layerSwapApiClient";
 
 const options = {
     month: 'short' as const,
@@ -28,13 +27,13 @@ const options = {
 };
 
 export default function SearchData({ searchParam }: { searchParam: string }) {
-    const settings = useSettingsState();
     const router = useRouter();
     const pathname = usePathname();
     const basePath = process.env.NEXT_PUBLIC_APP_BASE_PATH
-    const version = process.env.NEXT_PUBLIC_API_VERSION
-    const fetcher = (url: string) => fetch(url).then(r => r.json())
-    const { data, error, isLoading } = useSWR<ApiResponse<SwapData[]>>(`${AppSettings.LayerswapApiUri}/api/v2-alpha/explorer/${searchParam}?version=${version}`, fetcher, { dedupingInterval: 60000 });
+
+    const apiClient = new LayerSwapApiClient()
+
+    const { data, error, isLoading } = useSWR<ApiResponse<SwapData[]>>(`/explorer/${searchParam}`, apiClient.fetcher, { dedupingInterval: 60000 });
     
     const swap = data?.data?.[0]?.swap
     const quote = data?.data?.[0]?.quote
@@ -53,8 +52,6 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const destinationNetwork = swap?.destination_network
     const destinationToken = swap?.destination_token
 
-    const elapsedTimeInMiliseconds = new Date(output_transaction?.timestamp || '')?.getTime() - new Date(input_transaction?.timestamp || '')?.getTime();
-    const timeElapsed = millisToMinutesAndSeconds(elapsedTimeInMiliseconds);
     const filteredData = data?.data?.filter(s => s?.swap?.transactions?.some(t => t?.type == TransactionType.Input))?.map(s => s?.swap);
     const emptyData = data?.data?.every(s => !s?.swap?.transactions.length);
 
@@ -466,14 +463,3 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
 function truncateDecimals(value: number | undefined, decimals: number | undefined) {
     return Number(value?.toFixed(decimals));
 }
-
-function millisToMinutesAndSeconds(milliseconds:number) {
-    var totalSeconds = Math.floor(milliseconds / 1000);
-    var minutes = Math.floor(totalSeconds / 60);
-    var seconds = totalSeconds % 60;
-  
-    return {
-      minutes: minutes,
-      seconds: seconds
-    };
-  }

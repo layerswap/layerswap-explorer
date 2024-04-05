@@ -2,25 +2,23 @@
 import { ApiResponse } from "@/models/ApiResponse";
 import useSWR from "swr"
 import { ChevronRight } from "lucide-react";
-import { useSettingsState } from "@/context/settings";
 import Image from "next/image";
 import Link from "next/link";
 import LoadingBlocks from "@/components/LoadingBlocks";
 import { SwapStatus } from "@/models/SwapStatus";
 import { useRouter } from "next/navigation";
-import AppSettings from "@/lib/AppSettings";
 import Error500 from "@/components/Error500";
 import { SwapData, Swap, TransactionType } from "@/models/Swap";
+import LayerSwapApiClient from "@/lib/layerSwapApiClient";
 
 export default function DataTable() {
-    const fetcher = (url: string) => fetch(url).then(r => r.json())
-    const settings = useSettingsState()
-    const version = process.env.NEXT_PUBLIC_API_VERSION;
+    const apiClient = new LayerSwapApiClient()
 
-    const { data, error, isLoading } = useSWR<ApiResponse<SwapData[]>>(`${AppSettings.LayerswapApiUri}api/v2-alpha/explorer?version=${version}`, fetcher, { dedupingInterval: 60000 });
+
+    const { data, error, isLoading } = useSWR<ApiResponse<SwapData[]>>("/explorer", apiClient.fetcher, { dedupingInterval: 60000 });
     const swapsData = data?.data?.map(d => d.swap);
     const router = useRouter();
-console.log(swapsData)
+
     if (error) return <Error500 />
     if (isLoading) return <LoadingBlocks />
 
