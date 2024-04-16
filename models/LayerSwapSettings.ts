@@ -1,7 +1,5 @@
-import { CryptoNetwork } from "./CryptoNetwork";
-import { Exchange } from "./Exchange";
+import { SwapData } from "./Swap";
 
 export class LayerSwapSettings {
-    exchanges?: Exchange[];
-    networks?: CryptoNetwork[];
+    data?: SwapData[];
 };
