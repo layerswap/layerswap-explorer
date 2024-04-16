@@ -1,8 +1,12 @@
 import Search from "@/components/Search";
 import DataTable from "./DataTable";
 import { SettingsProvider } from "@/context/settings";
+import MaintananceContent from "@/components/maintanance/maintanance";
 
 export default async function Home() {
+
+  if (process.env.NEXT_PUBLIC_MAINTANANCE == String(true))
+    return <MaintananceContent />
 
   return (
     <SettingsProvider>
