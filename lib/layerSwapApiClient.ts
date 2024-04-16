@@ -14,7 +14,7 @@ export default class LayerSwapApiClient {
     }
 
     private async UnauthenticatedRequest<T extends EmptyApiResponse>(method: Method, endpoint: string, data?: any, header?: {}): Promise<T> {
-        let uri = LayerSwapApiClient.apiBaseEndpoint + "/api/v2-alpha" + endpoint + `?version=${LayerSwapApiClient.apiVersion}`;
+        let uri = LayerSwapApiClient.apiBaseEndpoint + "/api/v2" + endpoint + `?version=${LayerSwapApiClient.apiVersion}`;
         return await axios.get(uri, { method: method, data: data, headers: { 'Access-Control-Allow-Origin': '*', ...(header ? header : {}) } })
             .then(res => {
                 return res?.data;

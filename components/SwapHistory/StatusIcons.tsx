@@ -32,7 +32,7 @@ export default function StatusIcon({ swap }: { swap: string | undefined }) {
         <>
           <div className="inline-flex items-center">
             <YellowIcon />
-            <p>Deposite pending</p>
+            <p>Deposit pending</p>
           </div>
         </>)
     case SwapStatus.UserTransferDelayed:
