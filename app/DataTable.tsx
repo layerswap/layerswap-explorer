@@ -15,7 +15,7 @@ export default function DataTable() {
     const apiClient = new LayerSwapApiClient()
 
 
-    const { data, error, isLoading } = useSWR<ApiResponse<SwapData[]>>("/explorer", apiClient.fetcher, { dedupingInterval: 60000 });
+    const { data, error, isLoading } = useSWR<ApiResponse<SwapData[]>>(`/explorer?version=${process.env.NEXT_PUBLIC_API_VERSION}&statuses=1&statuses=4`, apiClient.fetcher, { dedupingInterval: 60000 });
     const swapsData = data?.data?.map(d => d.swap);
     const router = useRouter();
 
