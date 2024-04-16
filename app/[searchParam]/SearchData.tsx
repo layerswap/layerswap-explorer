@@ -132,7 +132,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                     <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                         <span>
                                                                             <span></span>
-                                                                            <Image alt={`Source token icon ${index}`} src={sourceNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                                            <Image alt={`Source token icon ${index}`} src={sourceToken?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
                                                                         </span>
                                                                     </div>
                                                                     <div className="mx-2.5">
@@ -168,7 +168,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                 <div className="flex flex-row items-center ml-4 mb-1">
                                                                     <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                         <span>
-                                                                            <Image alt={`Destination token icon ${index}`} src={destinationNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                                            <Image alt={`Destination token icon ${index}`} src={destinationToken?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
                                                                         </span>
                                                                     </div>
                                                                     {
