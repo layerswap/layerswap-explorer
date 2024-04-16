@@ -1,13 +1,7 @@
-import TwitterLogo from "../icons/TwitterLogo";
 import LayerswapExplorerLogo from "../icons/layerswapExplorer";
 import CardContainer from "../cardContainer";
-import SubmitButton from "../buttons/submitButton";
 
 function MaintananceContent(props: any) {
-    const twitterLogo = <TwitterLogo className="text-primary-text h-6 w-6" />
-    const handleClick = () => {
-        window.open('https://twitter.com/layerswap', '_blank')
-    }
 
     return (
         <div className="flex items-stretch flex-col">
