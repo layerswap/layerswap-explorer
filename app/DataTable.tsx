@@ -2,24 +2,21 @@
 import { ApiResponse } from "@/models/ApiResponse";
 import useSWR from "swr"
 import { ChevronRight } from "lucide-react";
-import { useSettingsState } from "@/context/settings";
 import Image from "next/image";
 import Link from "next/link";
 import LoadingBlocks from "@/components/LoadingBlocks";
 import { SwapStatus } from "@/models/SwapStatus";
 import { useRouter } from "next/navigation";
-import AppSettings from "@/lib/AppSettings";
 import Error500 from "@/components/Error500";
-import { TransactionType } from "@/models/TransactionTypes";
-import { Swap } from "@/models/Swap";
+import { SwapData, Swap, TransactionType } from "@/models/Swap";
+import LayerSwapApiClient from "@/lib/layerSwapApiClient";
 
 export default function DataTable() {
-    const fetcher = (url: string) => fetch(url).then(r => r.json())
-    const version = process.env.NEXT_PUBLIC_API_VERSION
-    const settings = useSettingsState()
+    const apiClient = new LayerSwapApiClient()
 
-    const { data, error, isLoading } = useSWR<ApiResponse<Swap[]>>(`${AppSettings.LayerswapApiUri}/api/explorer/?statuses=1&statuses=4&version=${version}`, fetcher, { dedupingInterval: 60000 });
-    const swapsData = data?.data;
+
+    const { data, error, isLoading } = useSWR<ApiResponse<SwapData[]>>("/explorer", apiClient.fetcher, { dedupingInterval: 60000 });
+    const swapsData = data?.data?.map(d => d.swap);
     const router = useRouter();
 
     if (error) return <Error500 />
@@ -50,20 +47,20 @@ export default function DataTable() {
                                 </thead>
                                 <tbody className="divide-y divide-secondary-400 bg-secondary overflow-y-scroll">
                                     {swapsData?.filter(s => s.transactions?.some(t => t?.type == TransactionType.Input))?.map((swap, index) => {
-                                        const sourceLayer = settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.source_network?.toLowerCase())
-                                        const sourceToken = sourceLayer?.assets?.find(a => a?.asset == swap?.source_network_asset)
+                                        const input_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Input)
+                                        const output_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Output)
 
-                                        const sourceExchange = settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.source_exchange?.toLowerCase())
-                                        const destinationExchange = settings?.exchanges?.find(l => l.internal_name?.toLowerCase() === swap.destination_exchange?.toLowerCase())
+                                        const sourceNetwork = swap?.source_network
+                                        const sourceToken = swap?.source_token
 
-                                        const destinationLayer = settings?.layers?.find(l => l.internal_name?.toLowerCase() === swap.destination_network?.toLowerCase())
-                                        const destinationToken = destinationLayer?.assets?.find(a => a?.asset == swap?.destination_network_asset)
+                                        const sourceExchange = swap?.source_exchange
+                                        const destinationExchange = swap?.destination_exchange
 
-                                        const input_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Input);
-                                        const output_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Output);
+                                        const destinationNetwork = swap?.destination_network
+                                        const destinationToken = swap?.destination_token
 
                                         return (
-                                            <tr key={index} onClick={() => router.push(`/${input_transaction?.transaction_id}`)} className="cursor-pointer hover:bg-secondary-600">
+                                            <tr key={index} onClick={() => router.push(`/${input_transaction?.transaction_hash}`)} className="cursor-pointer hover:bg-secondary-600">
                                                 <td className="whitespace-nowrap py-2 px-3 text-sm font-medium text-white flex flex-col">
                                                     <div className="flex flex-row items-center text-btn-success bg-btn-success py-1 rounded">
                                                         {DestTxStatus(swap)}
@@ -81,24 +78,24 @@ export default function DataTable() {
                                                                 <div className="flex flex-row items-center">
                                                                     <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                         <span>
-                                                                            <Image alt={`Source token icon ${index}`} src={settings?.resolveImgSrc(sourceToken) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                                            <Image alt={`Source token icon ${index}`} src={sourceToken?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
                                                                         </span>
                                                                     </div>
                                                                     <div className="mx-2.5">
                                                                         <span className="text-white">{input_transaction?.amount}</span>
-                                                                        <span className="mx-1 text-white">{swap?.source_network_asset}</span>
+                                                                        <span className="mx-1 text-white">{sourceToken?.symbol}</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div className="text-sm md:text-base flex flex-row items-center">
                                                                 <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                     <span>
-                                                                        <Image alt={`Source chain icon ${index}`} src={settings?.resolveImgSrc(sourceExchange ? sourceExchange : sourceLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                                        <Image alt={`Source chain icon ${index}`} src={sourceExchange ? sourceExchange?.logo : sourceNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-2 text-white">
-                                                                    <Link href={`${sourceLayer?.transaction_explorer_template?.replace('{0}', (input_transaction?.transaction_id || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
-                                                                        <span className="mx-0.5 hover:text-gray-300 underline hover:no-underline">{sourceExchange ? sourceExchange?.display_name : sourceLayer?.display_name}</span>
+                                                                    <Link href={`${sourceNetwork?.transaction_explorer_template?.replace('{0}', (input_transaction?.transaction_hash || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                                        <span className="mx-0.5 hover:text-gray-300 underline hover:no-underline">{sourceExchange ? sourceExchange?.display_name : sourceNetwork?.display_name}</span>
                                                                     </Link>
                                                                 </div>
                                                             </div>
@@ -116,13 +113,13 @@ export default function DataTable() {
                                                                 <div className="flex flex-row items-center ml-4 mb-1">
                                                                     <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                         <span>
-                                                                            <Image alt={`Destination token icon ${index}`} src={settings?.resolveImgSrc(destinationToken) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                                            <Image alt={`Destination token icon ${index}`} src={destinationToken?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
                                                                         </span>
                                                                     </div>
                                                                     {output_transaction?.amount ?
                                                                         <div className="mx-2.5">
                                                                             <span className="text-white">{output_transaction?.amount}</span>
-                                                                            <span className="mx-1 text-white">{swap?.destination_network_asset}</span>
+                                                                            <span className="mx-1 text-white">{destinationToken?.symbol}</span>
                                                                         </div>
                                                                         :
                                                                         <span className="ml-2.5">-</span>
@@ -132,17 +129,17 @@ export default function DataTable() {
                                                             <div className="text-sm md:text-base flex flex-row items-center ml-4">
                                                                 <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                     <span>
-                                                                        <Image alt={`Destination chain icon ${index}`} src={settings?.resolveImgSrc(destinationExchange ? destinationExchange : destinationLayer) || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                                        <Image alt={`Destination chain icon ${index}`} src={destinationExchange ? destinationExchange?.logo : destinationNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-2 text-white">
                                                                     {
-                                                                        output_transaction?.transaction_id ?
-                                                                            <Link href={`${destinationLayer?.transaction_explorer_template?.replace('{0}', (output_transaction?.transaction_id || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
-                                                                                <span className={`underline mx-0.5 hover:text-gray-300 hover:no-underline`}>{destinationExchange ? destinationExchange?.display_name : destinationLayer?.display_name}</span>
+                                                                        output_transaction?.transaction_hash ?
+                                                                            <Link href={`${destinationNetwork?.transaction_explorer_template?.replace('{0}', (output_transaction?.transaction_hash || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
+                                                                                <span className={`underline mx-0.5 hover:text-gray-300 hover:no-underline`}>{destinationExchange ? destinationExchange?.display_name : destinationNetwork?.display_name}</span>
                                                                             </Link>
                                                                             :
-                                                                            <span className={`mx-0.5`}>{destinationExchange ? destinationExchange?.display_name : destinationLayer?.display_name}</span>
+                                                                            <span className={`mx-0.5`}>{destinationExchange ? destinationExchange?.display_name : destinationNetwork?.display_name}</span>
                                                                     }
                                                                 </div>
                                                             </div>
