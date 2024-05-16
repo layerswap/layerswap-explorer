@@ -34,7 +34,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const apiClient = new LayerSwapApiClient()
 
     const { data, error, isLoading } = useSWR<ApiResponse<SwapData[]>>(`/explorer/${searchParam}?version=${process.env.NEXT_PUBLIC_API_VERSION}`, apiClient.fetcher, { dedupingInterval: 60000 });
-    
+
     const swap = data?.data?.[0]?.swap
     const quote = data?.data?.[0]?.quote
     const refuel = data?.data?.[0]?.refuel
@@ -429,7 +429,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 <div className="text-base font-normal text-socket-secondary">Native Asset</div>
                                                 <div className="flex items-center">
                                                     <div className="flex items-center">
-                                                        <Image alt="Destination token icon" src={destinationToken?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                        <Image alt="Destination token icon" src={refuel?.token?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
                                                         <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{truncateDecimals(refuel?.amount, refuel?.token?.precision)} {refuel?.token?.symbol}</span>
                                                     </div>
                                                 </div>
