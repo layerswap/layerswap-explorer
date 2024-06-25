@@ -6,7 +6,7 @@ import Script from 'next/script'
 
 export const metadata: Metadata = {
   title: 'Layerswap Explorer',
-  description: 'Explore your swaps',
+  description: 'Layerswap Explorer provides a detailed view of all transactions going through Layerswap. Search by address or transaction hash to get the information you need.',
 }
 
 export default function RootLayout({
