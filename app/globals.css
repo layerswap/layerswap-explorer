@@ -162,16 +162,12 @@ textarea:disabled::placeholder {
 .pendingAnim {
   top: -4px;
   left: 0;
-  width: 0;
-  right: 100%;
   height: 4px;
   border-radius: 50%;
-  background: linear-gradient(90deg,
-      transparent 50%,
-      #facc15,
-      #d0a90f);
+  background: linear-gradient(90deg, transparent 50%, #facc15, #d0a90f);
   position: absolute;
   animation: animateTop 2s linear infinite;
+  will-change: transform, opacity;
 }
 
 @keyframes animateTop {
@@ -179,23 +175,34 @@ textarea:disabled::placeholder {
     left: 0%;
     right: 100%;
     width: 0%;
+    opacity: 1;
   }
 
   20% {
     left: 0%;
     right: 80%;
     width: 20%;
+    opacity: 1;
   }
 
   80% {
     right: 0%;
     left: 20%;
     width: 60%;
+    opacity: 1;
+  }
+
+  90% {
+    left: 80%;
+    right: 20%;
+    width: 20%;
+    opacity: 0;
   }
 
   100% {
     left: 100%;
     right: 0%;
     width: 0%;
+    opacity: 0;
   }
 }
