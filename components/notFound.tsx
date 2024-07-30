@@ -10,7 +10,7 @@ export default function NotFound() {
                 <p className="text-base text-primary-text-placeholder mt-2">Please make sure you entered a valid address/source Tx/destination TX.</p>
                 <span className="text-base text-primary-text-placeholder block">if the issue persists, you can contact our support.</span>
                 <div className="flex items-center mt-6 gap-x-3">
-                    <Link href={'/'} className="w-full px-5 py-2 text-sm tracking-wide text-primary-text transition-colors duration-200 bg-secondary-600 rounded-lg shrink-0 sm:w-auto hover:bg-secondary-700/80">
+                    <Link href="/" className="w-full px-5 py-2 text-sm tracking-wide text-primary-text transition-colors duration-200 bg-secondary-600 rounded-lg shrink-0 sm:w-auto hover:bg-secondary-700/80">
                         Clear search
                     </Link>
                 </div>
