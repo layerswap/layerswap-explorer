@@ -1,24 +1,20 @@
-import BackBtn from "@/helpers/BackButton";
 import Link from "next/link";
+import { NotFoundBackground } from "./icons/NotFoundBackground";
 
 export default function NotFound() {
     return (
-    <section>
-        <div className="px-6 py-12 mx-auto">
-            <div className="flex flex-col justify-center items-center">
-                <p className="text-sm font-medium text-priamry-text">We can’t find that</p>
-                <h1 className="mt-3 text-2xl font-semibold text-white md:text-3xl">If you think it’s a mistake, contact us</h1>
-
+        <section className="fixed inset-0 flex items-center justify-center">
+            <NotFoundBackground className="absolute"/>
+            <div className="flex flex-col items-center justify-center text-center p-4 relative z-20">
+                <h1 className="text-2xl font-semibold text-white md:text-4xl">We Couldn't find any logs</h1>
+                <p className="text-base text-primary-text-placeholder mt-2">Please make sure you entered a valid address/source Tx/destination TX.</p>
+                <span className="text-base text-primary-text-placeholder block">if the issue persists, you can contact our support.</span>
                 <div className="flex items-center mt-6 gap-x-3">
-                    <div className='hover:bg-secondary-600 hover:text-accent-foreground rounded ring-offset-background transition-colors'>
-                        <BackBtn />
-                    </div>
-                    <Link href={'http://discord.gg/layerswap'} target="_blank" className="w-1/2 px-5 py-2 text-sm tracking-wide text-white transition-colors duration-200 bg-primary-500 rounded-lg shrink-0 sm:w-auto hover:bg-primary-500/80">
-                        Contact support
+                    <Link href={'/'} className="w-full px-5 py-2 text-sm tracking-wide text-primary-text transition-colors duration-200 bg-secondary-600 rounded-lg shrink-0 sm:w-auto hover:bg-secondary-700/80">
+                        Clear search
                     </Link>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
     )
 }
