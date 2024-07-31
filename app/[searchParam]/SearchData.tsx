@@ -14,7 +14,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useRouter } from "next/navigation";
 import BackBtn from "@/helpers/BackButton";
 import { usePathname } from 'next/navigation'
-import Error500 from "@/components/Error500";
 import { getTimeDifferenceFromNow } from "@/components/utils/CalcTime";
 import { SwapData, TransactionType } from "@/models/Swap";
 import LayerSwapApiClient from "@/lib/layerSwapApiClient";
@@ -55,9 +54,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const filteredData = data?.data?.filter(s => s?.swap?.transactions?.some(t => t?.type == TransactionType.Input))?.map(s => s?.swap);
     const emptyData = data?.data?.every(s => !s?.swap?.transactions.length);
 
-    if (error) return <Error500 />
+    if (error || emptyData) return <NotFound />
     if (isLoading) return <LoadingBlocks />
-    if (data?.error || emptyData) return <NotFound />
 
     return (Number(data?.data?.length) > 1 ?
         <div className="px-4 sm:px-6 lg:px-8 w-full">
