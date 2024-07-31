@@ -1,13 +1,19 @@
 "use client"
 
 import { SearchIcon, XCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const Search = () => {
-    const [searchParam, setSearchParam] = useState('');
+    const params = useParams()
+
+    const [searchParam, setSearchParam] = useState(params.searchParam || '');
     const router = useRouter();
 
+    useEffect(() => {
+        setSearchParam(params.searchParam || '');
+    }, [params.searchParam]);
+    
     const handleKeyDown = (event: any) => {
         if (event.key === 'Enter') {
             handleSearch()
