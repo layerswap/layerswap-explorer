@@ -60,7 +60,7 @@ export default function DataTable() {
                                         const destinationToken = swap?.destination_token
 
                                         return (
-                                            <tr key={index} onClick={() => router.push(`/${input_transaction?.transaction_hash}`)} className="cursor-pointer hover:bg-secondary-600">
+                                            <tr key={index} onClick={() => router.push(`/${encodeURIComponent(String(input_transaction?.transaction_hash))}`)} className="cursor-pointer hover:bg-secondary-600">
                                                 <td className="whitespace-nowrap py-2 px-3 text-sm font-medium text-white flex flex-col">
                                                     <div className="flex flex-row items-center text-btn-success bg-btn-success py-1 rounded">
                                                         {DestTxStatus(swap)}

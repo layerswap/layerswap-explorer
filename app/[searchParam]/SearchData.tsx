@@ -110,7 +110,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                             return
 
                                         return (
-                                            <tr key={index} onClick={(e) => router.push(`/${inputTransaction?.transaction_hash}`)} className="hover:bg-secondary-600 hover:cursor-pointer">
+                                            <tr key={index} onClick={() => router.push(`/${encodeURIComponent(String(inputTransaction?.transaction_hash))}`)} className="hover:bg-secondary-600 hover:cursor-pointer">
                                                 <td className="whitespace-nowrap py-2 px-3 text-sm font-medium text-white flex flex-col">
                                                     <Link href={`/${inputTransaction?.transaction_hash}`} onClick={(e) => e.stopPropagation()} className="hover:text-gray-300 inline-flex items-center w-fit">
                                                         {shortenAddress(inputTransaction?.transaction_hash)}
