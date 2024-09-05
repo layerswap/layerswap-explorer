@@ -31,8 +31,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const basePath = process.env.NEXT_PUBLIC_APP_BASE_PATH
 
     const apiClient = new LayerSwapApiClient()
-
-    const { data, error, isLoading } = useSWR<ApiResponse<SwapData[]>>(`/explorer/${searchParam}?version=${process.env.NEXT_PUBLIC_API_VERSION}`, apiClient.fetcher, { dedupingInterval: 60000 });
+    const decodedSearchParam = decodeURIComponent(searchParam)
+    const { data, error, isLoading } = useSWR<ApiResponse<SwapData[]>>(`/explorer/${decodedSearchParam}?version=${process.env.NEXT_PUBLIC_API_VERSION}`, apiClient.fetcher, { dedupingInterval: 60000 });
 
     const swap = data?.data?.[0]?.swap
     const quote = data?.data?.[0]?.quote
@@ -110,7 +110,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                             return
 
                                         return (
-                                            <tr key={index} onClick={() => router.push(`/${encodeURIComponent(String(inputTransaction?.transaction_hash))}`)} className="hover:bg-secondary-600 hover:cursor-pointer">
+                                            <tr key={index} onClick={(e) => router.push(`/${encodeURIComponent(String(inputTransaction?.transaction_hash))}`)} className="hover:bg-secondary-600 hover:cursor-pointer">
                                                 <td className="whitespace-nowrap py-2 px-3 text-sm font-medium text-white flex flex-col">
                                                     <Link href={`/${inputTransaction?.transaction_hash}`} onClick={(e) => e.stopPropagation()} className="hover:text-gray-300 inline-flex items-center w-fit">
                                                         {shortenAddress(inputTransaction?.transaction_hash)}
