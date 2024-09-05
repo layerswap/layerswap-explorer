@@ -26,10 +26,10 @@ export default function Header() {
                         <LayerswapExplorerLogo className="h-14 w-auto text-primary-logoColor" />
                     </Link>
                     <div className="flex">
-                        <Link target='_blank' href={'https://www.layerswap.io/app'} className='px-2 sm:px-3 py-1 sm:py-2 hover:border-white/50 flex items-center gap-1 text-white text-sm sm:text-base duration-200 transition-colors'>
+                        <Link target='_blank' href={'https://www.layerswap.io/app'} className='px-2 sm:px-3 py-1 sm:py-2 hover:opacity-70 flex items-center gap-1 text-white text-sm sm:text-base transition-all duartion-200'>
                             <span>App</span>
                         </Link>
-                        <Link target='_blank' href={'https://docs.layerswap.io'} className='px-2 sm:px-3 py-1 sm:py-2 hover:border-white/50 flex items-center gap-1 text-white text-sm sm:text-base duration-200 transition-colors'>
+                        <Link target='_blank' href={'https://docs.layerswap.io'} className='px-2 sm:px-3 py-1 sm:py-2 hover:opacity-70 flex items-center gap-1 text-white text-sm sm:text-base transition-all duartion-200'>
                             <span>Docs</span>
                         </Link>
                     </div>
