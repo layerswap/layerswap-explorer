@@ -8,9 +8,11 @@ export default async function Home() {
     return <MaintananceContent />
 
   return (
-    <main className="w-full py-5 px-6 xl:px-0 h-full flex flex-col flex-1">
+    <main className="w-full pb-5 px-6 xl:px-0 h-full flex flex-col">
+      <div className="mx-auto w-full px-6 lg:px-8 flex flex-col">
         <Search />
-        <DataTable />
+      </div>
+      <DataTable />
     </main>
   )
 }

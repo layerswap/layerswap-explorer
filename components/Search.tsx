@@ -1,13 +1,19 @@
 "use client"
 
 import { SearchIcon, XCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const Search = () => {
-    const [searchParam, setSearchParam] = useState('');
+    const params = useParams()
+
+    const [searchParam, setSearchParam] = useState(params.searchParam || '');
     const router = useRouter();
 
+    useEffect(() => {
+        setSearchParam(params.searchParam || '');
+    }, [params.searchParam]);
+    
     const handleKeyDown = (event: any) => {
         if (event.key === 'Enter') {
             handleSearch()
@@ -29,7 +35,7 @@ const Search = () => {
     }
 
     return (
-        <div className="w-full mt-5 flex items-center">
+        <div className="w-full mt-5 flex items-center ">
             <div className="relative w-full pl-2 bg-secondary-700 p-1.5 rounded-md">
                 <input
                     type="text"
@@ -47,8 +53,9 @@ const Search = () => {
             </div>
             <div className="p-2">
                 <button
+                    disabled={!searchParam}
                     onClick={handleSearch}
-                    className="rounded-lg bg-primary-500 shadow-lg p-2 hover:bg-primary-700 hover:text-primary-text active:scale-90 duration-200 transition-all font-sans text-xs text-white"
+                    className="disabled:bg-primary-text-muted disabled:hover:text-white rounded-lg bg-primary-500 shadow-lg p-2 hover:bg-primary-700 hover:text-primary-text active:scale-90 duration-200 transition-all font-sans text-xs text-white"
                 >
                     <SearchIcon className="h-5 w-5" />
                 </button>
