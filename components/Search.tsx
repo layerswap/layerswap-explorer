@@ -21,7 +21,7 @@ const Search = () => {
 
     const handleSearch = () => {
         const url = getLastPart(searchParam)
-        router.push(`/${encodeURIComponent(String(url))}`)
+        router.push(`/${url}`)
     }
 
     const clearSearch = () => {
