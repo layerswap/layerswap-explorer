@@ -31,7 +31,6 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const basePath = process.env.NEXT_PUBLIC_APP_BASE_PATH
 
     const apiClient = new LayerSwapApiClient()
-
     const { data, error, isLoading } = useSWR<ApiResponse<SwapData[]>>(`/explorer/${searchParam}?version=${process.env.NEXT_PUBLIC_API_VERSION}`, apiClient.fetcher, { dedupingInterval: 60000 });
 
     const swap = data?.data?.[0]?.swap

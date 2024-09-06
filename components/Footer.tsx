@@ -80,7 +80,7 @@ const Footer = () => {
             </div>
             <div className="mt-3 order-1 md:mt-0 place-self-start">
                 <p className="text-center text-xs text-primary-text-muted leading-6">
-                    &copy; {new Date().getFullYear()} Bransfer, Inc. All rights reserved.
+                    &copy; {new Date().getFullYear()} Layerswap Labs, Inc. All rights reserved.
                 </p>
             </div>
         </footer>
