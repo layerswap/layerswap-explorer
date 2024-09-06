@@ -88,7 +88,6 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                             Destination
                                         </th>
                                         <th scope="col" className="sticky top-0 px-4 py-3.5 text-left text-sm font-semibold text-white rounded-tr-lg">
-
                                         </th>
                                     </tr>
                                 </thead>
