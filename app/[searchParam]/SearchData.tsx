@@ -333,7 +333,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                 {input_transaction?.confirmations >= input_transaction?.max_confirmations ?
                                     null
                                     :
-                                    <div className="flex-1">
+                                    <div className="flex-1  px-4 pb-2">
                                         <div className="text-base font-normal text-socket-secondary">
                                             Confirmations
                                             <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-1">
