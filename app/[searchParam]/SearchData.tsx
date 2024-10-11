@@ -18,7 +18,15 @@ import { getTimeDifferenceFromNow } from "@/components/utils/CalcTime";
 import { SwapData, TransactionType } from "@/models/Swap";
 import LayerSwapApiClient from "@/lib/layerSwapApiClient";
 
-const options = {
+const optionsWithYear = {
+    year: 'numeric' as const,
+    month: 'short' as const,
+    day: 'numeric' as const,
+    hour: 'numeric' as const,
+    minute: 'numeric' as const,
+};
+
+const optionsWithoutYear = {
     month: 'short' as const,
     day: 'numeric' as const,
     hour: 'numeric' as const,
@@ -52,6 +60,9 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
 
     const filteredData = data?.data?.filter(s => s?.swap?.transactions?.some(t => t?.type == TransactionType.Input))?.map(s => s?.swap);
     const emptyData = data?.data?.every(s => !s?.swap?.transactions.length);
+
+    const currentYear = new Date().getFullYear();
+    const isCurrentYear = new Date(input_transaction?.timestamp || '').getFullYear() === currentYear
 
     if (error || emptyData) return <NotFound />
     if (isLoading) return <LoadingBlocks />
@@ -227,7 +238,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                     <span className="whitespace-nowrap text-white align-bottom">&nbsp;
                                                         <TooltipProvider delayDuration={0}>
                                                             <Tooltip>
-                                                                <TooltipTrigger className="cursor-default">{new Date(input_transaction?.timestamp)?.toLocaleString('en-US', options)}.</TooltipTrigger>
+                                                                <TooltipTrigger className="cursor-default">{new Date(input_transaction?.timestamp)?.toLocaleString('en-US', isCurrentYear ? optionsWithoutYear : optionsWithYear)}.</TooltipTrigger>
                                                                 <TooltipContent>
                                                                     {new Date(swap.created_date).toUTCString()}
                                                                 </TooltipContent>
@@ -253,7 +264,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                         <span className="whitespace-nowrap text-white align-bottom">&nbsp;
                                                             <TooltipProvider delayDuration={0}>
                                                                 <Tooltip>
-                                                                    <TooltipTrigger className="cursor-default">{new Date(input_transaction?.timestamp)?.toLocaleString('en-US', options)}.</TooltipTrigger>
+                                                                    <TooltipTrigger className="cursor-default">{new Date(input_transaction?.timestamp)?.toLocaleString('en-US', isCurrentYear ? optionsWithoutYear : optionsWithYear)}.</TooltipTrigger>
                                                                     <TooltipContent>
                                                                         {new Date(swap.created_date).toUTCString()}
                                                                     </TooltipContent>
