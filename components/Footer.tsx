@@ -7,8 +7,8 @@ const Footer = () => {
             { name: 'Product', href: '/' },
             { name: 'Company', href: '/company' },
             { name: 'FAQ', href: '/faq' },
-            { name: 'Privacy Policy', href: 'https://docs.layerswap.io/information/privacy-policy' },
-            { name: 'Terms of Services', href: 'https://docs.layerswap.io/information/terms-of-services' },
+            { name: 'Privacy Policy', href: 'https://docs.layerswap.io/user-docs/more-information/privacy-policy' },
+            { name: 'Terms of Services', href: 'https://docs.layerswap.io/user-docs/more-information/terms-of-services' },
             { name: 'Docs', href: 'https://docs.layerswap.io/onboarding-sdk/' },
         ],
         social: [
@@ -71,10 +71,10 @@ const Footer = () => {
                 ))}
             </div>
             <div className="flex justify-center mt-3 md:mt-0 gap-6 order-2 place-self-center">
-                <Link target="_blank" href="https://docs.layerswap.io/information/privacy-policy" className="text-xs leading-6 text-primary-text-muted hover:text-opacity-70 duration-200 transition-all">
+                <Link target="_blank" href="https://docs.layerswap.io/user-docs/more-information/privacy-policy" className="text-xs leading-6 text-primary-text-muted hover:text-opacity-70 duration-200 transition-all">
                     Privacy Policy
                 </Link>
-                <Link target="_blank" href="https://docs.layerswap.io/information/terms-of-services" className="text-xs leading-6 text-primary-text-muted hover:text-opacity-70 duration-200 transition-all">
+                <Link target="_blank" href="https://docs.layerswap.io/user-docs/more-information/terms-of-services" className="text-xs leading-6 text-primary-text-muted hover:text-opacity-70 duration-200 transition-all">
                     Terms of Services
                 </Link>
             </div>
