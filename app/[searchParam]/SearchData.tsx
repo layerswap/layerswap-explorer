@@ -119,7 +119,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                             return
 
                                         return (
-                                            <tr key={index} onClick={() => router.push(`/${encodeURIComponent(String(input_transaction?.transaction_hash))}`)} className="hover:bg-secondary-600 hover:cursor-pointer">
+                                            <tr key={index} onClick={() => router.push(`/${encodeURIComponent(String(inputTransaction?.transaction_hash))}`)} className="hover:bg-secondary-600 hover:cursor-pointer">
                                                 <td className="whitespace-nowrap py-2 px-3 text-sm font-medium text-white flex flex-col">
                                                     <Link href={`/${inputTransaction?.transaction_hash}`} onClick={(e) => e.stopPropagation()} className="hover:text-gray-300 inline-flex items-center w-fit">
                                                         {shortenAddress(inputTransaction?.transaction_hash)}
@@ -156,7 +156,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-2 text-white">
-                                                                    <Link href={`${sourceNetwork?.transaction_explorer_template?.replace('{0}', (input_transaction?.from || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                                    <Link href={`${sourceNetwork?.transaction_explorer_template?.replace('{0}', (inputTransaction?.from || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
                                                                         <span className="mx-0.5 hover:text-gray-300 underline">{sourceExchange ? sourceExchange?.display_name : sourceNetwork?.display_name}</span>
                                                                     </Link>
                                                                 </div>
@@ -197,7 +197,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-2 text-white">
-                                                                    <Link href={`${destinationNetwork?.transaction_explorer_template?.replace('{0}', (output_transaction?.transaction_hash || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!outputTransaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
+                                                                    <Link href={`${destinationNetwork?.transaction_explorer_template?.replace('{0}', (outputTransaction?.transaction_hash || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!outputTransaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
                                                                         <span className={`${outputTransaction?.transaction_hash ? "underline" : ""} mx-0.5 hover:text-gray-300`}>{destinationExchange ? destinationExchange?.display_name : destinationNetwork?.display_name}</span>
                                                                     </Link>
                                                                 </div>
