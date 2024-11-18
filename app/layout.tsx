@@ -4,8 +4,8 @@ import Footer from '@/components/Footer'
 import Script from 'next/script'
 
 export const metadata = {
-  title: 'Layerswap Explorer',
-  description: 'Layerswap Explorer provides a detailed view of all transactions going through Layerswap. Search by address or transaction hash to get the information you need.',
+  title: 'Layerswap Explorer: All the Transactions in One Place',
+  description: 'Layerswap Explorer provides a detailed view of all transactions going through Layerswap. Search by address or txn to get the information you need.',
   icons: {
     apple: '/favicon/apple-touch-icon.png',
   },
