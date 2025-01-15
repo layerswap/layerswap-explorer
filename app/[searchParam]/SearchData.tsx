@@ -445,7 +445,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 <div className="text-base font-normal text-socket-secondary">Transaction</div>
                                                 {refuel_transaction?.transaction_hash ?
                                                     <div className="flex items-center justify-between text-white hover:text-primary-text">
-                                                        <Link href={`${destinationNetwork?.transaction_explorer_template?.replace('{0}', refuel_transaction?.transaction_hash)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                        <Link href={`${refuel_transaction?.network?.transaction_explorer_template?.replace('{0}', refuel_transaction?.transaction_hash)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
                                                             <span className="break-all link link-underline link-underline-black">{shortenHash(refuel_transaction?.transaction_hash)}</span>
                                                         </Link>
                                                         <CopyButton toCopy={refuel_transaction?.transaction_hash} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
