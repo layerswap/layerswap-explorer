@@ -66,7 +66,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
 
     if (error || emptyData) return <NotFound />
     if (isLoading) return <LoadingBlocks />
-
+console.log(quote?.total_fee,"quote?.total_fee")
+console.log(sourceToken?.precision,"sourceToken?.precision")
     return (Number(data?.data?.length) > 1 ?
         <div className="px-4 sm:px-6 lg:px-8 w-full">
             {!(pathname === '/' || pathname === basePath || pathname === `${basePath}/`) && <div className='hidden xl:block w-fit mb-1 hover:bg-secondary-600 hover:text-accent-foreground rounded ring-offset-background transition-colors -ml-5'>
@@ -468,5 +469,13 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
 }
 
 function truncateDecimals(value: number | undefined, decimals: number | undefined) {
-    return Number(value?.toFixed(decimals));
+    if (value === undefined || decimals === undefined) return value;
+    
+    const truncated = Number(value?.toFixed(decimals));
+
+    if (truncated.toString().includes('e')) {
+        return truncated.toFixed(decimals);
+    }
+
+    return truncated;
 }
