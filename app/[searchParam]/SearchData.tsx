@@ -136,7 +136,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                         </div>
                                                         <div className="flex flex-col">
                                                             <div className="text-sm md:text-base flex flex-row mb-1">
-                                                                <div className="flex flex-row items-center ml-4">
+                                                                <div className="flex flex-row items-center ml-4 whitespace-nowrap">
                                                                     <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                         <span>
                                                                             <span></span>
@@ -173,7 +173,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                         </div>
                                                         <div className="flex flex-col">
                                                             <div className="text-sm md:text-base flex flex-row">
-                                                                <div className="flex flex-row items-center ml-4 mb-1">
+                                                                <div className="flex flex-row items-center ml-4 mb-1 whitespace-nowrap">
                                                                     <div className="relative h-4 w-4 md:h-5 md:w-5">
                                                                         <span>
                                                                             <Image alt={`Destination token icon ${index}`} src={destinationToken?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
@@ -293,7 +293,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             </div>
                             <div className="rounded-md w-full grid text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border divide-y divide-secondary-500">
                                 <div className="flex justify-around">
-                                    <div className="flex-1 p-4">
+                                    <div className="flex-1 p-4 whitespace-nowrap">
                                         <div className="text-base font-normal text-socket-secondary">Asset</div>
                                         <div className="flex items-center">
                                             <span className="text-sm lg:text-base font-medium text-socket-table text-white flex items-center">
@@ -364,7 +364,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             </div>
                             <div className="rounded-md w-full grid text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border divide-y divide-secondary-500">
                                 <div className="flex justify-around">
-                                    <div className="flex-1 p-4">
+                                    <div className="flex-1 p-4 whitespace-nowrap">
                                         <div className="text-base font-normal text-socket-secondary">Asset</div>
                                         <div className="flex items-center">
                                             {output_transaction?.amount ?
