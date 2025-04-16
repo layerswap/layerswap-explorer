@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import Error500 from "@/components/Error500";
 import { SwapData, Swap, TransactionType } from "@/models/Swap";
 import LayerSwapApiClient from "@/lib/layerSwapApiClient";
+import { formatAmount } from "@/helpers/formatAmount";
 
 export default function DataTable() {
     const apiClient = new LayerSwapApiClient()
@@ -82,7 +83,7 @@ export default function DataTable() {
                                                                         </span>
                                                                     </div>
                                                                     <div className="mx-2.5">
-                                                                        <span className="text-white">{input_transaction?.amount}</span>
+                                                                        <span className="text-white">{formatAmount(input_transaction?.amount)}</span>
                                                                         <span className="mx-1 text-white">{sourceToken?.symbol}</span>
                                                                     </div>
                                                                 </div>
@@ -118,7 +119,7 @@ export default function DataTable() {
                                                                     </div>
                                                                     {output_transaction?.amount ?
                                                                         <div className="mx-2.5">
-                                                                            <span className="text-white">{output_transaction?.amount}</span>
+                                                                            <span className="text-white">{formatAmount(output_transaction?.amount)}</span>
                                                                             <span className="mx-1 text-white">{destinationToken?.symbol}</span>
                                                                         </div>
                                                                         :

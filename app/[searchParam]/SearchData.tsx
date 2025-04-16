@@ -17,6 +17,7 @@ import { usePathname } from 'next/navigation'
 import { getTimeDifferenceFromNow } from "@/components/utils/CalcTime";
 import { SwapData, TransactionType } from "@/models/Swap";
 import LayerSwapApiClient from "@/lib/layerSwapApiClient";
+import { formatAmount } from "@/helpers/formatAmount";
 
 const optionsWithYear = {
     year: 'numeric' as const,
@@ -66,8 +67,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
 
     if (error || emptyData) return <NotFound />
     if (isLoading) return <LoadingBlocks />
-console.log(quote?.total_fee,"quote?.total_fee")
-console.log(sourceToken?.precision,"sourceToken?.precision")
+
     return (Number(data?.data?.length) > 1 ?
         <div className="px-4 sm:px-6 lg:px-8 w-full">
             {!(pathname === '/' || pathname === basePath || pathname === `${basePath}/`) && <div className='hidden xl:block w-fit mb-1 hover:bg-secondary-600 hover:text-accent-foreground rounded ring-offset-background transition-colors -ml-5'>
@@ -144,7 +144,7 @@ console.log(sourceToken?.precision,"sourceToken?.precision")
                                                                         </span>
                                                                     </div>
                                                                     <div className="mx-2.5">
-                                                                        <span className="text-white">{inputTransaction?.amount}</span>
+                                                                        <span className="text-white">{formatAmount(inputTransaction?.amount)}</span>
                                                                         <span className="mx-1 text-white">{swap?.source_token?.symbol}</span>
                                                                     </div>
                                                                 </div>
@@ -182,7 +182,7 @@ console.log(sourceToken?.precision,"sourceToken?.precision")
                                                                     {
                                                                         outputTransaction?.amount ?
                                                                             <div className="mx-2.5">
-                                                                                <span className="text-white mx-0.5">{outputTransaction?.amount}</span>
+                                                                                <span className="text-white mx-0.5">{formatAmount(outputTransaction?.amount)}</span>
                                                                                 <span className="text-white">{swap?.destination_token?.symbol}</span>
                                                                             </div>
                                                                             :
@@ -298,7 +298,7 @@ console.log(sourceToken?.precision,"sourceToken?.precision")
                                         <div className="flex items-center">
                                             <span className="text-sm lg:text-base font-medium text-socket-table text-white flex items-center">
                                                 <Image alt="Source token icon" src={sourceToken?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
-                                                {input_transaction?.amount} {swap?.source_token?.symbol}
+                                                {formatAmount(input_transaction?.amount)} {swap?.source_token?.symbol}
                                             </span>
                                         </div>
                                     </div>
@@ -370,7 +370,7 @@ console.log(sourceToken?.precision,"sourceToken?.precision")
                                             {output_transaction?.amount ?
                                                 <div className="flex items-center">
                                                     <Image alt="Destination token icon" src={destinationToken?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
-                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{output_transaction?.amount} {swap?.destination_token?.symbol}</span>
+                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{formatAmount(output_transaction?.amount)} {swap?.destination_token?.symbol}</span>
                                                 </div>
                                                 :
                                                 <span>-</span>
