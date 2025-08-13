@@ -59,6 +59,22 @@ export default function StatusIcon({ swap }: { swap: string | undefined }) {
             <p>Expired</p>
           </div>
         </>)
+    case SwapStatus.PendingRefund:
+      return (
+        <>
+          <div className="inline-flex items-center">
+            <YellowIcon />
+            <p>Refund Pending</p>
+          </div>
+        </>)
+    case SwapStatus.Refunded:
+      return (
+        <>
+          <div className="inline-flex items-center">
+            <GreyIcon />
+            <p>Refunded</p>
+          </div>
+        </>)
   }
 }
 

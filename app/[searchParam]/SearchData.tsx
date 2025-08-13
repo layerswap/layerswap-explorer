@@ -40,7 +40,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const basePath = process.env.NEXT_PUBLIC_APP_BASE_PATH
 
     const apiClient = new LayerSwapApiClient()
-    const { data, error, isLoading } = useSWR<ApiResponse<SwapData[]>>(`/explorer/${searchParam}?version=${process.env.NEXT_PUBLIC_API_VERSION}`, apiClient.fetcher, { dedupingInterval: 60000 });
+    const { data, error, isLoading } = useSWR<ApiResponse<SwapData[]>>(`/explorer/${searchParam}?version=${process.env.NEXT_PUBLIC_API_VERSION}&statuses=Completed&statuses=PendingWithdrawal&statuses=PendingRefund&statuses=Refunded`, apiClient.fetcher, { dedupingInterval: 60000 });
 
     const swap = data?.data?.[0]?.swap
     const quote = data?.data?.[0]?.quote
@@ -49,6 +49,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const input_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Input)
     const output_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Output)
     const refuel_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Refuel);
+    const refund_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Refund);
 
     const sourceNetwork = swap?.source_network
     const sourceToken = swap?.source_token
@@ -115,6 +116,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
 
                                         const inputTransaction = swap?.transactions?.find(t => t?.type == TransactionType.Input);
                                         const outputTransaction = swap?.transactions?.find(t => t?.type == TransactionType.Output);
+                                        const refundTransaction = swap?.transactions?.find(t => t?.type == TransactionType.Refund);
 
                                         if (!inputTransaction)
                                             return
@@ -180,7 +182,12 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                         </span>
                                                                     </div>
                                                                     {
-                                                                        outputTransaction?.amount ?
+                                                                        (swap.status === SwapStatus.Refunded && refundTransaction?.amount) ?
+                                                                            <div className="mx-2.5">
+                                                                                <span className="text-white mx-0.5">{formatAmount(refundTransaction?.amount)}</span>
+                                                                                <span className="text-white">{swap?.source_token?.symbol}</span>
+                                                                            </div>
+                                                                        : outputTransaction?.amount ?
                                                                             <div className="mx-2.5">
                                                                                 <span className="text-white mx-0.5">{formatAmount(outputTransaction?.amount)}</span>
                                                                                 <span className="text-white">{swap?.destination_token?.symbol}</span>
@@ -198,9 +205,15 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-2 text-white">
-                                                                    <Link href={`${destinationNetwork?.transaction_explorer_template?.replace('{0}', (outputTransaction?.transaction_hash || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!outputTransaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
-                                                                        <span className={`${outputTransaction?.transaction_hash ? "underline" : ""} mx-0.5 hover:text-gray-300`}>{destinationExchange ? destinationExchange?.display_name : destinationNetwork?.display_name}</span>
-                                                                    </Link>
+                                                                    {(swap.status === SwapStatus.Refunded && refundTransaction?.transaction_hash) ?
+                                                                        <Link href={`${refundTransaction?.network?.transaction_explorer_template?.replace('{0}', (refundTransaction?.transaction_hash || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                                            <span className="underline mx-0.5 hover:text-gray-300">{refundTransaction?.network?.display_name || sourceNetwork?.display_name}</span>
+                                                                        </Link>
+                                                                        :
+                                                                        <Link href={`${destinationNetwork?.transaction_explorer_template?.replace('{0}', (outputTransaction?.transaction_hash || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!outputTransaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
+                                                                            <span className={`${outputTransaction?.transaction_hash ? "underline" : ""} mx-0.5 hover:text-gray-300`}>{destinationExchange ? destinationExchange?.display_name : destinationNetwork?.display_name}</span>
+                                                                        </Link>
+                                                                    }
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -358,16 +371,21 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                         </div>
                         <div className="rotate-90 lg:rotate-0 self-center"><ArrowRight className="text-white w-6 h-auto" /></div>
                         <div className="rounded-md w-full p-6 grid gap-y-3 text-primary-text bg-secondary-900 border-secondary-500 border-t-4 shadow-lg relative">
-                            {swap.status == SwapStatus.LsTransferPending || swap.status == SwapStatus.UserTransferPending ? <span className="pendingAnim"></span> : null}
+                            {swap.status == SwapStatus.LsTransferPending || swap.status == SwapStatus.UserTransferPending || swap.status == SwapStatus.PendingRefund ? <span className="pendingAnim"></span> : null}
                             <div className="flex items-center text-white">
-                                <div className="mr-2 text-primary-text text-2xl font-medium">To</div>
+                                <div className="mr-2 text-primary-text text-2xl font-medium">{swap.status === SwapStatus.Refunded ? "Refunded To" : "To"}</div>
                             </div>
                             <div className="rounded-md w-full grid text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border divide-y divide-secondary-500">
                                 <div className="flex justify-around">
                                     <div className="flex-1 p-4 whitespace-nowrap">
                                         <div className="text-base font-normal text-socket-secondary">Asset</div>
                                         <div className="flex items-center">
-                                            {output_transaction?.amount ?
+                                            {(swap.status === SwapStatus.Refunded && refund_transaction?.amount) ?
+                                                <div className="flex items-center">
+                                                    <Image alt="Refund token icon" src={sourceToken?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
+                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{formatAmount(refund_transaction?.amount)} {swap?.source_token?.symbol}</span>
+                                                </div>
+                                            : output_transaction?.amount ?
                                                 <div className="flex items-center">
                                                     <Image alt="Destination token icon" src={destinationToken?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
                                                     <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{formatAmount(output_transaction?.amount)} {swap?.destination_token?.symbol}</span>
@@ -378,10 +396,10 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         </div>
                                     </div>
                                     <div className="flex-1 p-4 border-secondary-600 border-l">
-                                        <div className="text-base font-normal text-socket-secondary">Destination</div>
+                                        <div className="text-base font-normal text-socket-secondary">{swap.status === SwapStatus.Refunded ? "Source" : "Destination"}</div>
                                         <div className="flex items-center">
-                                            <Image alt="Destination chain icon" src={destinationExchange ? destinationExchange?.logo : destinationNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
-                                            <span className="text-sm lg:text-base font-medium text-socket-table text-white">{destinationExchange ? destinationExchange?.display_name : destinationNetwork?.display_name}</span>
+                                            <Image alt={`${swap.status === SwapStatus.Refunded ? "Source" : "Destination"} chain icon`} src={swap.status === SwapStatus.Refunded ? (sourceExchange ? sourceExchange?.logo : sourceNetwork?.logo || '') : (destinationExchange ? destinationExchange?.logo : destinationNetwork?.logo || '')} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                            <span className="text-sm lg:text-base font-medium text-socket-table text-white">{swap.status === SwapStatus.Refunded ? (sourceExchange ? sourceExchange?.display_name : sourceNetwork?.display_name) : (destinationExchange ? destinationExchange?.display_name : destinationNetwork?.display_name)}</span>
                                         </div>
                                         {
                                             swap?.destination_exchange && destinationExchange &&
@@ -396,9 +414,16 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     </div>
                                 </div>
                                 <div className="flex flex-col p-4">
-                                    <div className="text-base font-normal text-socket-secondary">To Address</div>
+                                    <div className="text-base font-normal text-socket-secondary">{swap.status === SwapStatus.Refunded ? "Refund Address" : "To Address"}</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
-                                        {output_transaction?.to ?
+                                        {(swap.status === SwapStatus.Refunded && refund_transaction?.to) ?
+                                            <div className="flex items-center justify-between text-white hover:text-primary-text">
+                                                <Link href={`${refund_transaction?.network?.account_explorer_template?.replace("{0}", refund_transaction?.to)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                    <span className="break-all link link-underline link-underline-black">{refund_transaction?.to}</span>
+                                                </Link>
+                                                <CopyButton toCopy={refund_transaction?.to} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
+                                            </div>
+                                        : output_transaction?.to ?
                                             <div className="flex items-center justify-between text-white hover:text-primary-text">
                                                 <Link href={`${destinationNetwork?.account_explorer_template?.replace("{0}", output_transaction?.to)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
                                                     <span className="break-all link link-underline link-underline-black">{output_transaction?.to}</span>
@@ -413,7 +438,14 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                 <div className="flex flex-col p-4">
                                     <div className="text-base font-normal text-socket-secondary">Transaction</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
-                                        {output_transaction?.transaction_hash ?
+                                        {(swap.status === SwapStatus.Refunded && refund_transaction?.transaction_hash) ?
+                                            <div className="flex items-center justify-between text-white hover:text-primary-text">
+                                                <Link href={`${refund_transaction?.network?.transaction_explorer_template?.replace('{0}', refund_transaction?.transaction_hash)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                    <span className="break-all link link-underline link-underline-black">{shortenAddress(refund_transaction?.transaction_hash)}</span>
+                                                </Link>
+                                                <CopyButton toCopy={refund_transaction?.transaction_hash} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
+                                            </div>
+                                        : output_transaction?.transaction_hash ?
                                             <div className="flex items-center justify-between text-white hover:text-primary-text">
                                                 <Link href={`${destinationNetwork?.transaction_explorer_template?.replace('{0}', output_transaction?.transaction_hash)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
                                                     <span className="break-all link link-underline link-underline-black">{shortenAddress(output_transaction?.transaction_hash)}</span>
