@@ -18,6 +18,7 @@ import { getTimeDifferenceFromNow } from "@/components/utils/CalcTime";
 import { SwapData, TransactionType } from "@/models/Swap";
 import LayerSwapApiClient from "@/lib/layerSwapApiClient";
 import { formatAmount } from "@/helpers/formatAmount";
+import Refund from "@/components/RefundComp";
 
 const optionsWithYear = {
     year: 'numeric' as const,
@@ -49,6 +50,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const input_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Input)
     const output_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Output)
     const refuel_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Refuel);
+    const refunded_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Refunded);
 
     const sourceNetwork = swap?.source_network
     const sourceToken = swap?.source_token
@@ -227,19 +229,48 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                     {pathname !== '/' && <div className='hidden xl:block w-fit mb-1 hover:bg-secondary-600 hover:text-accent-foreground rounded ring-offset-background transition-colors -ml-5'>
                         <BackBtn />
                     </div>}
-                    <div className="md:ml-0 md:mb-6 flex-col sm:flex-row sm:justify-between sm:items-start">
-                        <div className="mb-4 sm:mb-0">
-                            <div className="text-sm md:text-base text-[#475467] dark:text-white sm:flex justify-between w-full">
-                                <div className="items-center text-base mb-0.5 text-white">
-                                    <div className="mr-2 sm:text-xl text-base">
-                                        {swap.status == SwapStatus.Completed && output_transaction ?
+                    <div className="md:ml-0 md:mb-2 flex-col sm:flex-row sm:justify-between sm:items-start">
+                        <div className="text-sm md:text-base text-[#475467] dark:text-white sm:flex justify-between w-full">
+                            <div className="items-center text-base mb-0.5 text-white w-full">
+                                <div className="mr-2 sm:text-xl text-base w-full">
+                                    {swap.status == SwapStatus.Completed && output_transaction ?
+                                        <div className="flex flex-col sm:flex-row mb-4">
+                                            <div><StatusIcon swap={swap.status} />
+                                                <span className="text-secondary-300 mx-1">|</span>
+                                                <span className="whitespace-nowrap text-primary-text align-bottom">Date:</span>
+                                                <span className="whitespace-nowrap text-white align-bottom">&nbsp;
+                                                    <TooltipProvider delayDuration={0}>
+                                                        <Tooltip>
+                                                            <TooltipTrigger className="cursor-default">{new Date(input_transaction?.timestamp)?.toLocaleString('en-US', isCurrentYear ? optionsWithoutYear : optionsWithYear)}</TooltipTrigger>
+                                                            <TooltipContent>
+                                                                {new Date(swap.created_date).toUTCString()}
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
+                                                </span>
+                                            </div>
+                                            <span className="text-secondary-300 mx-1">|</span>
+                                            <p className="sm:self-end">
+                                                <span className="sm:whitespace-nowrap sm:ml-0.5 text-primary-text">Duration:</span>
+                                                <span className="text-white">{getTimeDifferenceFromNow(input_transaction?.timestamp, output_transaction?.timestamp)}</span>
+                                            </p>
+                                            <span className="text-secondary-300 mx-1">|</span>
+                                            <p className="sm:self-end">
+                                                <span className="text-primary-text sm:ml-1">Cost:</span>
+                                                <span className="text-white">{truncateDecimals(quote?.total_fee, sourceToken?.precision)} {swap?.source_token?.symbol}</span>
+                                            </p>
+                                        </div>
+                                        :
+                                        swap.status !== SwapStatus.Completed ?
                                             <div className="flex flex-col sm:flex-row">
-                                                <div><StatusIcon swap={swap.status} />
-                                                    <span className="whitespace-nowrap text-primary-text align-bottom">&nbsp;at</span>
-                                                    <span className="whitespace-nowrap text-white align-bottom">&nbsp;
+                                                <div>
+                                                    <StatusIcon swap={swap.status} />
+                                                    <span className="text-secondary-300 mx-1">|</span>
+                                                    <span className="whitespace-nowrap text-primary-text align-bottom">Date:</span>
+                                                    <span className="whitespace-nowrap text-white align-bottom">
                                                         <TooltipProvider delayDuration={0}>
                                                             <Tooltip>
-                                                                <TooltipTrigger className="cursor-default">{new Date(input_transaction?.timestamp)?.toLocaleString('en-US', isCurrentYear ? optionsWithoutYear : optionsWithYear)}.</TooltipTrigger>
+                                                                <TooltipTrigger className="cursor-default">{new Date(input_transaction?.timestamp)?.toLocaleString('en-US', isCurrentYear ? optionsWithoutYear : optionsWithYear)}</TooltipTrigger>
                                                                 <TooltipContent>
                                                                     {new Date(swap.created_date).toUTCString()}
                                                                 </TooltipContent>
@@ -247,49 +278,26 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                         </TooltipProvider>
                                                     </span>
                                                 </div>
+                                                <span className="text-secondary-300 mx-1">|</span>
                                                 <p className="sm:self-end">
-                                                    <span className="sm:whitespace-nowrap sm:ml-0.5 text-primary-text">Took</span>
-                                                    <span className="text-white">&nbsp;{getTimeDifferenceFromNow(input_transaction?.timestamp, output_transaction?.timestamp)}</span>
-                                                </p>
-                                                <p className="sm:self-end">
-                                                    <span className="text-primary-text sm:ml-1">and cost</span>
-                                                    <span className="text-white">&nbsp;{truncateDecimals(quote?.total_fee, sourceToken?.precision)} {swap?.source_token?.symbol}</span>
+                                                    <span className="text-primary-text">({getTimeDifferenceFromNow(input_transaction?.timestamp, new Date().toString())} ago)</span>
                                                 </p>
                                             </div>
                                             :
-                                            swap.status !== SwapStatus.Completed ?
-                                                <div className="flex flex-col sm:flex-row">
-                                                    <div>
-                                                        <StatusIcon swap={swap.status} />
-                                                        <span className="whitespace-nowrap text-primary-text align-bottom">&nbsp;Published at</span>
-                                                        <span className="whitespace-nowrap text-white align-bottom">&nbsp;
-                                                            <TooltipProvider delayDuration={0}>
-                                                                <Tooltip>
-                                                                    <TooltipTrigger className="cursor-default">{new Date(input_transaction?.timestamp)?.toLocaleString('en-US', isCurrentYear ? optionsWithoutYear : optionsWithYear)}.</TooltipTrigger>
-                                                                    <TooltipContent>
-                                                                        {new Date(swap.created_date).toUTCString()}
-                                                                    </TooltipContent>
-                                                                </Tooltip>
-                                                            </TooltipProvider>
-                                                        </span>
-                                                    </div>
-                                                    <p className="sm:self-end">
-                                                        <span className="text-primary-text">&nbsp;({getTimeDifferenceFromNow(input_transaction?.timestamp, new Date().toString())} ago)</span>
-                                                    </p>
-                                                </div>
-                                                :
-                                                <div className="flex sm:flex-row"><StatusIcon swap={swap.status} />
-                                                </div>
-                                        }
-                                    </div>
+                                            <div className="flex sm:flex-row"><StatusIcon swap={swap.status} />
+                                            </div>
+                                    }
                                 </div>
                             </div>
                         </div>
                     </div>
+                    {
+                        refunded_transaction && <Refund refund={refunded_transaction} />
+                    }
                     <div className="flex flex-col lg:flex-row items-start rounded-md text-primary-text gap-4">
                         <div className="rounded-md w-full p-6 grid gap-y-3 items-baseline lg:max-w-[50%] bg-secondary-900 rounded-t-lg border-secondary-500 border-t-4 shadow-lg">
                             <div className="flex items-center text-white">
-                                <div className="mr-2 text-primary-text text-2xl font-medium">From</div>
+                                <div className="mr-2 text-2xl font-medium">From</div>
                             </div>
                             <div className="rounded-md w-full grid text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border divide-y divide-secondary-500">
                                 <div className="flex justify-around">
@@ -297,15 +305,15 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         <div className="text-base font-normal text-socket-secondary">Asset</div>
                                         <div className="flex items-center">
                                             <span className="text-sm lg:text-base font-medium text-socket-table text-white flex items-center">
-                                                <Image alt="Source token icon" src={sourceToken?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                                <Image alt="Source token icon" src={sourceToken?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-2" />
                                                 {formatAmount(input_transaction?.amount)} {swap?.source_token?.symbol}
                                             </span>
                                         </div>
                                     </div>
                                     <div className="flex-1 p-4 border-secondary-600 border-l">
-                                        <div className="text-base font-normal text-socket-secondary">Source</div>
+                                        <div className="text-base font-normal text-socket-secondary">Network</div>
                                         <div className="flex items-center">
-                                            <Image alt="Source chain icon" src={sourceExchange ? sourceExchange?.logo : sourceNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                            <Image alt="Source chain icon" src={sourceExchange ? sourceExchange?.logo : sourceNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-2" />
                                             <span className="text-sm lg:text-base font-medium text-socket-table text-white">{sourceExchange ? sourceExchange?.display_name : sourceNetwork?.display_name}</span>
                                         </div>
                                         {
@@ -313,7 +321,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                             <div>
                                                 <div className="text-base font-normal text-socket-secondary">Via</div>
                                                 <div className="flex items-center">
-                                                    <Image alt="Source chain icon" src={sourceNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                                    <Image alt="Source chain icon" src={sourceNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-2" />
                                                     <span className="text-sm lg:text-base font-medium text-socket-table text-white">{sourceNetwork?.display_name}</span>
                                                 </div>
                                             </div>
@@ -360,17 +368,17 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                         <div className="rounded-md w-full p-6 grid gap-y-3 text-primary-text bg-secondary-900 border-secondary-500 border-t-4 shadow-lg relative">
                             {swap.status == SwapStatus.LsTransferPending || swap.status == SwapStatus.UserTransferPending ? <span className="pendingAnim"></span> : null}
                             <div className="flex items-center text-white">
-                                <div className="mr-2 text-primary-text text-2xl font-medium">To</div>
+                                <div className={`${swap.status == SwapStatus.Failed || swap.status == SwapStatus.Refunded ? 'text-[#FF6161]' : ''} mr-2 text-2xl font-medium`}>To</div>
                             </div>
                             <div className="rounded-md w-full grid text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border divide-y divide-secondary-500">
                                 <div className="flex justify-around">
                                     <div className="flex-1 p-4 whitespace-nowrap">
                                         <div className="text-base font-normal text-socket-secondary">Asset</div>
                                         <div className="flex items-center">
-                                            {output_transaction?.amount ?
+                                            {(output_transaction || refunded_transaction)?.amount ?
                                                 <div className="flex items-center">
                                                     <Image alt="Destination token icon" src={destinationToken?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
-                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{formatAmount(output_transaction?.amount)} {swap?.destination_token?.symbol}</span>
+                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{formatAmount((output_transaction || refunded_transaction)?.amount)} {swap?.destination_token?.symbol}</span>
                                                 </div>
                                                 :
                                                 <span>-</span>
@@ -378,9 +386,9 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         </div>
                                     </div>
                                     <div className="flex-1 p-4 border-secondary-600 border-l">
-                                        <div className="text-base font-normal text-socket-secondary">Destination</div>
+                                        <div className="text-base font-normal text-socket-secondary">Network</div>
                                         <div className="flex items-center">
-                                            <Image alt="Destination chain icon" src={destinationExchange ? destinationExchange?.logo : destinationNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                            <Image alt="Destination chain icon" src={destinationExchange ? destinationExchange?.logo : destinationNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-2" />
                                             <span className="text-sm lg:text-base font-medium text-socket-table text-white">{destinationExchange ? destinationExchange?.display_name : destinationNetwork?.display_name}</span>
                                         </div>
                                         {
@@ -388,7 +396,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                             <div>
                                                 <div className="text-base font-normal text-socket-secondary">Via</div>
                                                 <div className="flex items-center">
-                                                    <Image alt="Source chain icon" src={destinationNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-0.5" />
+                                                    <Image alt="Source chain icon" src={destinationNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-2" />
                                                     <span className="text-sm lg:text-base font-medium text-socket-table text-white">{destinationNetwork?.display_name}</span>
                                                 </div>
                                             </div>
@@ -398,10 +406,10 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                 <div className="flex flex-col p-4">
                                     <div className="text-base font-normal text-socket-secondary">To Address</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
-                                        {output_transaction?.to ?
+                                        {(output_transaction || refunded_transaction)?.to ?
                                             <div className="flex items-center justify-between text-white hover:text-primary-text">
-                                                <Link href={`${destinationNetwork?.account_explorer_template?.replace("{0}", output_transaction?.to)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                                    <span className="break-all link link-underline link-underline-black">{output_transaction?.to}</span>
+                                                <Link href={`${destinationNetwork?.account_explorer_template?.replace("{0}", (output_transaction || refunded_transaction)?.to || '')}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                    <span className="break-all link link-underline link-underline-black">{(output_transaction || refunded_transaction)?.to}</span>
                                                 </Link>
                                                 <CopyButton toCopy={swap?.destination_address} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                             </div>
@@ -421,7 +429,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 <CopyButton toCopy={output_transaction?.transaction_hash} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                             </div>
                                             :
-                                            <span>-</span>
+                                            <span>{refunded_transaction ? <span className="text-[#FF6161]">Failed</span> : "-"}</span>
                                         }
                                     </div>
                                 </div>
@@ -470,7 +478,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
 
 function truncateDecimals(value: number | undefined, decimals: number | undefined) {
     if (value === undefined || decimals === undefined) return value;
-    
+
     const truncated = Number(value?.toFixed(decimals));
 
     if (truncated.toString().includes('e')) {

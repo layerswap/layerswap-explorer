@@ -1,7 +1,7 @@
 "use client"
 import { ApiResponse } from "@/models/ApiResponse";
 import useSWR from "swr"
-import { ChevronRight } from "lucide-react";
+import { CheckCircle2, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import LoadingBlocks from "@/components/LoadingBlocks";
@@ -164,15 +164,26 @@ export default function DataTable() {
     )
 }
 
-
-function DestTxStatus(swap: Swap) {
+export function DestTxStatus(swap: Swap) {
     const swapStatus = swap?.status;
     const input_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Input);
     if (swapStatus == SwapStatus.LsTransferPending) {
-        return <span className="font-medium md:text-sm text-xs border p-1 rounded-md text-yellow-200 bg-yellow-100/20 !border-yellow-200/50">Pending</span>
+        return <div className="flex items-center space-x-1 px-2 py-1 rounded-lg text-[#FFC94A] bg-[#2F2B1D]">
+            <span className="w-3.5 h-3.5 rounded-full bg-[#FFC94A]"></span>
+            <span className="font-medium md:text-sm text-base">In Progress</span>
+        </div>
     } else if (swapStatus == SwapStatus.Failed && input_transaction) {
-        return <span className="font-medium md:text-sm text-xs border p-1 rounded-md text-red-200 bg-red-100/20 !border-red-200/50">Failed</span>
+        return <div className="flex items-center space-x-1 px-2 py-1 rounded-lg text-[#F5678D] bg-[#2E0713]">
+            <span className="font-medium md:text-sm text-base">Failed</span>
+        </div>
+    } else if (swapStatus == SwapStatus.Refunded) {
+        return <div className="flex items-center space-x-1 px-2 py-1 rounded-lg text-[#F5678D] bg-[#2E0713]">
+            <span className="font-medium md:text-sm text-base">Refunded</span>
+        </div>
     } else if (swapStatus == SwapStatus.Completed) {
-        return <span className="font-medium md:text-sm text-xs border p-1 rounded-md text-green-200 bg-green-100/20 !border-green-200/50">Completed</span>
+        return <div className="flex items-center space-x-1 px-2 py-1 rounded-lg text-[#59E07D] bg-[#0E2B16]">
+            <CheckCircle2 className="w-3.5 h-3.5 text-secondary-400 [&>path]:fill-[#59E07D]" />
+            <span className="font-medium md:text-sm text-base">Completed</span>
+        </div>
     }
 }
