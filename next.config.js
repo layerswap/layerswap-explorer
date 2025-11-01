@@ -2,7 +2,7 @@
 const nextConfig = {
     reactStrictMode: true,
     images: {
-        domains: ['prodlslayerswapbridgesa.blob.core.windows.net', 'devlslayerswapbridgesa.blob.core.windows.net'],
+        domains: ['prodlslayerswapbridgesa.blob.core.windows.net', 'devlslayerswapbridgesa.blob.core.windows.net', 'cdn.layerswap.io', 'cdn.layerswap.cloud'],
     },
 }
 if (process.env.NEXT_PUBLIC_APP_BASE_PATH) {
