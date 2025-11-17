@@ -71,8 +71,8 @@ export default function DataTable() {
                                                 <td className="whitespace-nowrap px-3 py-2 text-sm text-primary-text">
                                                     <div className="flex flex-row">
                                                         <div className="flex flex-col items-start mr-4">
-                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-1">Token:</span>
-                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end min-w-[70px]">Source:</span>
+                                                            <span className="text-sm md:text-base font-normal place-items-end mb-1">Token:</span>
+                                                            <span className="text-sm md:text-base font-normal place-items-end min-w-[70px]">Source:</span>
                                                         </div>
                                                         <div className="flex flex-col">
                                                             <div className="text-sm md:text-base flex flex-row mb-1">
@@ -106,8 +106,8 @@ export default function DataTable() {
                                                 <td className="whitespace-nowrap px-3 py-2 text-sm text-primary-text">
                                                     <div className="flex flex-row">
                                                         <div className="flex flex-col items-start">
-                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-1">Token:</span>
-                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end min-w-[70px]">Destination:</span>
+                                                            <span className="text-sm md:text-base font-normal place-items-end mb-1">Token:</span>
+                                                            <span className="text-sm md:text-base font-normal place-items-end min-w-[70px]">Destination:</span>
                                                         </div>
                                                         <div className="flex flex-col">
                                                             <div className="text-sm md:text-base flex flex-row">

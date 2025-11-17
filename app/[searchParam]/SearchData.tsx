@@ -133,8 +133,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 <td className="whitespace-nowrap px-3 py-2 text-sm text-primary-text">
                                                     <div className="flex flex-row">
                                                         <div className="flex flex-col items-start ">
-                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-1">Token:</span>
-                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end min-w-[70px]">Source:</span>
+                                                            <span className="text-sm md:text-base font-normal place-items-end mb-1">Token:</span>
+                                                            <span className="text-sm md:text-base font-normal place-items-end min-w-[70px]">Source:</span>
                                                         </div>
                                                         <div className="flex flex-col">
                                                             <div className="text-sm md:text-base flex flex-row mb-1">
@@ -170,8 +170,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                 <td className="whitespace-nowrap px-3 py-2 text-sm text-primary-text">
                                                     <div className="flex flex-row">
                                                         <div className="flex flex-col items-start ">
-                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end mb-1">Token:</span>
-                                                            <span className="text-sm md:text-base font-normal text-socket-ternary place-items-end min-w-[70px]">Destination:</span>
+                                                            <span className="text-sm md:text-base font-normal place-items-end mb-1">Token:</span>
+                                                            <span className="text-sm md:text-base font-normal place-items-end min-w-[70px]">Destination:</span>
                                                         </div>
                                                         <div className="flex flex-col">
                                                             <div className="text-sm md:text-base flex flex-row">
@@ -302,34 +302,34 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             <div className="rounded-md w-full grid text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border divide-y divide-secondary-500">
                                 <div className="flex justify-around">
                                     <div className="flex-1 p-4 whitespace-nowrap">
-                                        <div className="text-base font-normal text-socket-secondary">Asset</div>
+                                        <div className="text-base font-normal">Asset</div>
                                         <div className="flex items-center">
-                                            <span className="text-sm lg:text-base font-medium text-socket-table text-white flex items-center">
+                                            <span className="text-sm lg:text-base font-medium text-white flex items-center">
                                                 <Image alt="Source token icon" src={sourceToken?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-2" />
                                                 {formatAmount(input_transaction?.amount)} {swap?.source_token?.symbol}
                                             </span>
                                         </div>
                                     </div>
                                     <div className="flex-1 p-4 border-secondary-600 border-l">
-                                        <div className="text-base font-normal text-socket-secondary">Network</div>
+                                        <div className="text-base font-normal">Network</div>
                                         <div className="flex items-center">
                                             <Image alt="Source chain icon" src={sourceExchange ? sourceExchange?.logo : sourceNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-2" />
-                                            <span className="text-sm lg:text-base font-medium text-socket-table text-white">{sourceExchange ? sourceExchange?.display_name : sourceNetwork?.display_name}</span>
+                                            <span className="text-sm lg:text-base font-medium text-white">{sourceExchange ? sourceExchange?.display_name : sourceNetwork?.display_name}</span>
                                         </div>
                                         {
                                             swap?.source_exchange && sourceExchange &&
                                             <div>
-                                                <div className="text-base font-normal text-socket-secondary">Via</div>
+                                                <div className="text-base font-normal">Via</div>
                                                 <div className="flex items-center">
                                                     <Image alt="Source chain icon" src={sourceNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-2" />
-                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white">{sourceNetwork?.display_name}</span>
+                                                    <span className="text-sm lg:text-base font-medium text-white">{sourceNetwork?.display_name}</span>
                                                 </div>
                                             </div>
                                         }
                                     </div>
                                 </div>
                                 <div className="flex flex-col p-4">
-                                    <div className="text-base font-normal text-socket-secondary">From Address</div>
+                                    <div className="text-base font-normal">From Address</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
                                         <div className="flex justify-between items-center text-white hover:text-primary-text">
                                             <Link href={`${sourceNetwork?.account_explorer_template?.replace('{0}', input_transaction?.from)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
@@ -340,7 +340,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     </div>
                                 </div>
                                 <div className="flex flex-col p-4">
-                                    <div className="text-base font-normal text-socket-secondary">Transaction</div>
+                                    <div className="text-base font-normal">Transaction</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
                                         <div className="flex items-center justify-between text-white hover:text-primary-text">
                                             <Link href={`${sourceNetwork?.transaction_explorer_template?.replace('{0}', input_transaction?.transaction_hash)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center second-link">
@@ -354,9 +354,9 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     null
                                     :
                                     <div className="flex-1  px-4 pb-2">
-                                        <div className="text-base font-normal text-socket-secondary">
+                                        <div className="text-base font-normal">
                                             Confirmations
-                                            <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-1">
+                                            <span className="text-sm lg:text-base font-medium text-white ml-1">
                                                 {input_transaction?.confirmations >= input_transaction?.max_confirmations ? input_transaction?.max_confirmations : input_transaction?.confirmations}/{input_transaction?.max_confirmations}
                                             </span>
                                         </div>
@@ -373,12 +373,12 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             <div className="rounded-md w-full grid text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border divide-y divide-secondary-500">
                                 <div className="flex justify-around">
                                     <div className="flex-1 p-4 whitespace-nowrap">
-                                        <div className="text-base font-normal text-socket-secondary">Asset</div>
+                                        <div className="text-base font-normal">Asset</div>
                                         <div className="flex items-center">
                                             {(output_transaction || refunded_transaction)?.amount ?
                                                 <div className="flex items-center">
                                                     <Image alt="Destination token icon" src={destinationToken?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
-                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{formatAmount((output_transaction || refunded_transaction)?.amount)} {swap?.destination_token?.symbol}</span>
+                                                    <span className="text-sm lg:text-base font-medium text-white ml-0.5">{formatAmount((output_transaction || refunded_transaction)?.amount)} {swap?.destination_token?.symbol}</span>
                                                 </div>
                                                 :
                                                 <span>-</span>
@@ -386,25 +386,25 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                         </div>
                                     </div>
                                     <div className="flex-1 p-4 border-secondary-600 border-l">
-                                        <div className="text-base font-normal text-socket-secondary">Network</div>
+                                        <div className="text-base font-normal">Network</div>
                                         <div className="flex items-center">
                                             <Image alt="Destination chain icon" src={destinationExchange ? destinationExchange?.logo : destinationNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-2" />
-                                            <span className="text-sm lg:text-base font-medium text-socket-table text-white">{destinationExchange ? destinationExchange?.display_name : destinationNetwork?.display_name}</span>
+                                            <span className="text-sm lg:text-base font-medium text-white">{destinationExchange ? destinationExchange?.display_name : destinationNetwork?.display_name}</span>
                                         </div>
                                         {
                                             swap?.destination_exchange && destinationExchange &&
                                             <div>
-                                                <div className="text-base font-normal text-socket-secondary">Via</div>
+                                                <div className="text-base font-normal">Via</div>
                                                 <div className="flex items-center">
                                                     <Image alt="Source chain icon" src={destinationNetwork?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-2" />
-                                                    <span className="text-sm lg:text-base font-medium text-socket-table text-white">{destinationNetwork?.display_name}</span>
+                                                    <span className="text-sm lg:text-base font-medium text-white">{destinationNetwork?.display_name}</span>
                                                 </div>
                                             </div>
                                         }
                                     </div>
                                 </div>
                                 <div className="flex flex-col p-4">
-                                    <div className="text-base font-normal text-socket-secondary">To Address</div>
+                                    <div className="text-base font-normal">To Address</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
                                         {(output_transaction || refunded_transaction)?.to ?
                                             <div className="flex items-center justify-between text-white hover:text-primary-text">
@@ -419,7 +419,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     </div>
                                 </div>
                                 <div className="flex flex-col p-4">
-                                    <div className="text-base font-normal text-socket-secondary">Transaction</div>
+                                    <div className="text-base font-normal">Transaction</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
                                         {output_transaction?.transaction_hash ?
                                             <div className="flex items-center justify-between text-white hover:text-primary-text">
@@ -442,16 +442,16 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     <div className="rounded-md w-full grid gap-y-3 text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border">
                                         <div className="flex justify-around">
                                             <div className="flex-1 p-4">
-                                                <div className="text-base font-normal text-socket-secondary">Native Asset</div>
+                                                <div className="text-base font-normal">Native Asset</div>
                                                 <div className="flex items-center">
                                                     <div className="flex items-center">
                                                         <Image alt="Destination token icon" src={refuel?.token?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
-                                                        <span className="text-sm lg:text-base font-medium text-socket-table text-white ml-0.5">{truncateDecimals(refuel?.amount, refuel?.token?.precision)} {refuel?.token?.symbol}</span>
+                                                        <span className="text-sm lg:text-base font-medium text-white ml-0.5">{truncateDecimals(refuel?.amount, refuel?.token?.precision)} {refuel?.token?.symbol}</span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="flex-1 p-4 border-secondary-600 border-l">
-                                                <div className="text-base font-normal text-socket-secondary">Transaction</div>
+                                                <div className="text-base font-normal">Transaction</div>
                                                 {refuel_transaction?.transaction_hash ?
                                                     <div className="flex items-center justify-between text-white hover:text-primary-text">
                                                         <Link href={`${refuel_transaction?.network?.transaction_explorer_template?.replace('{0}', refuel_transaction?.transaction_hash)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">

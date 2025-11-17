@@ -22,7 +22,7 @@
 @layer base {
 
   body {
-    @apply bg-secondary-950 text-primary-text;
+    @apply bg-secondary-900 text-primary-text;
   }
 
   /* On iOS disabled inputs have default opacitiy */
@@ -115,7 +115,7 @@ input:disabled,
 textarea:disabled,
 input:disabled::placeholder,
 textarea:disabled::placeholder {
-  -webkit-text-fill-color: theme('colors.primary.text-placeholder');
+  -webkit-text-fill-color: theme('colors.tertiary');
   /* 1. sets text fill to 'primary-text': '#a4afc8' */
   opacity: 1;
   /* 2. correct opacity on iOS */
