@@ -234,38 +234,41 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                             <div className="items-center text-base mb-0.5 text-white w-full">
                                 <div className="mr-2 sm:text-xl text-base w-full">
                                     {swap.status == SwapStatus.Completed && output_transaction ?
-                                        <div className="flex flex-col sm:flex-row mb-4">
-                                            <div><StatusIcon swap={swap.status} />
-                                                <span className="text-secondary-300 mx-1">|</span>
-                                                <span className="whitespace-nowrap text-primary-text align-bottom">Date:</span>
-                                                <span className="whitespace-nowrap text-white align-bottom">&nbsp;
-                                                    <TooltipProvider delayDuration={0}>
-                                                        <Tooltip>
-                                                            <TooltipTrigger className="cursor-default">{new Date(input_transaction?.timestamp)?.toLocaleString('en-US', isCurrentYear ? optionsWithoutYear : optionsWithYear)}</TooltipTrigger>
-                                                            <TooltipContent>
-                                                                {new Date(swap.created_date).toUTCString()}
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    </TooltipProvider>
+                                        <div className="flex flex-col sm:flex-row sm:items-center flex-wrap gap-y-1 mb-4">
+                                            <StatusIcon swap={swap.status} />
+                                            <div className="flex items-center flex-wrap gap-x-2 sm:gap-x-0 gap-y-0.5">
+                                                <span className="whitespace-nowrap">
+                                                    <span className="text-secondary-300 mx-1 hidden sm:inline">|</span>
+                                                    <span className="text-primary-text align-bottom">Date:</span>
+                                                    <span className="text-white align-bottom ml-0.5">
+                                                        <TooltipProvider delayDuration={0}>
+                                                            <Tooltip>
+                                                                <TooltipTrigger className="cursor-default">{new Date(input_transaction?.timestamp)?.toLocaleString('en-US', isCurrentYear ? optionsWithoutYear : optionsWithYear)}</TooltipTrigger>
+                                                                <TooltipContent>
+                                                                    {new Date(swap.created_date).toUTCString()}
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        </TooltipProvider>
+                                                    </span>
+                                                </span>
+                                                <span className="whitespace-nowrap">
+                                                    <span className="text-secondary-300 mx-1 hidden sm:inline">|</span>
+                                                    <span className="text-primary-text">Duration:</span>
+                                                    <span className="text-white ml-0.5">{getTimeDifferenceFromNow(input_transaction?.timestamp, output_transaction?.timestamp)}</span>
+                                                </span>
+                                                <span className="whitespace-nowrap">
+                                                    <span className="text-secondary-300 mx-1 hidden sm:inline">|</span>
+                                                    <span className="text-primary-text">Cost:</span>
+                                                    <span className="text-white ml-0.5">{truncateDecimals(quote?.total_fee, sourceToken?.precision)} {swap?.source_token?.symbol}</span>
                                                 </span>
                                             </div>
-                                            <span className="text-secondary-300 mx-1">|</span>
-                                            <p className="sm:self-end">
-                                                <span className="sm:whitespace-nowrap sm:ml-0.5 text-primary-text">Duration:</span>
-                                                <span className="text-white">{getTimeDifferenceFromNow(input_transaction?.timestamp, output_transaction?.timestamp)}</span>
-                                            </p>
-                                            <span className="text-secondary-300 mx-1">|</span>
-                                            <p className="sm:self-end">
-                                                <span className="text-primary-text sm:ml-1">Cost:</span>
-                                                <span className="text-white">{truncateDecimals(quote?.total_fee, sourceToken?.precision)} {swap?.source_token?.symbol}</span>
-                                            </p>
                                         </div>
                                         :
                                         swap.status !== SwapStatus.Completed ?
-                                            <div className="flex flex-col sm:flex-row">
-                                                <div>
-                                                    <StatusIcon swap={swap.status} />
-                                                    <span className="text-secondary-300 mx-1">|</span>
+                                            <div className="flex flex-col sm:flex-row sm:items-center flex-wrap gap-y-1">
+                                                <StatusIcon swap={swap.status} />
+                                                <div className="flex items-center flex-wrap">
+                                                    <span className="text-secondary-300 mx-1 hidden sm:inline">|</span>
                                                     <span className="whitespace-nowrap text-primary-text align-bottom">Date:</span>
                                                     <span className="whitespace-nowrap text-white align-bottom">
                                                         <TooltipProvider delayDuration={0}>
@@ -277,11 +280,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                             </Tooltip>
                                                         </TooltipProvider>
                                                     </span>
+                                                    <span className="text-primary-text ml-1">({getTimeDifferenceFromNow(input_transaction?.timestamp, new Date().toString())} ago)</span>
                                                 </div>
-                                                <span className="text-secondary-300 mx-1">|</span>
-                                                <p className="sm:self-end">
-                                                    <span className="text-primary-text">({getTimeDifferenceFromNow(input_transaction?.timestamp, new Date().toString())} ago)</span>
-                                                </p>
                                             </div>
                                             :
                                             <div className="flex sm:flex-row"><StatusIcon swap={swap.status} />
