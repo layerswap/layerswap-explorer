@@ -14,8 +14,8 @@ export default function Refund({ refund }: { refund: Transaction }) {
             <div className="flex items-center text-white">
                 <div className="mr-2 text-2xl font-medium">Refund</div>
             </div>
-            <div className="rounded-md w-full grid grid-cols-8 text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border divide-y divide-secondary-500">
-                <div className="flex-1 p-4 whitespace-nowrap col-span-2">
+            <div className="rounded-md w-full grid grid-cols-1 sm:grid-cols-8 text-primary-text bg-secondary-700 shadow-lg relative border-secondary-600 border divide-y divide-secondary-500">
+                <div className="flex-1 p-4 whitespace-nowrap sm:col-span-2">
                     <div className="text-base font-normal text-socket-secondary">Asset</div>
                     <div className="flex items-center">
                         <span className="text-sm lg:text-base font-medium text-socket-table text-white flex items-center">
@@ -24,14 +24,14 @@ export default function Refund({ refund }: { refund: Transaction }) {
                         </span>
                     </div>
                 </div>
-                <div className="flex-1 p-4 border-secondary-600 border-l col-span-2">
+                <div className="flex-1 p-4 border-secondary-600 sm:border-l sm:col-span-2">
                     <div className="text-base font-normal text-socket-secondary">Network</div>
                     <div className="flex items-center">
                         <Image alt="Source chain icon" src={network?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md mr-2" />
                         <span className="text-sm lg:text-base font-medium text-socket-table text-white">{network?.display_name}</span>
                     </div>
                 </div>
-                <div className="flex flex-col p-4 border-secondary-600 border-l col-span-4">
+                <div className="flex flex-col p-4 border-secondary-600 sm:border-l sm:col-span-4">
                     <div className="text-base font-normal text-socket-secondary">Transaction</div>
                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
                         <div className="flex justify-between items-center text-white">
