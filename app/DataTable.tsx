@@ -1,7 +1,7 @@
 "use client"
 import { ApiResponse } from "@/models/ApiResponse";
 import useSWR from "swr"
-import { ChevronRight } from "lucide-react";
+import { CheckCircle2, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import LoadingBlocks from "@/components/LoadingBlocks";
@@ -50,7 +50,6 @@ export default function DataTable() {
                                     {swapsData?.filter(s => s.transactions?.some(t => t?.type == TransactionType.Input))?.map((swap, index) => {
                                         const input_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Input)
                                         const output_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Output)
-                                        const refund_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Refund)
 
                                         const sourceNetwork = swap?.source_network
                                         const sourceToken = swap?.source_token
@@ -118,12 +117,7 @@ export default function DataTable() {
                                                                             <Image alt={`Destination token icon ${index}`} src={destinationToken?.logo || ''} width={20} height={20} decoding="async" data-nimg="responsive" className="rounded-md" />
                                                                         </span>
                                                                     </div>
-                                                                    {(swap.status === SwapStatus.Refunded && refund_transaction?.amount) ?
-                                                                        <div className="mx-2.5">
-                                                                            <span className="text-white">{formatAmount(refund_transaction?.amount)}</span>
-                                                                            <span className="mx-1 text-white">{sourceToken?.symbol}</span>
-                                                                        </div>
-                                                                        : output_transaction?.amount ?
+                                                                    {output_transaction?.amount ?
                                                                         <div className="mx-2.5">
                                                                             <span className="text-white">{formatAmount(output_transaction?.amount)}</span>
                                                                             <span className="mx-1 text-white">{destinationToken?.symbol}</span>
@@ -141,11 +135,7 @@ export default function DataTable() {
                                                                 </div>
                                                                 <div className="mx-2 text-white">
                                                                     {
-                                                                        (swap.status === SwapStatus.Refunded && refund_transaction?.transaction_hash) ?
-                                                                            <Link href={`${refund_transaction?.network?.transaction_explorer_template?.replace('{0}', (refund_transaction?.transaction_hash || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
-                                                                                <span className="underline mx-0.5 hover:text-gray-300 hover:no-underline">{refund_transaction?.network?.display_name || sourceNetwork?.display_name}</span>
-                                                                            </Link>
-                                                                        : output_transaction?.transaction_hash ?
+                                                                        output_transaction?.transaction_hash ?
                                                                             <Link href={`${destinationNetwork?.transaction_explorer_template?.replace('{0}', (output_transaction?.transaction_hash || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className={`${!output_transaction ? "disabled" : ""} hover:text-gray-300 inline-flex items-center w-fit`}>
                                                                                 <span className={`underline mx-0.5 hover:text-gray-300 hover:no-underline`}>{destinationExchange ? destinationExchange?.display_name : destinationNetwork?.display_name}</span>
                                                                             </Link>
@@ -174,19 +164,26 @@ export default function DataTable() {
     )
 }
 
-
-function DestTxStatus(swap: Swap) {
+export function DestTxStatus(swap: Swap) {
     const swapStatus = swap?.status;
     const input_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Input);
     if (swapStatus == SwapStatus.LsTransferPending) {
-        return <span className="font-medium md:text-sm text-xs border p-1 rounded-md text-yellow-200 bg-yellow-100/20 !border-yellow-200/50">Pending</span>
+        return <div className="flex items-center space-x-1 px-2 py-1 rounded-lg text-[#FFC94A] bg-[#2F2B1D]">
+            <span className="w-3.5 h-3.5 rounded-full bg-[#FFC94A]"></span>
+            <span className="font-medium md:text-sm text-base">In Progress</span>
+        </div>
     } else if (swapStatus == SwapStatus.Failed && input_transaction) {
-        return <span className="font-medium md:text-sm text-xs border p-1 rounded-md text-red-200 bg-red-100/20 !border-red-200/50">Failed</span>
-    } else if (swapStatus == SwapStatus.Completed) {
-        return <span className="font-medium md:text-sm text-xs border p-1 rounded-md text-green-200 bg-green-100/20 !border-green-200/50">Completed</span>
-    } else if (swapStatus == SwapStatus.PendingRefund) {
-        return <span className="font-medium md:text-sm text-xs border p-1 rounded-md text-yellow-200 bg-yellow-100/20 !border-yellow-200/50">Refund Pending</span>
+        return <div className="flex items-center space-x-1 px-2 py-1 rounded-lg text-[#F5678D] bg-[#2E0713]">
+            <span className="font-medium md:text-sm text-base">Failed</span>
+        </div>
     } else if (swapStatus == SwapStatus.Refunded) {
-        return <span className="font-medium md:text-sm text-xs border p-1 rounded-md text-purple-200 bg-purple-100/20 !border-purple-200/50">Refunded</span>
+        return <div className="flex items-center space-x-1 px-2 py-1 rounded-lg text-[#F5678D] bg-[#2E0713]">
+            <span className="font-medium md:text-sm text-base">Refunded</span>
+        </div>
+    } else if (swapStatus == SwapStatus.Completed) {
+        return <div className="flex items-center space-x-1 px-2 py-1 rounded-lg text-[#59E07D] bg-[#0E2B16]">
+            <CheckCircle2 className="w-3.5 h-3.5 text-secondary-400 [&>path]:fill-[#59E07D]" />
+            <span className="font-medium md:text-sm text-base">Completed</span>
+        </div>
     }
 }

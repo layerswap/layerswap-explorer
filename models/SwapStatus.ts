@@ -9,6 +9,5 @@ export enum SwapStatus {
     Failed = 'failed',
     Expired = "expired",
     Cancelled = "cancelled",
-    PendingRefund = "pending_refund",
-    Refunded = "refunded",
+    Refunded = "refunded"
 }

@@ -51,7 +51,7 @@ export enum TransactionType {
     Input = 'input',
     Output = 'output',
     Refuel = 'refuel',
-    Refund = 'refund'
+    Refunded = 'refund'
 }
 
 export type Swap = {
