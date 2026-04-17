@@ -3,7 +3,7 @@ import { shortenAddress, shortenHash } from "@/lib/utils";
 import { ApiResponse } from "@/models/ApiResponse";
 import CopyButton from "../../components/buttons/copyButton";
 import { ArrowRight, ChevronRight } from 'lucide-react';
-import useSWR from "swr";
+import useSWRInfinite from "swr/infinite";
 import StatusIcon from '../../components/SwapHistory/StatusIcons';
 import Link from "next/link";
 import Image from "next/image";
@@ -40,11 +40,20 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const basePath = process.env.NEXT_PUBLIC_APP_BASE_PATH
 
     const apiClient = new LayerSwapApiClient()
-    const { data, error, isLoading } = useSWR<ApiResponse<SwapData[]>>(`/explorer/${searchParam}?version=${process.env.NEXT_PUBLIC_API_VERSION}&statuses=Completed&statuses=PendingWithdrawal&statuses=PendingRefund&statuses=Refunded`, apiClient.fetcher, { dedupingInterval: 60000 });
+    const getKey = (pageIndex: number, previousPageData: ApiResponse<SwapData[]> | null) => {
+        if (previousPageData && (!previousPageData.data || previousPageData.data.length === 0)) return null;
+        return `/explorer/${searchParam}?version=${process.env.NEXT_PUBLIC_API_VERSION}&page=${pageIndex + 1}&statuses=Completed&statuses=PendingWithdrawal&statuses=PendingRefund&statuses=Refunded`;
+    };
+    const { data, error, isLoading, size, setSize, isValidating } = useSWRInfinite<ApiResponse<SwapData[]>>(getKey, apiClient.fetcher, { dedupingInterval: 60000, revalidateFirstPage: false });
 
-    const swap = data?.data?.[0]?.swap
-    const quote = data?.data?.[0]?.quote
-    const refuel = data?.data?.[0]?.refuel
+    const allData = data ? data.flatMap(d => d?.data || []) : [];
+    const lastPage = data?.[data.length - 1];
+    const isLoadingMore = isValidating && size > 1;
+    const isReachingEnd = !!data && (!lastPage?.data || lastPage.data.length === 0);
+
+    const swap = allData[0]?.swap
+    const quote = allData[0]?.quote
+    const refuel = allData[0]?.refuel
 
     const input_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Input)
     const output_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Output)
@@ -60,8 +69,8 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const destinationNetwork = swap?.destination_network
     const destinationToken = swap?.destination_token
 
-    const filteredData = data?.data?.filter(s => s?.swap?.transactions?.some(t => t?.type == TransactionType.Input))?.map(s => s?.swap);
-    const emptyData = data?.data?.every(s => !s?.swap?.transactions.length);
+    const filteredData = allData.filter(s => s?.swap?.transactions?.some(t => t?.type == TransactionType.Input))?.map(s => s?.swap);
+    const emptyData = !!data && allData.every(s => !s?.swap?.transactions.length);
 
     const currentYear = new Date().getFullYear();
     const isCurrentYear = new Date(input_transaction?.timestamp || '').getFullYear() === currentYear
@@ -69,7 +78,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     if (error || emptyData) return <NotFound />
     if (isLoading) return <LoadingBlocks />
 
-    return (Number(data?.data?.length) > 1 ?
+    return (allData.length > 1 ?
         <div className="px-4 sm:px-6 lg:px-8 w-full">
             {!(pathname === '/' || pathname === basePath || pathname === `${basePath}/`) && <div className='hidden xl:block w-fit mb-1 hover:bg-secondary-600 hover:text-accent-foreground rounded ring-offset-background transition-colors -ml-5'>
                 <BackBtn />
@@ -229,6 +238,17 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                 </tbody>
                             </table>
                         </div>
+                        {!isReachingEnd && (
+                            <div className="flex justify-center py-4">
+                                <button
+                                    onClick={() => setSize(size + 1)}
+                                    disabled={isLoadingMore}
+                                    className="px-4 py-2 text-sm font-medium text-white bg-secondary-700 hover:bg-secondary-600 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isLoadingMore ? 'Loading...' : 'Load more'}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
