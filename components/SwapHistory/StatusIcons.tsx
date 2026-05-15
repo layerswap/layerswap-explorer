@@ -21,7 +21,7 @@ export default function StatusIcon({ swap }: { swap: string | undefined }) {
       return (
         <>
           <div className="inline-flex items-center space-x-1 px-2 py-1 rounded-lg text-[#59E07D] bg-[#0E2B16] w-max">
-            <CheckCircle2 className="w-3.5 h-3.5 text-secondary-400 [&>path]:fill-[#59E07D]" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#59E07D]" />
             <span className="font-medium md:text-sm text-base">Completed</span>
           </div>
         </>
