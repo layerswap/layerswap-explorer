@@ -14,7 +14,7 @@ export default function NotFound() {
                     >
                         Go back home
                     </Link>
-                    <Link href="https://discord.gg/layerswap" className="text-sm font-semibold text-white hover:text-white/80">
+                    <Link href="https://layerswap.io/help" className="text-sm font-semibold text-white hover:text-white/80">
                         Contact support <span aria-hidden="true">&rarr;</span>
                     </Link>
                 </div>
