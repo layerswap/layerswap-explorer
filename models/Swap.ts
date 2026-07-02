@@ -87,6 +87,7 @@ export type Swap = {
     };
     requested_amount: number;
     destination_address: string;
+    source_address?: string;
     deposit_mode: string;
     status: string;
     metadata: {
