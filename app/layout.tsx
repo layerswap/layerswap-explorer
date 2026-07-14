@@ -1,7 +1,6 @@
 import Header from '@/components/Header'
 import './globals.css'
 import Footer from '@/components/Footer'
-import Script from 'next/script'
 
 export const metadata = {
   title: 'Layerswap Explorer: All the Transactions in One Place',
@@ -25,7 +24,6 @@ export default function RootLayout({
         <Header />
         {children}
         <Footer />
-        <Script defer data-domain="layerswap.io" src="https://plausible.io/js/script.js" />
       </body>
     </html>
   );

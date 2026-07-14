@@ -60,6 +60,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const output_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Output)
     const refuel_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Refuel);
     const refunded_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Refunded);
+    const sourceAccountAddress = swap?.source_address || input_transaction?.from || '';
 
     const sourceNetwork = swap?.source_network
     const sourceToken = swap?.source_token
@@ -169,7 +170,7 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                                                     </span>
                                                                 </div>
                                                                 <div className="mx-2 text-white">
-                                                                    <Link href={`${sourceNetwork?.transaction_explorer_template?.replace('{0}', (inputTransaction?.from || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
+                                                                    <Link href={`${sourceNetwork?.transaction_explorer_template?.replace('{0}', (swap?.source_address || inputTransaction?.from || ''))}`} onClick={(e) => e.stopPropagation()} target="_blank" className="hover:text-gray-300 inline-flex items-center w-fit">
                                                                         <span className="mx-0.5 hover:text-gray-300 underline">{sourceExchange ? sourceExchange?.display_name : sourceNetwork?.display_name}</span>
                                                                     </Link>
                                                                 </div>
@@ -353,10 +354,10 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                     <div className="text-base font-normal text-socket-secondary">From Address</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
                                         <div className="flex justify-between items-center text-white hover:text-primary-text">
-                                            <Link href={`${sourceNetwork?.account_explorer_template?.replace('{0}', input_transaction?.from)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                                <span className="break-all link link-underline link-underline-black">{input_transaction?.from}</span>
+                                            <Link href={`${sourceNetwork?.account_explorer_template?.replace('{0}', sourceAccountAddress)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                <span className="break-all link link-underline link-underline-black">{sourceAccountAddress}</span>
                                             </Link>
-                                            <CopyButton toCopy={input_transaction?.from} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
+                                            <CopyButton toCopy={sourceAccountAddress} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                         </div>
                                     </div>
                                 </div>

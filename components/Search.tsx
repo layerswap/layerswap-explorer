@@ -5,9 +5,9 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const Search = () => {
-    const params = useParams()
+    const params = useParams<{ searchParam?: string }>()
 
-    const [searchParam, setSearchParam] = useState(params.searchParam || '');
+    const [searchParam, setSearchParam] = useState<string>(params.searchParam || '');
     const router = useRouter();
 
     useEffect(() => {
