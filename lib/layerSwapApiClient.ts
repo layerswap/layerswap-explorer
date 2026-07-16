@@ -10,7 +10,7 @@ export default class LayerSwapApiClient {
     fetcher = (url: string) => this.UnauthenticatedRequest<ApiResponse<any>>("GET", url)
 
     async GetExplorerDataAsync(): Promise<ApiResponse<SwapData[]>> {
-        return await this.UnauthenticatedRequest<ApiResponse<SwapData[]>>("GET", `/explorer?version=${LayerSwapApiClient.apiVersion}&statuses=1&statuses=4`);
+        return await this.UnauthenticatedRequest<ApiResponse<SwapData[]>>("GET", `/explorer?version=${LayerSwapApiClient.apiVersion}&statuses=1&statuses=4&compact=true`);
     }
 
     private async UnauthenticatedRequest<T extends EmptyApiResponse>(method: Method, endpoint: string, data?: any, header?: {}): Promise<T> {

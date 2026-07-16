@@ -14,11 +14,10 @@ import { formatAmount } from "@/helpers/formatAmount";
 
 export default function DataTable() {
     const apiClient = new LayerSwapApiClient()
-
-
-    const { data, error, isLoading } = useSWR<ApiResponse<SwapData[]>>(`/explorer?version=${process.env.NEXT_PUBLIC_API_VERSION}&statuses=1&statuses=4`, apiClient.fetcher, { dedupingInterval: 60000 });
-    const swapsData = data?.data?.map(d => d.swap);
     const router = useRouter();
+
+    const { data, error, isLoading } = useSWR<ApiResponse<SwapData[]>>(`/explorer?version=${process.env.NEXT_PUBLIC_API_VERSION}&statuses=1&statuses=4&compact=true`, apiClient.fetcher, { dedupingInterval: 60000 });
+    const swapsData = data?.data?.map(d => d.swap);
 
     if (error) return <Error500 />
     if (isLoading) return <LoadingBlocks />
