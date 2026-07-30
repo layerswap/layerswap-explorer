@@ -25,7 +25,10 @@ export default function Header() {
                     <Link href="/" className="-m-1.5 p-1.5">
                         <LayerswapExplorerLogo className="h-14 w-auto text-primary-logoColor" />
                     </Link>
-                    <div className="flex">
+                    <div className="flex items-center">
+                        <Link href={'/analytics'} className={`px-2 sm:px-3 py-1 sm:py-2 hover:opacity-70 flex items-center gap-1 text-sm sm:text-base transition-all duartion-200 ${pathname === '/analytics' || pathname === `${basePath}/analytics` ? 'text-primary-500 font-semibold' : 'text-white'}`}>
+                            <span>Analytics</span>
+                        </Link>
                         <Link target='_blank' href={'https://layerswap.io/'} className='px-2 sm:px-3 py-1 sm:py-2 hover:opacity-70 flex items-center gap-1 text-white text-sm sm:text-base transition-all duartion-200'>
                             <span>App</span>
                         </Link>
@@ -35,7 +38,7 @@ export default function Header() {
                     </div>
                 </div>
                 <div className='w-full'>
-                    {!(pathname === '/' || pathname === basePath || pathname === `${basePath}/`) &&
+                    {!(pathname === '/' || pathname === basePath || pathname === `${basePath}/` || pathname === '/analytics' || pathname === `${basePath}/analytics`) &&
                         <Search />
                     }
                 </div>
