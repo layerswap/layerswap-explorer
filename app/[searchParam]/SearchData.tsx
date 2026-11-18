@@ -61,6 +61,9 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
     const refuel_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Refuel);
     const refunded_transaction = swap?.transactions?.find(t => t?.type == TransactionType.Refunded);
     const sourceAccountAddress = swap?.source_address || input_transaction?.from || '';
+    const destinationTransaction = output_transaction || refunded_transaction;
+    const destinationAccountAddress = destinationTransaction?.to || swap?.destination_address || '';
+    const destinationAccountNetwork = destinationTransaction?.network || swap?.destination_network;
 
     const sourceNetwork = swap?.source_network
     const sourceToken = swap?.source_token
@@ -428,12 +431,12 @@ export default function SearchData({ searchParam }: { searchParam: string }) {
                                 <div className="flex flex-col p-4">
                                     <div className="text-base font-normal text-socket-secondary">To Address</div>
                                     <div className="text-sm lg:text-base font-medium text-tx-base w-full">
-                                        {(output_transaction || refunded_transaction)?.to ?
+                                        {destinationAccountAddress ?
                                             <div className="flex items-center justify-between text-white hover:text-primary-text">
-                                                <Link href={`${destinationNetwork?.account_explorer_template?.replace("{0}", (output_transaction || refunded_transaction)?.to || '')}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
-                                                    <span className="break-all link link-underline link-underline-black">{(output_transaction || refunded_transaction)?.to}</span>
+                                                <Link href={`${destinationAccountNetwork?.account_explorer_template?.replace("{0}", destinationAccountAddress)}`} target="_blank" className="hover:text-gray-300 w-fit contents items-center">
+                                                    <span className="break-all link link-underline link-underline-black">{destinationAccountAddress}</span>
                                                 </Link>
-                                                <CopyButton toCopy={swap?.destination_address} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
+                                                <CopyButton toCopy={destinationAccountAddress} iconHeight={16} iconClassName="order-2" iconWidth={16} className="ml-2" />
                                             </div>
                                             :
                                             <span className="ml-1">-</span>
